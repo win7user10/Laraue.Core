@@ -13,7 +13,7 @@ jobs:
       shell: bash
     - name: Publish nuget
       run: |
-           for f in ./[repository]/bin/Release/*.nupkg
+           for f in ./Laraue.Core/bin/Release/*.nupkg
            do
              curl -vX PUT -u "win7user10:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/win7user10/
            done
