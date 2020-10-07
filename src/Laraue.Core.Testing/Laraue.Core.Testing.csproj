@@ -6,6 +6,7 @@
     <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
