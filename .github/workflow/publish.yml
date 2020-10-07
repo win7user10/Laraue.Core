@@ -15,6 +15,6 @@ jobs:
       run: |
            for f in ./[repository]/bin/Release/*.nupkg
            do
-             curl -vX PUT -u "[user]:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/[user]/
+             curl -vX PUT -u "win7user10:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/win7user10/
            done
       shell: bash
