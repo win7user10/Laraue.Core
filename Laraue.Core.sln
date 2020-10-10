@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.Expressions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.Logging.Telegram", "src\Laraue.Core.Logging.Telegram\Laraue.Core.Logging.Telegram.csproj", "{C6C2C4E9-5F9D-41ED-B741-7C9A5D6D6C2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.Testing", "src\Laraue.Core.Testing\Laraue.Core.Testing.csproj", "{A57F50F1-0FD5-427D-B4E2-8EB3D8FD4555}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.Testing", "src\Laraue.Core.Testing\Laraue.Core.Testing.csproj", "{A57F50F1-0FD5-427D-B4E2-8EB3D8FD4555}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.Patterns", "src\Laraue.Core.Patterns\Laraue.Core.Patterns.csproj", "{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A57F50F1-0FD5-427D-B4E2-8EB3D8FD4555}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A57F50F1-0FD5-427D-B4E2-8EB3D8FD4555}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A57F50F1-0FD5-427D-B4E2-8EB3D8FD4555}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

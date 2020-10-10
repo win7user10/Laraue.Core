@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Abstractions for fast implementaion some patterns.</Description>
+    <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>Belyanskiy Ilya</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <VersionPrefix>1.0</VersionPrefix>
+  </PropertyGroup>
+
+</Project>
