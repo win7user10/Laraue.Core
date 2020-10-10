@@ -25,6 +25,9 @@ jobs:
           NUGET_AUTH_TOKEN: ${{secrets.GHPackagesToken}}
 
       - name: Build project
+        uses: einaregilsson/build-number@v2
+        with:
+          token: ${{secrets.GHPackagesToken}}
         run: dotnet build --configuration Release --version-suffix "build-$BUILD_NUMBER"
 
       - name: Generate a NuGet package
