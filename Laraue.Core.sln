@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.Testing", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.Patterns", "src\Laraue.Core.Patterns\Laraue.Core.Patterns.csproj", "{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.Extensions.Options", "src\Laraue.Core.Extensions.Options\Laraue.Core.Extensions.Options.csproj", "{0F8F73FF-FA00-4DFC-8DD2-8AE9B2236EC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8331728A-2CDD-4B65-9F1C-D3064BC74BF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F8F73FF-FA00-4DFC-8DD2-8AE9B2236EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F8F73FF-FA00-4DFC-8DD2-8AE9B2236EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F8F73FF-FA00-4DFC-8DD2-8AE9B2236EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F8F73FF-FA00-4DFC-8DD2-8AE9B2236EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
