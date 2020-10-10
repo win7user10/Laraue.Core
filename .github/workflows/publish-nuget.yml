@@ -36,4 +36,4 @@ jobs:
            do
              curl -vX PUT -u "win7user10:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/win7user10/
            done
-      shell: bash
+        shell: bash
