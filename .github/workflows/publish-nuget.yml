@@ -31,9 +31,4 @@ jobs:
         run: dotnet pack --no-build -c Release -o .
 
       - name: Push to GitHub package registry
-        run: |
-           for f in ./Laraue.Core/*.nupkg
-           do
-             curl -vX PUT -u "win7user10:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/win7user10/
-           done
-        shell: bash
+        run: dotnet nuget push "*.nupkg"
