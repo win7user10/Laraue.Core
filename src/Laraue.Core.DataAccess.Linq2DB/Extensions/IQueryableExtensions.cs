@@ -1,11 +1,11 @@
 ﻿using Laraue.Core.DataAccess.Contracts;
-using Microsoft.EntityFrameworkCore;
+using LinqToDB.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Laraue.Core.DataAccess.Extensions
+namespace Laraue.Core.DataAccess.Linq2DB.Extensions
 {
-    public static class EfCoreQueryableExtensions
+    public static class IQueryableExtensions
     {
         /// <summary>
         /// Create pagination by <see cref="IPaginatedRequest"/>. Extension for EF core package.
@@ -14,16 +14,15 @@ namespace Laraue.Core.DataAccess.Extensions
         /// <param name="query"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static async Task<IPaginatedResult<TEntity>> PaginateAsync<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
+        public static async Task<IPaginatedResult<TEntity>> PaginateAsyncLinq2DB<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
             where TEntity : class
         {
-            var total = await query.CountAsync();
+            var total = await query.CountAsyncEF();
             int skip = (request.Page - 1) * request.PerPage;
 
             var data = await query.Skip(skip)
                 .Take(request.PerPage)
-                .AsNoTracking()
-                .ToListAsync();
+                .ToListAsyncEF();
 
             return new PaginatedResult<TEntity>(request.Page, request.PerPage, total, data);
         }
