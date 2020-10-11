@@ -5,31 +5,34 @@ namespace Laraue.Core.DataAccess.Contracts
 {
     public class PaginatedResult<TEntity> : IPaginatedResult<TEntity> where TEntity : class
     {
-        public PaginatedResult(int page, long perPage, long total, IEnumerable<TEntity> data)
+        private const int DefaultPerPage = 20;
+
+        private long _page = 1;
+        private int _perPage = DefaultPerPage;
+
+        public PaginatedResult(long page, int perPage, long total, IEnumerable<TEntity> data)
         {
-            if (page <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(page), "Value should be positive");
-            }
-
-            if (perPage <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(perPage), "Value should be positive");
-            }
-
             Page = page;
             PerPage = perPage;
             Data = data;
             Total = total;
         }
 
-        public int Page { get; }
+        public long Page
+        {
+            get => _page;
+            set => _page = value > 0 ? value : 1;
+        }
 
-        public int LastPage => (int)Math.Ceiling((double)Total / PerPage);
+        public long LastPage => (int)Math.Ceiling((double)Total / PerPage);
 
         public long Total { get; }
 
-        public long PerPage { get; }
+        public int PerPage
+        {
+            get => _perPage;
+            set => _perPage = value > 0 ? value : DefaultPerPage;
+        }
 
         public IEnumerable<TEntity> Data { get; }
     }

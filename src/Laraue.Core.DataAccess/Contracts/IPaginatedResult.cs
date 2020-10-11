@@ -11,12 +11,12 @@ namespace Laraue.Core.DataAccess.Contracts
         /// <summary>
         /// Current page.
         /// </summary>
-        int Page { get; }
+        long Page { get; }
 
         /// <summary>
         /// Number of last page.
         /// </summary>
-        int LastPage { get; }
+        long LastPage { get; }
 
         /// <summary>
         /// Total entities count available by this request.
@@ -26,7 +26,7 @@ namespace Laraue.Core.DataAccess.Contracts
         /// <summary>
         /// Maximum count of entities which can be returned in the one request.
         /// </summary>
-        long PerPage { get; }
+        int PerPage { get; }
 
         /// <summary>
         /// Paginated data.
