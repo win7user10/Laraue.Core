@@ -34,7 +34,7 @@ namespace Laraue.Core.Extensions.Linq
         }
 
         /// <summary>
-        /// Generate "OrElse" expression for passed array of values by predicate.
+        /// Generates "OrElse" expression for passed array of values by predicate.
         /// </summary>
         /// <typeparam name="TQueryable"></typeparam>
         /// <typeparam name="TCondition"></typeparam>
@@ -44,28 +44,11 @@ namespace Laraue.Core.Extensions.Linq
         /// <returns></returns>
         public static IQueryable<TQueryable> WhereAny<TQueryable, TCondition>(this IQueryable<TQueryable> queryable, IEnumerable<TCondition> values, Expression<Func<TQueryable, TCondition, bool>> condition)
         {
-            if (values == null || values.Count() == 0)
-                return queryable;
-
-            Expression<Func<TQueryable, bool>> fullCondition = null;
-            foreach (var value in values)
-            {
-                var constParameter = Expression.Constant(value);
-                var visitor = new ReplaceExpressionVisitor(condition.Parameters[1], constParameter);
-                var visitedExpression = visitor.Visit(condition.Body);
-                var lambdaExpression = Expression.Lambda<Func<TQueryable, bool>>(visitedExpression, condition.Parameters[0]);
-
-                if (fullCondition == null)
-                    fullCondition = lambdaExpression;
-                else
-                    fullCondition = fullCondition.OrElse(lambdaExpression);
-            }
-
-            return queryable.Where(fullCondition);
+            return queryable.WhereExpression(values, condition, (left, right) => left.OrElse(right));
         }
 
         /// <summary>
-        /// Generate "AndAlso" expression for passed array of values by predicate.
+        /// Generates "AndAlso" expression for passed array of values by predicate.
         /// </summary>
         /// <typeparam name="TQueryable"></typeparam>
         /// <typeparam name="TCondition"></typeparam>
@@ -74,6 +57,24 @@ namespace Laraue.Core.Extensions.Linq
         /// <param name="condition"></param>
         /// <returns></returns>
         public static IQueryable<TQueryable> WhereAll<TQueryable, TCondition>(this IQueryable<TQueryable> queryable, IEnumerable<TCondition> values, Expression<Func<TQueryable, TCondition, bool>> condition)
+        {
+            return queryable.WhereExpression(values, condition, (left, right) => left.AndAlso(right));
+        }
+
+        /// <summary>
+        /// Generates expression using passed combinateing expression function for passed array of values by predicate.
+        /// </summary>
+        /// <typeparam name="TQueryable"></typeparam>
+        /// <typeparam name="TCondition"></typeparam>
+        /// <param name="queryable"></param>
+        /// <param name="values"></param>
+        /// <param name="condition"></param>
+        /// <param name="combinatingFunction">Function, that use two expressions and returns one combined expression.</param>
+        /// <returns></returns>
+        private static IQueryable<TQueryable> WhereExpression<TQueryable, TCondition>(this IQueryable<TQueryable> queryable, 
+            IEnumerable<TCondition> values, 
+            Expression<Func<TQueryable, TCondition, bool>> condition,
+            Func<Expression<Func<TQueryable, bool>>, Expression<Func<TQueryable, bool>>, Expression<Func<TQueryable, bool>>> combinatingFunction)
         {
             if (values == null || values.Count() == 0)
                 return queryable;
@@ -89,7 +90,7 @@ namespace Laraue.Core.Extensions.Linq
                 if (fullCondition == null)
                     fullCondition = lambdaExpression;
                 else
-                    fullCondition = fullCondition.AndAlso(lambdaExpression);
+                    fullCondition = combinatingFunction.Invoke(fullCondition, lambdaExpression);
             }
 
             return queryable.Where(fullCondition);
