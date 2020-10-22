@@ -13,7 +13,7 @@ namespace Laraue.Core.Tests.StoredProcedures
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Transaction>()
-                .AddTrigger(TriggerType.Delete, TriggerTime.BeforeTransaction);
+                .AddAfterDeleteTrigger();
         }
     }
 
