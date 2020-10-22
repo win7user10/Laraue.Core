@@ -13,7 +13,9 @@ namespace Laraue.Core.Tests.StoredProcedures
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Transaction>()
-                .AddAfterDeleteTrigger();
+                .AddAfterDeleteTrigger(trigger => trigger
+                    .When(x => x.IsVeryfied)
+                    .Update(Users));
         }
     }
 
@@ -31,5 +33,7 @@ namespace Laraue.Core.Tests.StoredProcedures
         public Guid Id { get; set; }
 
         public decimal Value { get; set; }
+
+        public bool IsVeryfied { get; set; }
     }
 }

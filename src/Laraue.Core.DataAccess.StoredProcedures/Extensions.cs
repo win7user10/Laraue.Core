@@ -10,28 +10,28 @@ namespace Laraue.Core.DataAccess.StoredProcedures
         {
         }
 
-        private static StoredProcedureBuilder<T> AddTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, TriggerType triggerType, TriggerTime triggerTime) where T : class
+        private static EntityTypeBuilder<T> AddTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, TriggerType triggerType, TriggerTime triggerTime, Action<TriggerBuilder<T>> configuration) where T : class
         {
-            return new StoredProcedureBuilder<T>();
+            return entityTypeBuilder;
         }
 
-        public static StoredProcedureBuilder<T> AddBeforeDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Delete, TriggerTime.BeforeTransaction);
+        public static EntityTypeBuilder<T> AddBeforeDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+            entityTypeBuilder.AddTrigger(TriggerType.Delete, TriggerTime.BeforeTransaction, configuration);
 
-        public static StoredProcedureBuilder<T> AddAfterDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Delete, TriggerTime.AfterTransaction);
+        public static EntityTypeBuilder<T> AddAfterDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+            entityTypeBuilder.AddTrigger(TriggerType.Delete, TriggerTime.AfterTransaction, configuration);
 
-        public static StoredProcedureBuilder<T> AddBeforeUpdateTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.BeforeTransaction);
+        public static EntityTypeBuilder<T> AddBeforeUpdateTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.BeforeTransaction, configuration);
 
-        public static StoredProcedureBuilder<T> AddAfterUpdateTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.AfterTransaction);
+        public static EntityTypeBuilder<T> AddAfterUpdateTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.AfterTransaction, configuration);
 
-        public static StoredProcedureBuilder<T> AddBeforeInsertTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.BeforeTransaction);
+        public static EntityTypeBuilder<T> AddBeforeInsertTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.BeforeTransaction, configuration);
 
-        public static StoredProcedureBuilder<T> AddAfterInsertTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.AfterTransaction);
+        public static EntityTypeBuilder<T> AddAfterInsertTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+            entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.AfterTransaction, configuration);
 
         enum TriggerType
         {
