@@ -1,4 +1,4 @@
-﻿namespace Laraue.Core.DataAccess.StoredProcedures.Triggers
+﻿namespace Laraue.Core.DataAccess.StoredProcedures.Common
 {
     public static class Constants
     {

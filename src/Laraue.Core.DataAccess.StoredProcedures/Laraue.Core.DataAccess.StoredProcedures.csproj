@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Laraue.Core.Extensions.Linq\Laraue.Core.Extensions.Linq.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MigrationBuilder\" />
+  </ItemGroup>
+
 </Project>

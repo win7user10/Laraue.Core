@@ -1,8 +1,15 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Triggers;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
+using Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Design;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -10,17 +17,26 @@ namespace Laraue.Core.Tests.StoredProcedures
 {
     public class DbContextTests
     {
-        [Fact]
-        public void DoSmth()
+        private readonly TestDbContext _dbContext;
+
+        public DbContextTests()
         {
             var options = new DbContextOptionsBuilder<TestDbContext>()
                 .UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tests;")
                 .ReplaceService<IMigrationsModelDiffer, TriggerModelDiffer>()
                 .Options;
-            var context = new TestDbContext(options);
+            _dbContext = new TestDbContext(options);
+        }
 
-            var migrator = context.Database.GetService<IMigrationsModelDiffer>();
-            var migration = migrator.GetDifferences(context.Model, context.Model);
+        [Fact]
+        public void DoSmth()
+        {
+            var generator = new StoredProcedureCSharpMigrationOperationGenerator(
+                new CSharpMigrationOperationGeneratorDependencies(
+                    new CSharpHelper(_dbContext.GetService<IRelationalTypeMappingSource>())));
+
+            var builder = new IndentedStringBuilder();
+            generator.Generate("builder", new List<MigrationOperation> { new CreateTriggerOperation() }, builder);
         }
     }
 

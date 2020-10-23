@@ -2,12 +2,23 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Update;
 
-namespace Laraue.Core.DataAccess.StoredProcedures
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
     public class TriggerBuilder<TTriggerEntity> where TTriggerEntity : class
     {
+        public TriggerType TriggerType { get; }
+
+        public TriggerTime TriggerTime { get; }
+
         private Expression<Func<TTriggerEntity, bool>> _triggerCondition;
+
+        internal TriggerBuilder(TriggerType triggerType, TriggerTime triggerTime)
+        {
+            TriggerType = triggerType;
+            TriggerTime = triggerTime;
+        }
 
         /// <summary>
         /// Add condition, when trigger should works.
@@ -24,12 +35,10 @@ namespace Laraue.Core.DataAccess.StoredProcedures
             return this;
         }
 
-        internal TriggerBuilder() { }
-
-        public UpdateBuilder<TTriggerEntity, TUpdateEntity> Update<TUpdateEntity>(Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> condition)
+        public UpdateTriggerBuilder<TTriggerEntity, TUpdateEntity> Update<TUpdateEntity>(Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> condition)
             where TUpdateEntity : class
         {
-            return new UpdateBuilder<TTriggerEntity, TUpdateEntity>(this, condition);
+            return new UpdateTriggerBuilder<TTriggerEntity, TUpdateEntity>(this, condition);
         }
     }
 }

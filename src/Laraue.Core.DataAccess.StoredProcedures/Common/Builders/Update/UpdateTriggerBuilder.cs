@@ -2,18 +2,22 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Laraue.Core.DataAccess.StoredProcedures
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Update
 {
-    public class UpdateBuilder<TTriggerEntity, TUpdateEntity> : IBuilder
+    public class UpdateTriggerBuilder<TTriggerEntity, TUpdateEntity>
         where TTriggerEntity : class
         where TUpdateEntity : class
     {
         public Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> UpdateCondition { get; private set; }
         private readonly TriggerBuilder<TTriggerEntity> _triggerBuilder;
 
+        public TriggerType TriggerType { get; }
+
+        public TriggerTime TriggerTime { get; }
+
         public Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> SetExpression { get; private set; }
 
-        internal UpdateBuilder(TriggerBuilder<TTriggerEntity> triggerBuilder, Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> condition)
+        internal UpdateTriggerBuilder(TriggerBuilder<TTriggerEntity> triggerBuilder, Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> condition)
         {
             _triggerBuilder = triggerBuilder ?? throw new ArgumentNullException(nameof(triggerBuilder));
             UpdateCondition = condition;
@@ -25,9 +29,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures
             return _triggerBuilder;
         }
 
-        public void Accept(IStoredProcedureVisitor visitor)
+        public UpdateTrigger Build()
         {
-            visitor.VisitUpdateBuilder(this);
+            return new UpdateTrigger(TriggerType, TriggerTime, UpdateCondition, SetExpression);
         }
     }
 }

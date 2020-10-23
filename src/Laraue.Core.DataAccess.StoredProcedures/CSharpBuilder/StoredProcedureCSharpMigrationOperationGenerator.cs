@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Triggers.Design
+namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 {
     public class StoredProcedureCSharpMigrationOperationGenerator : CSharpMigrationOperationGenerator
     {
