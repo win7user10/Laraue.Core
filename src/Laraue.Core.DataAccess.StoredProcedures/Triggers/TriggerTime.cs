@@ -1,4 +1,4 @@
-﻿namespace Laraue.Core.DataAccess.StoredProcedures.EFCore
+﻿namespace Laraue.Core.DataAccess.StoredProcedures.Triggers
 {
     public enum TriggerTime
     {

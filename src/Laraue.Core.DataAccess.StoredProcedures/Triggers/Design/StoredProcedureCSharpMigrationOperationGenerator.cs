@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using System;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.EFCore.Design
+namespace Laraue.Core.DataAccess.StoredProcedures.Triggers.Design
 {
     public class StoredProcedureCSharpMigrationOperationGenerator : CSharpMigrationOperationGenerator
     {

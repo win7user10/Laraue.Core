@@ -1,19 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Linq;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.EFCore
+namespace Laraue.Core.DataAccess.StoredProcedures.Triggers
 {
     public static class Extensions
     {
-        public static void DoUpdate<T>(this IQueryable<T> entityTypeBuilder, Action<T> predicate) where T : class
-        {
-        }
-
         private static EntityTypeBuilder<T> AddTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, TriggerType triggerType, TriggerTime triggerTime, Action<TriggerBuilder<T>> configuration) where T : class
         {
-            entityTypeBuilder.Metadata.Model.AddAnnotation("test", "testValue");
+            entityTypeBuilder.Metadata.Model.AddAnnotation(Constants.TriggerAnnotationName, "testValue");
             return entityTypeBuilder;
         }
 
