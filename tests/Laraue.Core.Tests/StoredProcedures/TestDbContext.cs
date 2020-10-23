@@ -1,4 +1,4 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures;
+﻿using Laraue.Core.DataAccess.StoredProcedures.EFCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;

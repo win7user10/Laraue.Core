@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Laraue.Core.DataAccess.StoredProcedures
+namespace Laraue.Core.DataAccess.StoredProcedures.EFCore
 {
     public static class Extensions
     {
@@ -32,18 +32,5 @@ namespace Laraue.Core.DataAccess.StoredProcedures
 
         public static EntityTypeBuilder<T> AddAfterInsertTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
             entityTypeBuilder.AddTrigger(TriggerType.Update, TriggerTime.AfterTransaction, configuration);
-
-        enum TriggerType
-        {
-            Insert,
-            Update,
-            Delete,
-        }
-
-        enum TriggerTime
-        {
-            BeforeTransaction,
-            AfterTransaction,
-        }
     }
 }

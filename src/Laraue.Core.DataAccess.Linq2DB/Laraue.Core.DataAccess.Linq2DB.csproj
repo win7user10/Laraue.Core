@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="linq2db.EntityFrameworkCore" Version="3.6.0" />
+    <PackageReference Include="linq2db.EntityFrameworkCore" Version="3.7.0" />
   </ItemGroup>
 
 </Project>
