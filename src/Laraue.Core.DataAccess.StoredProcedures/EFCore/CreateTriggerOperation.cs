@@ -2,7 +2,7 @@
 
 namespace Laraue.Core.DataAccess.StoredProcedures
 {
-    public class TriggerMigrationOperation : MigrationOperation
+    public class CreateTriggerOperation : MigrationOperation
     {
     }
 }
