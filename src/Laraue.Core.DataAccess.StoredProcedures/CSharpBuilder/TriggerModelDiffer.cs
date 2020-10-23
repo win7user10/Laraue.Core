@@ -12,19 +12,18 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
     {
         public IReadOnlyList<MigrationOperation> GetDifferences(IModel source, IModel target)
         {
-            var annotation = source.FindAnnotation(Constants.TriggerAnnotationName);
+            var annotation = source?.FindAnnotation(Constants.TriggerAnnotationName);
             if (annotation is UpdateTrigger trigger)
             {
                 
             }
 
-            return new List<MigrationOperation> { new CreateTriggerOperation() };
-            throw new NotImplementedException();
+            return new List<MigrationOperation> { new SqlOperation { Sql = "smth" } };
         }
 
         public bool HasDifferences(IModel source, IModel target)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
         {
             var triggerBuilder = new TriggerBuilder<T>(triggerType, triggerTime);
             configuration.Invoke(triggerBuilder);
-            entityTypeBuilder.Metadata.Model.AddAnnotation(Constants.TriggerAnnotationName, triggerBuilder);
+            // entityTypeBuilder.Metadata.Model.AddAnnotation(Constants.TriggerAnnotationName, triggerBuilder);
             return entityTypeBuilder;
         }
 

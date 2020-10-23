@@ -5,15 +5,18 @@ using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 {
-    public class StoredProcedureCSharpMigrationOperationGenerator : CSharpMigrationOperationGenerator
+    public class CSharpMigrationOperationGenerator : Microsoft.EntityFrameworkCore.Migrations.Design.CSharpMigrationOperationGenerator
     {
-        public StoredProcedureCSharpMigrationOperationGenerator(CSharpMigrationOperationGeneratorDependencies dependencies)
+        public CSharpMigrationOperationGenerator(CSharpMigrationOperationGeneratorDependencies dependencies)
             : base(dependencies)
         {
         }
 
         protected override void Generate(MigrationOperation operation, IndentedStringBuilder builder)
         {
+            if (operation == null)
+                return;
+
             if (operation is CreateTriggerOperation createTriggerOperation)
                 Generate(createTriggerOperation, builder);
             else

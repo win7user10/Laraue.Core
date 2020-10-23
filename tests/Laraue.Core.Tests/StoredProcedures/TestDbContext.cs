@@ -1,6 +1,7 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
 using Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -15,23 +16,31 @@ using Xunit;
 
 namespace Laraue.Core.Tests.StoredProcedures
 {
+    public class BloggingContextFactory : IDesignTimeDbContextFactory<TestDbContext>
+    {
+        public TestDbContext CreateDbContext(string[] args)
+        {
+            var options = new DbContextOptionsBuilder<TestDbContext>()
+                .UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tests;")
+                .ReplaceService<IMigrationsModelDiffer, TriggerModelDiffer>()
+                .Options;
+            return new TestDbContext(options);
+        }
+    }
+
     public class DbContextTests
     {
         private readonly TestDbContext _dbContext;
 
         public DbContextTests()
         {
-            var options = new DbContextOptionsBuilder<TestDbContext>()
-                .UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tests;")
-                .ReplaceService<IMigrationsModelDiffer, TriggerModelDiffer>()
-                .Options;
-            _dbContext = new TestDbContext(options);
+            _dbContext = new BloggingContextFactory().CreateDbContext(new string[0]);
         }
 
         [Fact]
         public void DoSmth()
         {
-            var generator = new StoredProcedureCSharpMigrationOperationGenerator(
+            var generator = new DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator(
                 new CSharpMigrationOperationGeneratorDependencies(
                     new CSharpHelper(_dbContext.GetService<IRelationalTypeMappingSource>())));
 
