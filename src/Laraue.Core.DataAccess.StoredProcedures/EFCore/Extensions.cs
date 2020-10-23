@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Linq;
 
@@ -12,6 +13,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.EFCore
 
         private static EntityTypeBuilder<T> AddTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, TriggerType triggerType, TriggerTime triggerTime, Action<TriggerBuilder<T>> configuration) where T : class
         {
+            entityTypeBuilder.Metadata.Model.AddAnnotation("test", "testValue");
             return entityTypeBuilder;
         }
 

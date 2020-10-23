@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Design;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.EFCore.Design
@@ -11,9 +12,17 @@ namespace Laraue.Core.DataAccess.StoredProcedures.EFCore.Design
         {
         }
 
-        protected void Generate(CreateTriggerOperation operation, IndentedStringBuilder builder)
+        protected override void Generate(MigrationOperation operation, IndentedStringBuilder builder)
         {
-            base.Generate(operation, builder);
+            if (operation is CreateTriggerOperation createTriggerOperation)
+                Generate(createTriggerOperation, builder);
+            else
+                base.Generate(operation, builder);
+        }
+
+        public void Generate(CreateTriggerOperation operation, IndentedStringBuilder builder)
+        {
+            builder.AppendLine("Ahahahaha");
         }
     }
 }
