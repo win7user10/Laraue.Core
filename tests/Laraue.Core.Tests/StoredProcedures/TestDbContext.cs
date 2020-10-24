@@ -1,4 +1,5 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
+﻿using Laraue.Core.DataAccess.StoredProcedures;
+using Laraue.Core.DataAccess.StoredProcedures.Common;
 using Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Laraue.Core.Tests.StoredProcedures
@@ -40,12 +42,24 @@ namespace Laraue.Core.Tests.StoredProcedures
         [Fact]
         public void DoSmth()
         {
+            Expression<Func<string, bool>> exp = (string x) => x.Contains("a");
+
+            var expString = exp.ToString();
+
             var generator = new DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator(
                 new CSharpMigrationOperationGeneratorDependencies(
                     new CSharpHelper(_dbContext.GetService<IRelationalTypeMappingSource>())));
 
             var builder = new IndentedStringBuilder();
-            generator.Generate("builder", new List<MigrationOperation> { new CreateTriggerOperation() }, builder);
+            generator.Generate("builder", new List<MigrationOperation> { new CreateTriggerOperation(
+                "On_After_Transaction_Inserted",
+                TriggerType.Delete,
+                TriggerTime.AfterTransaction,
+                "NEW.is_verified = true",
+                "users",
+                "users.id == NEW.user_id",
+                "users.balance = ACTION_TABLE.balance + NEW.value"
+            ) }, builder);
         }
     }
 
@@ -65,6 +79,9 @@ namespace Laraue.Core.Tests.StoredProcedures
                     .When(x => x.IsVeryfied)
                     .Update<User>((transaction, users) => users.Where(x => x.Id == transaction.UserId))
                     .Set((transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value }));
+
+            modelBuilder.Entity<User>()
+                .HasData(new User { Id = 1, Balance = 23M, Name = "John" });
         }
     }
 

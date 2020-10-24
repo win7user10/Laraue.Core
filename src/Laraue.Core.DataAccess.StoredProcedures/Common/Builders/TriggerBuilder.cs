@@ -3,10 +3,12 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Update;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerBuilder<TTriggerEntity> where TTriggerEntity : class
+    public class TriggerBuilder<TTriggerEntity> : ITrigger
+        where TTriggerEntity : class
     {
         public TriggerType TriggerType { get; }
 
@@ -39,6 +41,11 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             where TUpdateEntity : class
         {
             return new UpdateTriggerBuilder<TTriggerEntity, TUpdateEntity>(this, condition);
+        }
+
+        public TriggerAnnatation Visit(IBuilderVisitor builderVisitor)
+        {
+            throw new NotImplementedException();
         }
     }
 }
