@@ -56,9 +56,9 @@ namespace Laraue.Core.Tests.StoredProcedures
                 TriggerType.Delete,
                 TriggerTime.AfterTransaction,
                 "NEW.is_verified = true",
-                "users",
-                "users.id == NEW.user_id",
-                "users.balance = ACTION_TABLE.balance + NEW.value"
+                "update users set {0} = {1}",
+                new string[] { "users.balance" },
+                new object[] { "user.balance + NEW.balance" }
             ) }, builder);
         }
     }

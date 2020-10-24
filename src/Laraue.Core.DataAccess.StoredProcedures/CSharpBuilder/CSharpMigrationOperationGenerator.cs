@@ -14,9 +14,6 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 
         protected override void Generate(MigrationOperation operation, IndentedStringBuilder builder)
         {
-            if (operation == null)
-                return;
-
             if (operation is CreateTriggerOperation createTriggerOperation)
                 Generate(createTriggerOperation, builder);
             else
@@ -25,7 +22,45 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 
         public void Generate(CreateTriggerOperation operation, IndentedStringBuilder builder)
         {
-            builder.AppendLine("Ahahahaha");
+            var helper = Dependencies.CSharpHelper;
+
+            builder.AppendLine(".CreateTrigger(");
+
+            using (builder.Indent())
+            {
+                builder
+                    .Append("name: ")
+                    .Append(helper.Literal(operation.Name));
+
+                builder
+                    .Append("triggerType: ")
+                    .Append(helper.Literal(operation.TriggerType));
+
+
+                builder
+                    .Append("triggerTime: ")
+                    .Append(helper.Literal(operation.TriggerTime));
+
+                if (operation.Condition != null)
+                {
+                    builder
+                        .Append("condition: ")
+                        .Append(helper.Literal(operation.Condition));
+                }
+
+                builder
+                    .Append("actionQuery: ")
+                    .Append(helper.Literal(operation.ActionQuery));
+
+                builder
+                    .Append("columnNames: ")
+                    .Append(helper.Literal(operation.ColumnsNames));
+
+                builder
+                    .Append("columnValues: ")
+                    .Append(helper.Literal(operation.ColumnValues));
+            }
+
         }
     }
 }

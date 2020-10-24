@@ -30,7 +30,15 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
         public new IReadOnlyList<MigrationOperation> GetDifferences(IModel source, IModel target)
         {
             var operations = new List<MigrationOperation>();
-            operations.Add(new SqlOperation { Sql = "smth" });
+            operations.Add(new CreateTriggerOperation(
+                "On_After_Transaction_Inserted",
+                TriggerType.Delete,
+                TriggerTime.AfterTransaction,
+                "NEW.is_verified = true",
+                "update users set {0} = {1}",
+                new string[] { "users.balance" },
+                new object[] { "user.balance + NEW.balance" }
+            ));
 
             return operations.Concat(base.GetDifferences(source, target)).ToList();
         }
