@@ -33,32 +33,40 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
                     .Append(helper.Literal(operation.Name));
 
                 builder
+                    .AppendLine(",")
                     .Append("triggerType: ")
                     .Append(helper.Literal(operation.TriggerType));
 
 
                 builder
+                    .AppendLine(",")
                     .Append("triggerTime: ")
                     .Append(helper.Literal(operation.TriggerTime));
 
                 if (operation.Condition != null)
                 {
                     builder
+                        .AppendLine(",")
                         .Append("condition: ")
                         .Append(helper.Literal(operation.Condition));
                 }
 
                 builder
+                    .AppendLine(",")
                     .Append("actionQuery: ")
                     .Append(helper.Literal(operation.ActionQuery));
 
                 builder
+                    .AppendLine(",")
                     .Append("columnNames: ")
                     .Append(helper.Literal(operation.ColumnsNames));
 
                 builder
+                    .AppendLine(",")
                     .Append("columnValues: ")
                     .Append(helper.Literal(operation.ColumnValues));
+
+                builder.Append(")");
             }
 
         }

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,13 @@ using Xunit;
 
 namespace Laraue.Core.Tests.StoredProcedures
 {
+    public class DesignTimeServices : IDesignTimeServices
+    {
+        public void ConfigureDesignTimeServices(IServiceCollection services)
+            => services.AddSingleton<ICSharpMigrationOperationGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator>()
+                .AddSingleton<IMigrationsCodeGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationsGenerator>();
+    }
+
     public class BloggingContextFactory : IDesignTimeDbContextFactory<TestDbContext>
     {
         public TestDbContext CreateDbContext(string[] args)

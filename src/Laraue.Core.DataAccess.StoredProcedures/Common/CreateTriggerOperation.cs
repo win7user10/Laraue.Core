@@ -33,7 +33,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common
             Condition = condition;
             ActionQuery = actionQuery;
             ColumnsNames = columnNames;
-            ColumnValues = ColumnValues;
+            ColumnValues = columnValues;
         }
     }
 }
