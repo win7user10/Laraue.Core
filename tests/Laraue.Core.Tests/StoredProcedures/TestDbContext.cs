@@ -1,4 +1,7 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures;
+﻿using EFSqlTranslator.EFModels;
+using EFSqlTranslator.Translation;
+using EFSqlTranslator.Translation.DbObjects.PostgresQlObjects;
+using Laraue.Core.DataAccess.StoredProcedures;
 using Laraue.Core.DataAccess.StoredProcedures.Common;
 using Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +26,8 @@ namespace Laraue.Core.Tests.StoredProcedures
     {
         public void ConfigureDesignTimeServices(IServiceCollection services)
             => services.AddSingleton<ICSharpMigrationOperationGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator>()
-                .AddSingleton<IMigrationsCodeGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationsGenerator>();
+                .AddSingleton<IMigrationsCodeGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationsGenerator>()
+                .AddSingleton<ICSharpHelper, DataAccess.StoredProcedures.CSharpBuilder.CSharpHelper>();
     }
 
     public class BloggingContextFactory : IDesignTimeDbContextFactory<TestDbContext>
@@ -50,13 +54,16 @@ namespace Laraue.Core.Tests.StoredProcedures
         [Fact]
         public void DoSmth()
         {
-            Expression<Func<string, bool>> exp = (string x) => x.Contains("a");
 
-            var expString = exp.ToString();
+            Expression<Func<User, bool>> exp1 = (User x) => x.Name.Contains("a");
+            var query = _dbContext.Users.Where(exp1);
+
+            var modelInfoProvider = new EFModelInfoProvider(_dbContext);
+            var translatedExpression = QueryTranslator.Translate(query.Expression, modelInfoProvider, new PostgresQlObjectFactory());
 
             var generator = new DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator(
                 new CSharpMigrationOperationGeneratorDependencies(
-                    new CSharpHelper(_dbContext.GetService<IRelationalTypeMappingSource>())));
+                    new DataAccess.StoredProcedures.CSharpBuilder.CSharpHelper(_dbContext.GetService<IRelationalTypeMappingSource>())));
 
             var builder = new IndentedStringBuilder();
             generator.Generate("builder", new List<MigrationOperation> { new CreateTriggerOperation(
@@ -82,11 +89,12 @@ namespace Laraue.Core.Tests.StoredProcedures
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Transaction>()
+            /*modelBuilder.Entity<Transaction>()
                 .AddAfterDeleteTrigger(trigger => trigger
                     .When(x => x.IsVeryfied)
-                    .Update<User>((transaction, users) => users.Where(x => x.Id == transaction.UserId))
-                    .Set((transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value }));
+                    .Update<User>(
+                        (transaction, users) => users.Where(x => x.Id == transaction.UserId),
+                        (transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value }));*/
 
             modelBuilder.Entity<User>()
                 .HasData(new User { Id = 1, Balance = 23M, Name = "John" });
@@ -112,4 +120,6 @@ namespace Laraue.Core.Tests.StoredProcedures
 
         public int UserId { get; set; }
     }
+
+
 }

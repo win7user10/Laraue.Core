@@ -1,5 +1,9 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
+﻿using EFSqlTranslator.EFModels;
+using EFSqlTranslator.Translation;
+using EFSqlTranslator.Translation.DbObjects.PostgresQlObjects;
+using Laraue.Core.DataAccess.StoredProcedures.Common;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
@@ -7,6 +11,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 {
     public static class EntityTypeBuilderExtensions
     {
+        private static IModelInfoProvider _modelInfoProvider;
+
+        public static void SetupProvider(DbContext dbContext)
+        {
+            _modelInfoProvider = new EFModelInfoProvider(dbContext);
+        }
+
         private static EntityTypeBuilder<T> AddTrigger<T>(
             this EntityTypeBuilder<T> entityTypeBuilder,
             TriggerType triggerType,
@@ -15,8 +26,12 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
         {
             var triggerBuilder = new TriggerBuilder<T>(triggerType, triggerTime);
             configuration.Invoke(triggerBuilder);
-            // entityTypeBuilder.Metadata.Model.AddAnnotation(Constants.TriggerAnnotationName, triggerBuilder);
+            var builtTrigger = triggerBuilder.Build();
+
+            var translatedExpression = QueryTranslator.Translate(builtTrigger.ActionExpression, _modelInfoProvider, new PostgresQlObjectFactory());
+            entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(Constants.TriggerAnnotationName, translatedExpression);
             return entityTypeBuilder;
+
         }
 
         public static EntityTypeBuilder<T> AddBeforeDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>

@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\src\Laraue.Core.DataAccess.StoredProcedures\Laraue.Core.DataAccess.StoredProcedures.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

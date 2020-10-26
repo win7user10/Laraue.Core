@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Update;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
@@ -15,6 +14,10 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
         public TriggerTime TriggerTime { get; }
 
         private Expression<Func<TTriggerEntity, bool>> _triggerCondition;
+
+        private Expression _actionExpression;
+
+        private Expression _actionCondition;
 
         internal TriggerBuilder(TriggerType triggerType, TriggerTime triggerTime)
         {
@@ -37,15 +40,32 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             return this;
         }
 
-        public UpdateTriggerBuilder<TTriggerEntity, TUpdateEntity> Update<TUpdateEntity>(Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> condition)
+        public TriggerBuilder<TTriggerEntity> Update<TUpdateEntity>(
+            Expression<Func<TTriggerEntity, IQueryable<TUpdateEntity>, IQueryable<TUpdateEntity>>> condition,
+            Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> setExpression)
             where TUpdateEntity : class
         {
-            return new UpdateTriggerBuilder<TTriggerEntity, TUpdateEntity>(this, condition);
+            _actionCondition = condition;
+            _actionExpression = setExpression;
+
+            return this;
         }
 
         public TriggerAnnatation Visit(IBuilderVisitor builderVisitor)
         {
             throw new NotImplementedException();
+        }
+
+        public Trigger Build()
+        {
+            return new Trigger
+            {
+                TriggerConditionExpression = _triggerCondition,
+                TriggerTime = TriggerTime,
+                TriggerType = TriggerType,
+                ActionConditionExpression = _actionCondition,
+                ActionExpression = _actionExpression
+            };
         }
     }
 }

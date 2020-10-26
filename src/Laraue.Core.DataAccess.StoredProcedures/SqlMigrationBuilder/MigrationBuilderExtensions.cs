@@ -17,5 +17,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.SqlMigrationBuilder
             migrationBuilder.Sql("Some query");
             return migrationBuilder;
         }
+
+        public static MigrationBuilder DeleteTrigger(
+            this MigrationBuilder migrationBuilder,
+            string name)
+        {
+            migrationBuilder.Sql("Some query");
+            return migrationBuilder;
+        }
     }
 }
