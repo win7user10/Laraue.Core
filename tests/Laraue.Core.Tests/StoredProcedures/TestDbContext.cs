@@ -22,27 +22,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Laraue.Core.Tests.StoredProcedures
 {
-    public class DesignTimeServices : IDesignTimeServices
-    {
-        public void ConfigureDesignTimeServices(IServiceCollection services)
-            => services.AddSingleton<ICSharpMigrationOperationGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator>()
-                .AddSingleton<IMigrationsCodeGenerator, DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationsGenerator>()
-                .AddSingleton<ICSharpHelper, DataAccess.StoredProcedures.CSharpBuilder.CSharpHelper>();
-    }
-
-    public class BloggingContextFactory : IDesignTimeDbContextFactory<TestDbContext>
+    
+    public class ContextFactory : IDesignTimeDbContextFactory<TestDbContext>
     {
         public TestDbContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<TestDbContext>()
                 .UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tests;")
-                .ReplaceService<IMigrationsModelDiffer, TriggerModelDiffer>()
                 .Options;
             return new TestDbContext(options);
         }
@@ -54,7 +45,7 @@ namespace Laraue.Core.Tests.StoredProcedures
 
         public DbContextTests()
         {
-            _dbContext = new BloggingContextFactory().CreateDbContext(new string[0]);
+            _dbContext = new ContextFactory().CreateDbContext(new string[0]);
         }
 
         /// <summary>
@@ -141,12 +132,13 @@ namespace Laraue.Core.Tests.StoredProcedures
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            /*modelBuilder.Entity<Transaction>()
-                .AddAfterDeleteTrigger(trigger => trigger
-                    .When(x => x.IsVeryfied)
-                    .Update<User>(
-                        (transaction, users) => users.Where(x => x.Id == transaction.UserId),
-                        (transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value }));*/
+            modelBuilder.Entity<Transaction>()
+                .AddBeforeDeleteTrigger(trigger => trigger
+                    .Action(action => action
+                        .Condition(deletingTransaction => deletingTransaction.IsVeryfied)
+                        .UpdateAnotherEntity<User>(
+                            (transaction, user) => user.Id == transaction.UserId,
+                            (transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value })));
 
             modelBuilder.Entity<User>()
                 .HasData(new User { Id = 1, Balance = 23M, Name = "John" });

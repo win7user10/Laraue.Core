@@ -2,8 +2,8 @@
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public interface ITrigger
+    public interface IVisitingTrigger
     {
-        public TriggerAnnatation Visit(IBuilderVisitor builderVisitor);
+        public string BuildSql(IVisitor builderVisitor);
     }
 }
