@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -56,20 +57,41 @@ namespace Laraue.Core.Tests.StoredProcedures
             _dbContext = new BloggingContextFactory().CreateDbContext(new string[0]);
         }
 
+        /// <summary>
+        /// Draft variant of translating trigger expressions to query.
+        /// </summary>
         [Fact]
-        public void DoSmth()
+        public void GenerateTriggerQuery()
         {
             var modelInfoProvider = new EFModelInfoProvider(_dbContext);
 
+            // What do when trigger fired.
+            Expression<Func<Transaction, User, User>> actionEx = 
+                (transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value };
 
+            // Get all field bindings.
+            var setExpression = (MemberInitExpression)actionEx.Body;
+            var setExpressionBindings = setExpression.Bindings;
 
+            // Select members which should takes part in select query below
+            var memberInfoToSelect = new HashSet<MemberExpression>();
+            foreach (var memberBinding in setExpressionBindings)
+            {
+                var assignment = (BinaryExpression)((MemberAssignment)memberBinding).Expression;
+                var assignmentMember = (MemberExpression)assignment.Left;
+                memberInfoToSelect.Add(assignmentMember);
+            }
+
+            // New Expression for selecting fields in query
+            Expression newMemberInit = Expression.MemberInit(setExpression.NewExpression, memberInfoToSelect.Select(x => Expression.Bind(x.Member, x)));
+            var newSelectExpression = Expression.Lambda<Func<User, User>>(newMemberInit, actionEx.Parameters[1]);
+
+            // Condition for trigger to execute action upper.
             Expression<Func<User, Transaction, bool>> exp2 = (User x, Transaction y) => x.Id == y.UserId;
 
             // Need to create two expressions
             // 1 - condition expression
             // 2 - action expression
-
-            // Parse each lambda, if has parameter of type (T2), replace it to string @NEW.MemberName@
 
             // Part 1
             var conditionRightParameter = exp2.Parameters[1]; // int, UserId
@@ -87,26 +109,13 @@ namespace Laraue.Core.Tests.StoredProcedures
             var conditionLeftComiledExpression = Expression.Lambda<Func<User, bool>>(conditionLeftBinaryExpression, conditionLeftParameter);
 
             // Part 3 
-            var query = _dbContext.Users.Where(conditionLeftComiledExpression);
+            var query = _dbContext.Users.Where(conditionLeftComiledExpression).Select(newSelectExpression);
             var translatedExpression = QueryTranslator.Translate(query.Expression, modelInfoProvider, new PostgresQlObjectFactory()).ToString();
 
             // Part 4
             var replacedExpression = Regex.Replace(translatedExpression, $"= {defaultConditionParameterValue}", $"= {rightPartQuery}");
 
-            var generator = new DataAccess.StoredProcedures.CSharpBuilder.CSharpMigrationOperationGenerator(
-                new CSharpMigrationOperationGeneratorDependencies(
-                    new DataAccess.StoredProcedures.CSharpBuilder.CSharpHelper(_dbContext.GetService<IRelationalTypeMappingSource>())));
 
-            var builder = new IndentedStringBuilder();
-            generator.Generate("builder", new List<MigrationOperation> { new CreateTriggerOperation(
-                "On_After_Transaction_Inserted",
-                TriggerType.Delete,
-                TriggerTime.AfterTransaction,
-                "NEW.is_verified = true",
-                "update users set {0} = {1}",
-                new string[] { "users.balance" },
-                new object[] { "user.balance + NEW.balance" }
-            ) }, builder);
         }
 
         public object GetDefault(Type t)
