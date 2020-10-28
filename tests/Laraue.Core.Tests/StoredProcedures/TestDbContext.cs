@@ -138,7 +138,7 @@ namespace Laraue.Core.Tests.StoredProcedures
                         .Condition(deletingTransaction => deletingTransaction.IsVeryfied)
                         .UpdateAnotherEntity<User>(
                             (transaction, user) => user.Id == transaction.UserId,
-                            (transaction, oldUser) => new User { Balance = oldUser.Balance + transaction.Value })));
+                            (transaction, oldUser) => new User { Balance = oldUser.Balance + 1 + transaction.Value * 3 })));
 
             modelBuilder.Entity<User>()
                 .HasData(new User { Id = 1, Balance = 23M, Name = "John" });

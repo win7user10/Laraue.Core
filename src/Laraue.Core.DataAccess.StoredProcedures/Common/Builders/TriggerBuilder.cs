@@ -2,44 +2,47 @@
 using EFSqlTranslator.Translation.DbObjects;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using Laraue.Core.Extensions.Linq;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerBuilder<TTriggerEntity> : IVisitingTrigger
+    public class TriggerBuilder<TTriggerEntity> : VisitingTrigger
         where TTriggerEntity : class
     {
-        public TriggerType TriggerType { get; }
+        private TriggerType _triggerType { get; }
 
-        public TriggerTime TriggerTime { get; }
-
-        private IModelInfoProvider _modelInfoProvider;
-        
-        private IDbObjectFactory _dbObjectFactory;
+        public TriggerTime _triggerTime { get; }
 
         private readonly List<IVisitingTrigger> _actions = new List<IVisitingTrigger>();
 
-        public TriggerBuilder(IModelInfoProvider modelInfoProvider, IDbObjectFactory dbObjectFactory, TriggerType triggerType, TriggerTime triggerTime)
+        public TriggerBuilder(IModel model, TriggerType triggerType, TriggerTime triggerTime) : base(model)
         {
-            TriggerType = triggerType;
-            TriggerTime = triggerTime;
-            _dbObjectFactory = dbObjectFactory;
-            _modelInfoProvider = modelInfoProvider;
+            _triggerType = triggerType;
+            _triggerTime = triggerTime;
         }
 
         public TriggerBuilder<TTriggerEntity> Action(Action<TriggerActionBuilder<TTriggerEntity>> actionSetup)
         {
-            var actionTrigger = new TriggerActionBuilder<TTriggerEntity>();
+            var actionTrigger = new TriggerActionBuilder<TTriggerEntity>(Model);
             actionSetup.Invoke(actionTrigger);
             _actions.Add(actionTrigger);
             return this;
         }
 
-        public string BuildSql(IVisitor visitor)
+        public override string BuildSql()
         {
-            return "sql";
+            var sqlBuilder = new StringBuilder();
+            sqlBuilder.Append("BEGIN");
+            foreach (var action in _actions)
+            {
+                sqlBuilder.Append(action.BuildSql());
+            }
+            sqlBuilder.Append("END;");
+
+            return sqlBuilder.ToString();
         }
     }
 }

@@ -6,6 +6,7 @@ using Laraue.Core.DataAccess.StoredProcedures.Common;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
@@ -26,8 +27,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
             TriggerTime triggerTime,
             Action<TriggerBuilder<T>> configuration) where T : class
         {
-            var triggerBuilder = new TriggerBuilder<T>(_modelInfoProvider, _dbObjectFactory, triggerType, triggerTime);
+            var triggerBuilder = new TriggerBuilder<T>(entityTypeBuilder.Metadata.Model, triggerType, triggerTime);
             configuration.Invoke(triggerBuilder);
+
             entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(Constants.TriggerAnnotationName, triggerBuilder.BuildSql());
             return entityTypeBuilder;
 
