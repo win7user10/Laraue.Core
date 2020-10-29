@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
@@ -22,8 +23,14 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 
         public string BuildSql(IVisitor visitor)
         {
-            var actionSql = visitor.GetSql((MemberInitExpression)_setExpression.Body, typeof(TTriggerEntity), TriggerType.Update);
-            return actionSql;
+            var sqlBuilder = new StringBuilder();
+
+            sqlBuilder.Append("update ")
+                .Append(visitor.GetSql((MemberInitExpression)_setExpression.Body, typeof(TUpdateEntity), TriggerType.Update))
+                .Append(" where ")
+                .Append(visitor.GetSql((BinaryExpression)_setFilter.Body, typeof(TUpdateEntity), TriggerType.Update));
+
+            return sqlBuilder.ToString();
         }
     }
 }

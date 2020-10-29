@@ -65,6 +65,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             ExpressionType.Subtract => "-",
             ExpressionType.Multiply => "*",
             ExpressionType.Divide => "/",
+            ExpressionType.Equal => "=",
+            ExpressionType.NotEqual => "!=",
             _ => throw new NotSupportedException($"Unknown sign of {expressionType}"),
         };
 
@@ -119,7 +121,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
                 sqlBuilder.Append(triggerType switch
                 {
                     TriggerType.Insert => "NEW",
-                    TriggerType.Update => "OLD",
+                    TriggerType.Update => "NEW",
                     _ => throw new NotImplementedException(),
                 });
             }

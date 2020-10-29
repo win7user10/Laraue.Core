@@ -33,7 +33,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             return this;
         }
 
-        public string BuildConditionSql()
+        public string BuildConditionSql(IVisitor visitor)
         {
             return _actionsCondition is null ? null : "condition";
         }
@@ -42,7 +42,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
         {
             var sqlBuilder = new StringBuilder();
             if (_actionsCondition != null)
-                sqlBuilder.Append($"IF {BuildConditionSql()} THEN ");
+                sqlBuilder.Append($"IF {BuildConditionSql(visitor)} THEN ");
 
             var actionsSql = _actionExpressions.Select(actionExpression => actionExpression.BuildSql(visitor));
             foreach (var actionSql in actionsSql)
