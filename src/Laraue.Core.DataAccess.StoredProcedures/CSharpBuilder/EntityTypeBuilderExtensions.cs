@@ -4,6 +4,7 @@ using EFSqlTranslator.Translation.DbObjects;
 using EFSqlTranslator.Translation.DbObjects.PostgresQlObjects;
 using Laraue.Core.DataAccess.StoredProcedures.Common;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -27,10 +28,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
             TriggerTime triggerTime,
             Action<TriggerBuilder<T>> configuration) where T : class
         {
-            var triggerBuilder = new TriggerBuilder<T>(entityTypeBuilder.Metadata.Model, triggerType, triggerTime);
+            var triggerBuilder = new TriggerBuilder<T>(triggerType, triggerTime);
             configuration.Invoke(triggerBuilder);
 
-            entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(Constants.TriggerAnnotationName, triggerBuilder.BuildSql());
+            entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(
+                Constants.TriggerAnnotationName, 
+                triggerBuilder.BuildSql(new PostgreSqlVisitor(entityTypeBuilder.Metadata.Model)));
+
             return entityTypeBuilder;
 
         }

@@ -5,13 +5,15 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 {
     public interface IVisitor
     {
-        public string GetSql(Expression expression, Type newMemberType);
+        public string GetSql(MemberInitExpression memberInitExpression, Type newMemberType, TriggerType triggerType);
 
-        public string GetSql(MemberAssignment memberAssignment, Type newMemberType);
+        public string GetSql(Expression expression, Type newMemberType, TriggerType triggerType);
 
-        public string GetSql(BinaryExpression binaryExpression, Type newMemberType);
+        public string GetSql(MemberAssignment memberAssignment, Type newMemberType, TriggerType triggerType);
 
-        public string GetSql(MemberExpression memberExpression, SqlMemberTypeMapping sqlMemberTypeMapping);
+        public string GetSql(BinaryExpression binaryExpression, Type newMemberType, TriggerType triggerType);
+
+        public string GetSql(MemberExpression memberExpression, Type newMemberType, TriggerType triggerType);
 
         public string GetSql(ConstantExpression constantExpression);
     }

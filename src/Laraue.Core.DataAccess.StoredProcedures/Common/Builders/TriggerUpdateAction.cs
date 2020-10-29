@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerUpdateAction<TTriggerEntity, TUpdateEntity> : VisitingTrigger
+    public class TriggerUpdateAction<TTriggerEntity, TUpdateEntity> : IVisitingTrigger
         where TTriggerEntity : class
         where TUpdateEntity : class
     {
@@ -12,36 +13,17 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
         public Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> _setExpression;
 
         public TriggerUpdateAction(
-            IModel model,
             Expression<Func<TTriggerEntity, TUpdateEntity, bool>> setFilter,
             Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
-                : base(model)
         {
             _setFilter = setFilter;
             _setExpression = setValues;
         }
 
-        public override string BuildSql()
+        public string BuildSql(IVisitor visitor)
         {
-            var actionSql = ActionSql;
-
-            throw new NotImplementedException();
-        }
-
-        public string ActionSql
-        {
-            get
-            {
-                var setExpression = (MemberInitExpression)_setExpression.Body;
-                var setExpressionBindings = setExpression.Bindings;
-
-                foreach (var memberBinding in setExpressionBindings)
-                {
-
-                }
-
-                return "";
-            }
+            var actionSql = visitor.GetSql((MemberInitExpression)_setExpression.Body, typeof(TTriggerEntity), TriggerType.Update);
+            return actionSql;
         }
     }
 }

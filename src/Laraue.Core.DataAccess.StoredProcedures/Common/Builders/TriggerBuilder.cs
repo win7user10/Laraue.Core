@@ -1,15 +1,11 @@
-﻿using EFSqlTranslator.Translation;
-using EFSqlTranslator.Translation.DbObjects;
-using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
-using Laraue.Core.Extensions.Linq;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerBuilder<TTriggerEntity> : VisitingTrigger
+    public class TriggerBuilder<TTriggerEntity> : IVisitingTrigger
         where TTriggerEntity : class
     {
         private TriggerType _triggerType { get; }
@@ -18,7 +14,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 
         private readonly List<IVisitingTrigger> _actions = new List<IVisitingTrigger>();
 
-        public TriggerBuilder(IModel model, TriggerType triggerType, TriggerTime triggerTime) : base(model)
+        public TriggerBuilder(TriggerType triggerType, TriggerTime triggerTime)
         {
             _triggerType = triggerType;
             _triggerTime = triggerTime;
@@ -26,19 +22,19 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 
         public TriggerBuilder<TTriggerEntity> Action(Action<TriggerActionBuilder<TTriggerEntity>> actionSetup)
         {
-            var actionTrigger = new TriggerActionBuilder<TTriggerEntity>(Model);
+            var actionTrigger = new TriggerActionBuilder<TTriggerEntity>();
             actionSetup.Invoke(actionTrigger);
             _actions.Add(actionTrigger);
             return this;
         }
 
-        public override string BuildSql()
+        public string BuildSql(IVisitor visitor)
         {
             var sqlBuilder = new StringBuilder();
             sqlBuilder.Append("BEGIN");
             foreach (var action in _actions)
             {
-                sqlBuilder.Append(action.BuildSql());
+                sqlBuilder.Append(action.BuildSql(visitor));
             }
             sqlBuilder.Append("END;");
 

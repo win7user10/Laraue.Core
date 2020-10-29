@@ -1,5 +1,4 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
-using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +7,14 @@ using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerActionBuilder<TTriggerEntity> : VisitingTrigger
+    public class TriggerActionBuilder<TTriggerEntity> : IVisitingTrigger
         where TTriggerEntity : class
     {
         private Expression<Func<TTriggerEntity, bool>> _actionsCondition;
 
         private readonly List<IVisitingTrigger> _actionExpressions = new List<IVisitingTrigger>();
 
-        public TriggerActionBuilder(IModel model) : base(model)
+        public TriggerActionBuilder()
         {
         }
 
@@ -30,7 +29,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
                 Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
             where TUpdateEntity : class
         {
-            _actionExpressions.Add(new TriggerUpdateAction<TTriggerEntity, TUpdateEntity>(Model, entityFilter, setValues));
+            _actionExpressions.Add(new TriggerUpdateAction<TTriggerEntity, TUpdateEntity>(entityFilter, setValues));
             return this;
         }
 
@@ -39,13 +38,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             return _actionsCondition is null ? null : "condition";
         }
 
-        public override string BuildSql()
+        public string BuildSql(IVisitor visitor)
         {
             var sqlBuilder = new StringBuilder();
             if (_actionsCondition != null)
-                sqlBuilder.Append($"IF {BuildConditionSql()} THEN");
+                sqlBuilder.Append($"IF {BuildConditionSql()} THEN ");
 
-            var actionsSql = _actionExpressions.Select(actionExpression => actionExpression.BuildSql());
+            var actionsSql = _actionExpressions.Select(actionExpression => actionExpression.BuildSql(visitor));
             foreach (var actionSql in actionsSql)
                 sqlBuilder.Append(actionSql)
                     .Append(';');
