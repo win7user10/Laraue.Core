@@ -23,16 +23,30 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             Model = model;
         }
 
-        public abstract string BuildSql();
-
         protected string GetColumnName(MemberInfo memberInfo)
         {
-            var entityType = Model.FindEntityType(memberInfo.DeclaringType);
             if (!_columnNamesCache.ContainsKey(memberInfo))
+            {
+                var entityType = Model.FindEntityType(memberInfo.DeclaringType);
                 _columnNamesCache.Add(memberInfo, entityType.GetProperty(memberInfo.Name).GetColumnName());
+            }
             _columnNamesCache.TryGetValue(memberInfo, out var columnName);
             return columnName;
         }
+
+        protected string GetTableName(MemberInfo memberInfo)
+        {
+            var declaringType = memberInfo.DeclaringType;
+            if (!_tableNamesCache.ContainsKey(declaringType))
+            {
+                var entityType = Model.FindEntityType(declaringType);
+                _tableNamesCache.Add(declaringType, entityType.GetTableName());
+            }
+            _tableNamesCache.TryGetValue(declaringType, out var columnName);
+            return columnName;
+        }
+
+        public abstract string BuildSql();
 
         protected HashSet<MemberExpression> GetBinaryMembers(BinaryExpression expression)
         {
