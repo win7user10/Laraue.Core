@@ -26,9 +26,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
             this EntityTypeBuilder<T> entityTypeBuilder,
             TriggerType triggerType,
             TriggerTime triggerTime,
-            Action<TriggerBuilder<T>> configuration) where T : class
+            Action<Trigger<T>> configuration) where T : class
         {
-            var triggerBuilder = new TriggerBuilder<T>(triggerType, triggerTime);
+            var triggerBuilder = new Trigger<T>(triggerType, triggerTime);
             configuration.Invoke(triggerBuilder);
 
             entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(
@@ -39,7 +39,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 
         }
 
-        public static EntityTypeBuilder<T> AddBeforeDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<TriggerBuilder<T>> configuration) where T : class =>
+        public static EntityTypeBuilder<T> AddBeforeDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<Trigger<T>> configuration) where T : class =>
             entityTypeBuilder.AddTrigger(TriggerType.Delete, TriggerTime.BeforeTransaction, configuration);
     }
 }

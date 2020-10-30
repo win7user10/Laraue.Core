@@ -1,118 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 {
-    class PostgreSqlVisitor : IVisitor
+    class PostgreSqlVisitor : SqlVisitor
     {
-        private Dictionary<MemberInfo, string> _columnNamesCache = new Dictionary<MemberInfo, string>();
-
-        private Dictionary<Type, string> _tableNamesCache = new Dictionary<Type, string>();
-
-        protected IModel Model { get; }
-
-        public PostgreSqlVisitor(IModel model)
+        public PostgreSqlVisitor(IModel model) : base(model)
         {
-            Model = model;
         }
 
-        public string GetColumnName(MemberInfo memberInfo)
-        {
-            if (!_columnNamesCache.ContainsKey(memberInfo))
-            {
-                var entityType = Model.FindEntityType(memberInfo.DeclaringType);
-                _columnNamesCache.Add(memberInfo, entityType.GetProperty(memberInfo.Name).GetColumnName());
-            }
-            _columnNamesCache.TryGetValue(memberInfo, out var columnName);
-            return columnName;
-        }
-
-        public string GetTableName(MemberInfo memberInfo) => GetTableName(memberInfo.DeclaringType);
-
-        public string GetTableName(Type entity)
-        {
-            if (!_tableNamesCache.ContainsKey(entity))
-            {
-                var entityType = Model.FindEntityType(entity);
-                _tableNamesCache.Add(entity, entityType.GetTableName());
-            }
-            _tableNamesCache.TryGetValue(entity, out var columnName);
-            return columnName;
-        }
-
-        public string GetSql(MemberInitExpression memberInitExpression, Type newMemberType, TriggerType triggerType)
-        {
-            var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append("set ");
-            var setExpressionBindings = memberInitExpression.Bindings;
-            foreach (var memberBinding in setExpressionBindings)
-            {
-                var memberAssignmentExpression = (MemberAssignment)memberBinding;
-                var sql = GetSql(memberAssignmentExpression, newMemberType, triggerType);
-                sqlBuilder.Append(sql);
-            }
-
-            return sqlBuilder.ToString();
-        }
-
-        protected string GetExpressionTypeSign(ExpressionType expressionType) => expressionType switch
-        {
-            ExpressionType.Add => "+",
-            ExpressionType.Subtract => "-",
-            ExpressionType.Multiply => "*",
-            ExpressionType.Divide => "/",
-            ExpressionType.Equal => "=",
-            ExpressionType.NotEqual => "!=",
-            _ => throw new NotSupportedException($"Unknown sign of {expressionType}"),
-        };
-
-        public string GetSql(Expression expression, Type newMemberType, TriggerType triggerType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetSql(MemberAssignment memberAssignment, Type newMemberType, TriggerType triggerType)
-        {
-            var sqlBuilder = new StringBuilder();
-
-            sqlBuilder.Append(GetColumnName(memberAssignment.Member))
-                .Append(" = ");
-
-            var assignmentExpression = (BinaryExpression)memberAssignment.Expression;
-            var assignmentExpressionSql = GetSql(assignmentExpression, newMemberType, triggerType);
-            sqlBuilder.Append(assignmentExpressionSql);
-
-            return sqlBuilder.ToString();
-        }
-
-        public string GetSql(BinaryExpression binaryExpression, Type newMemberType, TriggerType triggerType)
-        {
-            var sqlBuilder = new StringBuilder();
-            var parts = new[] { binaryExpression.Left, binaryExpression.Right };
-            foreach (var part in parts)
-            {
-                if (part is MemberExpression memberExpression)
-                    sqlBuilder.Append(GetSql(memberExpression, newMemberType, triggerType));
-                else if (part is ConstantExpression constantExpression)
-                    sqlBuilder.Append(GetSql(constantExpression));
-                else if (part is BinaryExpression binaryExp)
-                    sqlBuilder.Append(GetSql(binaryExp, newMemberType, triggerType));
-                else
-                    throw new InvalidOperationException($"{part.GetType()} expression does not supports in set statement.");
-
-                if (part != binaryExpression.Right)
-                    sqlBuilder.Append($" {GetExpressionTypeSign(binaryExpression.NodeType)} ");
-            }
-            return sqlBuilder.ToString();
-        }
-
-        public string GetSql(MemberExpression memberExpression, Type newMemberType, TriggerType triggerType)
+        public override string GetMemberExpressionSql(MemberExpression memberExpression, Type newMemberType, TriggerType triggerType)
         {
             var sqlBuilder = new StringBuilder();
 
@@ -134,9 +33,52 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return sqlBuilder.ToString();
         }
 
-        public string GetSql(ConstantExpression constantExpression)
+        public override string GetTriggerActionSql<TTriggerEntity>(TriggerAction<TTriggerEntity> triggerAction)
         {
-            return constantExpression.Value.ToString();
+            var sqlBuilder = new StringBuilder();
+            if (triggerAction.ActionsCondition != null)
+                sqlBuilder.Append($"IF condition THEN ");
+
+            foreach (var actionExpression in triggerAction.ActionExpressions)
+            {
+                sqlBuilder.Append(actionExpression.BuildSql(this))
+                    .Append(";");
+            }
+
+            if (triggerAction.ActionsCondition != null)
+                sqlBuilder.Append($"END IF;");
+
+            sqlBuilder.Append($"RETURN NEW");
+
+            return sqlBuilder.ToString();
+        }
+
+        public override string GetTriggerUpdateActionSql<TTriggerEntity, TUpdateEntity>(TriggerUpdateAction<TTriggerEntity, TUpdateEntity> triggerUpdateAction)
+            where TTriggerEntity : class
+            where TUpdateEntity : class
+        {
+            var sqlBuilder = new StringBuilder();
+
+            sqlBuilder.Append("update ")
+                .Append($"{GetTableName(typeof(TUpdateEntity))} ")
+                .Append(GetMemberInitSql((MemberInitExpression)triggerUpdateAction.SetExpression.Body, typeof(TUpdateEntity), TriggerType.Update))
+                .Append(" where ")
+                .Append(GetBinaryExpressionSql((BinaryExpression)triggerUpdateAction.SetFilter.Body, typeof(TUpdateEntity), TriggerType.Update));
+
+            return sqlBuilder.ToString();
+        }
+
+        public override string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+        {
+            var sqlBuilder = new StringBuilder();
+            sqlBuilder.Append("BEGIN ");
+            foreach (var action in trigger.Actions)
+            {
+                sqlBuilder.Append(action.BuildSql(this));
+            }
+            sqlBuilder.Append(" END;");
+
+            return sqlBuilder.ToString();
         }
     }
 }
