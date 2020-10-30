@@ -22,7 +22,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             Model = model;
         }
 
-        protected string GetColumnName(MemberInfo memberInfo)
+        public string GetColumnName(MemberInfo memberInfo)
         {
             if (!_columnNamesCache.ContainsKey(memberInfo))
             {
@@ -33,21 +33,23 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return columnName;
         }
 
-        protected string GetTableName(MemberInfo memberInfo)
+        public string GetTableName(MemberInfo memberInfo) => GetTableName(memberInfo.DeclaringType);
+
+        public string GetTableName(Type entity)
         {
-            var declaringType = memberInfo.DeclaringType;
-            if (!_tableNamesCache.ContainsKey(declaringType))
+            if (!_tableNamesCache.ContainsKey(entity))
             {
-                var entityType = Model.FindEntityType(declaringType);
-                _tableNamesCache.Add(declaringType, entityType.GetTableName());
+                var entityType = Model.FindEntityType(entity);
+                _tableNamesCache.Add(entity, entityType.GetTableName());
             }
-            _tableNamesCache.TryGetValue(declaringType, out var columnName);
+            _tableNamesCache.TryGetValue(entity, out var columnName);
             return columnName;
         }
 
         public string GetSql(MemberInitExpression memberInitExpression, Type newMemberType, TriggerType triggerType)
         {
             var sqlBuilder = new StringBuilder();
+            sqlBuilder.Append("set ");
             var setExpressionBindings = memberInitExpression.Bindings;
             foreach (var memberBinding in setExpressionBindings)
             {

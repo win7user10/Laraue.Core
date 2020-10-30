@@ -26,6 +26,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             var sqlBuilder = new StringBuilder();
 
             sqlBuilder.Append("update ")
+                .Append($"{visitor.GetTableName(typeof(TUpdateEntity))} ")
                 .Append(visitor.GetSql((MemberInitExpression)_setExpression.Body, typeof(TUpdateEntity), TriggerType.Update))
                 .Append(" where ")
                 .Append(visitor.GetSql((BinaryExpression)_setFilter.Body, typeof(TUpdateEntity), TriggerType.Update));
