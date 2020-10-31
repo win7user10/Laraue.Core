@@ -11,7 +11,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
         {
         }
 
-        public override string GetMemberAssignmentSql(MemberAssignment memberAssignment, Type newMemberType, TriggerType triggerType)
+        public override string GetMemberAssignmentSql(MemberAssignment memberAssignment, Type triggeredEntityType)
         {
             var sqlBuilder = new StringBuilder();
 
@@ -19,24 +19,24 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
                 .Append(" = ");
 
             var assignmentExpression = (BinaryExpression)memberAssignment.Expression;
-            var assignmentExpressionSql = GetBinaryExpressionSql(assignmentExpression, newMemberType, triggerType);
+            var assignmentExpressionSql = GetBinaryExpressionSql(assignmentExpression, triggeredEntityType);
             sqlBuilder.Append(assignmentExpressionSql);
 
             return sqlBuilder.ToString();
         }
 
-        public override string GetBinaryExpressionSql(BinaryExpression binaryExpression, Type newMemberType, TriggerType triggerType)
+        public override string GetBinaryExpressionSql(BinaryExpression binaryExpression, Type triggeredEntityType)
         {
             var sqlBuilder = new StringBuilder();
             var parts = new[] { binaryExpression.Left, binaryExpression.Right };
             foreach (var part in parts)
             {
                 if (part is MemberExpression memberExpression)
-                    sqlBuilder.Append(GetMemberExpressionSql(memberExpression, newMemberType, triggerType));
+                    sqlBuilder.Append(GetMemberExpressionSql(memberExpression, triggeredEntityType));
                 else if (part is ConstantExpression constantExpression)
                     sqlBuilder.Append(GetConstantExpressionSql(constantExpression));
                 else if (part is BinaryExpression binaryExp)
-                    sqlBuilder.Append(GetBinaryExpressionSql(binaryExp, newMemberType, triggerType));
+                    sqlBuilder.Append(GetBinaryExpressionSql(binaryExp, triggeredEntityType));
                 else
                     throw new InvalidOperationException($"{part.GetType()} expression does not supports in set statement.");
 
@@ -46,7 +46,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return sqlBuilder.ToString();
         }
 
-        public override string GetMemberInitSql(MemberInitExpression memberInitExpression, Type newMemberType, TriggerType triggerType)
+        public override string GetMemberInitSql(MemberInitExpression memberInitExpression, Type triggeredEntityType)
         {
             var sqlBuilder = new StringBuilder();
             sqlBuilder.Append("set ");
@@ -54,7 +54,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             foreach (var memberBinding in setExpressionBindings)
             {
                 var memberAssignmentExpression = (MemberAssignment)memberBinding;
-                var sql = GetMemberAssignmentSql(memberAssignmentExpression, newMemberType, triggerType);
+                var sql = GetMemberAssignmentSql(memberAssignmentExpression, triggeredEntityType);
                 sqlBuilder.Append(sql);
             }
 

@@ -8,17 +8,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
     public class TriggerAction<TTriggerEntity> : IVisitingTrigger
         where TTriggerEntity : class
     {
-        public Expression<Func<TTriggerEntity, bool>> ActionsCondition;
+        public readonly List<IVisitingTrigger> ActionConditions = new List<IVisitingTrigger>();
 
-        public List<IVisitingTrigger> ActionExpressions = new List<IVisitingTrigger>();
+        public readonly List<IVisitingTrigger> ActionExpressions = new List<IVisitingTrigger>();
 
-        public TriggerAction()
+        public TriggerAction<TTriggerEntity> Condition(Expression<Func<TTriggerEntity, bool>> condition)
         {
-        }
-
-        public TriggerAction<TTriggerEntity> Condition(Expression<Func<TTriggerEntity, bool>> actionsCondition)
-        {
-            ActionsCondition = actionsCondition;
+            ActionConditions.Add(new TriggerCondition<TTriggerEntity>(condition));
             return this;
         }
 

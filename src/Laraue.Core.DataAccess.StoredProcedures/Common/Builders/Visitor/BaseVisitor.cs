@@ -56,13 +56,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             _ => throw new NotSupportedException($"Unknown sign of {expressionType}"),
         };
 
-        public abstract string GetMemberInitSql(MemberInitExpression memberInitExpression, Type newMemberType, TriggerType triggerType);
+        public abstract string GetMemberInitSql(MemberInitExpression memberInitExpression, Type triggeredEntityType);
 
-        public abstract string GetMemberAssignmentSql(MemberAssignment memberAssignment, Type newMemberType, TriggerType triggerType);
+        public abstract string GetMemberAssignmentSql(MemberAssignment memberAssignment, Type triggeredEntityType);
 
-        public abstract string GetBinaryExpressionSql(BinaryExpression binaryExpression, Type newMemberType, TriggerType triggerType);
+        public abstract string GetBinaryExpressionSql(BinaryExpression binaryExpression, Type triggeredEntityType);
 
-        public abstract string GetMemberExpressionSql(MemberExpression memberExpression, Type newMemberType, TriggerType triggerType);
+        public abstract string GetMemberExpressionSql(MemberExpression memberExpression, Type triggeredEntityType);
 
         public abstract string GetConstantExpressionSql(ConstantExpression constantExpression);
 
@@ -74,6 +74,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             where TTriggerEntity : class;
 
         public abstract string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+            where TTriggerEntity : class;
+
+        public abstract string GetTriggerConditionSql<TTriggerEntity>(TriggerCondition<TTriggerEntity> triggerCondition)
             where TTriggerEntity : class;
     }
 }

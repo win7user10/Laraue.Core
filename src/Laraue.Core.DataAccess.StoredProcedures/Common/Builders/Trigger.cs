@@ -33,5 +33,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             var sql = visitor.GetTriggerSql(this);
             return sql;
         }
+
+        public string Name => $"{TriggerTime}_{TriggerTime}_{typeof(TTriggerEntity).Name}";
     }
 }

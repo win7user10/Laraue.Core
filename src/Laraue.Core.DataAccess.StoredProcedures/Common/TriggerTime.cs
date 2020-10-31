@@ -2,7 +2,7 @@
 {
     public enum TriggerTime
     {
-        BeforeTransaction,
-        AfterTransaction,
+        Before,
+        After,
     }
 }

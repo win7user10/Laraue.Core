@@ -6,13 +6,13 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 {
     public interface IVisitor
     {
-        string GetMemberInitSql(MemberInitExpression memberInitExpression, Type newMemberType, TriggerType triggerType);
+        string GetMemberInitSql(MemberInitExpression memberInitExpression, Type triggeredEntityType);
 
-        string GetMemberAssignmentSql(MemberAssignment memberAssignment, Type newMemberType, TriggerType triggerType);
+        string GetMemberAssignmentSql(MemberAssignment memberAssignment, Type triggeredEntityType);
 
-        string GetBinaryExpressionSql(BinaryExpression binaryExpression, Type newMemberType, TriggerType triggerType);
+        string GetBinaryExpressionSql(BinaryExpression binaryExpression, Type triggeredEntityType);
 
-        string GetMemberExpressionSql(MemberExpression memberExpression, Type newMemberType, TriggerType triggerType);
+        string GetMemberExpressionSql(MemberExpression memberExpression, Type triggeredEntityType);
 
         string GetConstantExpressionSql(ConstantExpression constantExpression);
 
@@ -32,6 +32,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             where TTriggerEntity : class;
 
         string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+            where TTriggerEntity : class;
+
+        string GetTriggerConditionSql<TTriggerEntity>(TriggerCondition<TTriggerEntity> triggerCondition)
             where TTriggerEntity : class;
     }
 }
