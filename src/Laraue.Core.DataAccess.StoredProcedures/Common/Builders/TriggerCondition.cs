@@ -1,10 +1,10 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
 using System;
 using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerCondition<TTriggerEntity> : IVisitingTrigger
+    public class TriggerCondition<TTriggerEntity> : ISqlTrigger
         where TTriggerEntity : class
     {
         public Expression<Func<TTriggerEntity, bool>> Condition { get; }
@@ -14,7 +14,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             Condition = triggerCondition;
         }
 
-        public string BuildSql(IVisitor visitor)
+        public string BuildSql(IProvider visitor)
         {
             return visitor.GetTriggerConditionSql(this);
         }

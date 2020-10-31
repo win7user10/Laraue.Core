@@ -1,18 +1,18 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class Trigger<TTriggerEntity> : IVisitingTrigger
+    public class Trigger<TTriggerEntity> : ISqlTrigger
         where TTriggerEntity : class
     {
         public TriggerType TriggerType { get; }
 
         public TriggerTime TriggerTime { get; }
 
-        public readonly List<IVisitingTrigger> Actions = new List<IVisitingTrigger>();
+        public readonly List<ISqlTrigger> Actions = new List<ISqlTrigger>();
 
         public Trigger(TriggerType triggerType, TriggerTime triggerTime)
         {
@@ -28,12 +28,12 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             return this;
         }
 
-        public string BuildSql(IVisitor visitor)
+        public string BuildSql(IProvider visitor)
         {
             var sql = visitor.GetTriggerSql(this);
             return sql;
         }
 
-        public string Name => $"{TriggerTime}_{TriggerTime}_{typeof(TTriggerEntity).Name}";
+        public string Name => $"TRIGGER_{TriggerTime}_{TriggerType}_{typeof(TTriggerEntity).Name}";
     }
 }

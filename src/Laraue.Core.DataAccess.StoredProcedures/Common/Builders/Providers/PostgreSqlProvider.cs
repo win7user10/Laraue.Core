@@ -3,11 +3,11 @@ using System;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 {
-    class PostgreSqlVisitor : SqlVisitor
+    class PostgreSqlProvider : SqlProvider
     {
-        public PostgreSqlVisitor(IModel model) : base(model)
+        public PostgreSqlProvider(IModel model) : base(model)
         {
         }
 
@@ -71,7 +71,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
         public override string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
         {
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() as ${trigger.Name}$");
+            sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() as ${trigger.Name}$ ");
             sqlBuilder.Append("BEGIN ");
             foreach (var action in trigger.Actions)
             {

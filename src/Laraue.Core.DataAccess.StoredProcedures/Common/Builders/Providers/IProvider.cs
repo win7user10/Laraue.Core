@@ -2,9 +2,9 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 {
-    public interface IVisitor
+    public interface IProvider
     {
         string GetMemberInitSql(MemberInitExpression memberInitExpression, Type triggeredEntityType);
 

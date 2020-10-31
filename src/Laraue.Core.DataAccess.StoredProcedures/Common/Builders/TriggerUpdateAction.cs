@@ -1,10 +1,10 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
 using System;
 using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
-    public class TriggerUpdateAction<TTriggerEntity, TUpdateEntity> : IVisitingTrigger
+    public class TriggerUpdateAction<TTriggerEntity, TUpdateEntity> : ISqlTrigger
         where TTriggerEntity : class
         where TUpdateEntity : class
     {
@@ -19,7 +19,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             SetExpression = setValues;
         }
 
-        public string BuildSql(IVisitor visitor)
+        public string BuildSql(IProvider visitor)
         {
             return visitor.GetTriggerUpdateActionSql(this);
         }

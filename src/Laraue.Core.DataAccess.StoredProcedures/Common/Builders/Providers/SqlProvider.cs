@@ -3,11 +3,11 @@ using System;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 {
-    public abstract class SqlVisitor : BaseVisitor
+    public abstract class SqlProvider : BaseProvider
     {
-        public SqlVisitor(IModel model) : base(model)
+        public SqlProvider(IModel model) : base(model)
         {
         }
 

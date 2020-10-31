@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 {
-    public abstract class BaseVisitor : IVisitor
+    public abstract class BaseProvider : IProvider
     {
         private Dictionary<MemberInfo, string> _columnNamesCache = new Dictionary<MemberInfo, string>();
 
@@ -16,7 +16,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 
         protected IModel Model { get; }
 
-        public BaseVisitor(IModel model)
+        public BaseProvider(IModel model)
         {
             Model = model;
         }
