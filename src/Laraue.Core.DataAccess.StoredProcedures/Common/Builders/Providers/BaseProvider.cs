@@ -73,7 +73,10 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
         public abstract string GetTriggerActionSql<TTriggerEntity>(TriggerAction<TTriggerEntity> triggerAction)
             where TTriggerEntity : class;
 
-        public abstract string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+        public abstract string GetCreateTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+            where TTriggerEntity : class;
+
+        public abstract string GetDropTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
             where TTriggerEntity : class;
 
         public abstract string GetTriggerConditionSql<TTriggerEntity>(TriggerCondition<TTriggerEntity> triggerCondition)

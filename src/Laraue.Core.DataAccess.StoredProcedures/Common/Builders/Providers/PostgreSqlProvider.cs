@@ -68,18 +68,28 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        public override string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+        public override string GetCreateTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
         {
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() as ${trigger.Name}$ ");
-            sqlBuilder.Append("BEGIN ");
-            foreach (var action in trigger.Actions)
-            {
-                sqlBuilder.Append(action.BuildSql(this));
-            }
-            sqlBuilder.Append(" END;");
-            sqlBuilder.Append($"${trigger.Name}$ LANGUAGE plpgsql;");
+            sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() as ${trigger.Name}$ ")
+                .Append("BEGIN ");
 
+            foreach (var action in trigger.Actions)
+                sqlBuilder.Append(action.BuildSql(this));
+
+            sqlBuilder.Append(" END;")
+                .Append($"${trigger.Name}$ LANGUAGE plpgsql;")
+                .Append($"CREATE TRIGGER {trigger.Name} {trigger.TriggerTime.ToString().ToUpper()} {trigger.TriggerType.ToString().ToUpper()} ")
+                .Append($"ON {GetTableName(typeof(TTriggerEntity))} FOR EACH ROW EXECUTE PROCEDURE {trigger.Name}()");
+
+            return sqlBuilder.ToString();
+        }
+
+        public override string GetDropTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+        {
+            var sqlBuilder = new StringBuilder();
+            sqlBuilder.Append($"DROP FUNCTION {trigger.Name}();")
+                .Append($"DROP TRIGGER {trigger.Name} ON {GetTableName(typeof(TTriggerEntity))};");
             return sqlBuilder.ToString();
         }
 

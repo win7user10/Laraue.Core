@@ -1,7 +1,6 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 {
@@ -30,7 +29,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
 
         public string BuildSql(IProvider visitor)
         {
-            var sql = visitor.GetTriggerSql(this);
+            var sql = visitor.GetCreateTriggerSql(this);
             return sql;
         }
 
