@@ -1,5 +1,7 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
+using Laraue.Core.DataAccess.StoredProcedures.Migrations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Extensions
         public static DbContextOptionsBuilder<TContext> UseTriggers<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder)
             where TContext : DbContext
         {
+            optionsBuilder.ReplaceService<IMigrationsModelDiffer, MigrationsModelDiffer>();
+
             var providers = optionsBuilder.Options
                 .Extensions
                 .Where(x => x.Info.IsDatabaseProvider)

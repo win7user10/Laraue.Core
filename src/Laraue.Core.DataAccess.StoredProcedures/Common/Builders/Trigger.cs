@@ -34,6 +34,6 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders
             return sql;
         }
 
-        public string Name => $"TRIGGER_{TriggerTime}_{TriggerType}_{typeof(TTriggerEntity).Name}";
+        public string Name => $"{Constants.AnnotationKey}_{TriggerTime}_{TriggerType}_{typeof(TTriggerEntity).Name}";
     }
 }
