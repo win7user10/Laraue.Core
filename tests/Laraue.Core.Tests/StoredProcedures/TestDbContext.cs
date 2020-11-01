@@ -65,6 +65,14 @@ namespace Laraue.Core.Tests.StoredProcedures
                         .UpdateAnotherEntity<User>(
                             (deletedTransaction, users) => users.Id == deletedTransaction.UserId,
                             (deletedTransaction, oldUser) => new User { Balance = oldUser.Balance - deletedTransaction.Value })));
+
+            modelBuilder.Entity<Transaction>()
+                .AfterInsert(trigger => trigger
+                    .Action(action => action
+                        .Condition(insertedTransaction => insertedTransaction.IsVeryfied)
+                        .UpdateAnotherEntity<User>(
+                            (insertedTransaction, users) => users.Id == insertedTransaction.UserId,
+                            (insertedTransaction, oldUser) => new User { Balance = oldUser.Balance + insertedTransaction.Value })));
         }
     }
 

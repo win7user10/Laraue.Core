@@ -34,7 +34,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
                 var entityType = Model.FindEntityType(memberInfo.DeclaringType);
                 _columnNamesCache.Add(memberInfo, entityType.GetProperty(memberInfo.Name).GetColumnName());
             }
-            _columnNamesCache.TryGetValue(memberInfo, out var columnName);
+            if (!_columnNamesCache.TryGetValue(memberInfo, out var columnName))
+                throw new InvalidOperationException($"Column name for member {memberInfo.Name} is not defined in model");
             return columnName;
         }
 
@@ -47,7 +48,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
                 var entityType = Model.FindEntityType(entity);
                 _tableNamesCache.Add(entity, entityType.GetTableName());
             }
-            _tableNamesCache.TryGetValue(entity, out var columnName);
+            if (!_tableNamesCache.TryGetValue(entity, out var columnName))
+                throw new InvalidOperationException($"Table name for entity {entity.FullName} is not defined in model.");
             return columnName;
         }
 
@@ -162,6 +164,6 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return sqlBuilder.ToString();
         }
 
-        public virtual string GetConstantExpressionSql(ConstantExpression constantExpression) => constantExpression.Value.ToString();
+        public virtual string GetConstantExpressionSql(ConstantExpression constantExpression) => constantExpression.Value.ToString().ToLower();
     }
 }
