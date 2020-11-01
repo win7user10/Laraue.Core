@@ -2,7 +2,6 @@
 using Laraue.Core.DataAccess.StoredProcedures.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 

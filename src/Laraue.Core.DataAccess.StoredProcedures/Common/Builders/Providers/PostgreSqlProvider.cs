@@ -85,11 +85,11 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        public override string GetDropTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
+        public override string GetDropTriggerSql(string triggerName, Type entityType)
         {
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"DROP FUNCTION {trigger.Name}();")
-                .Append($"DROP TRIGGER {trigger.Name} ON {GetTableName(typeof(TTriggerEntity))};");
+            sqlBuilder.Append($"DROP FUNCTION {triggerName}();")
+                .Append($"DROP TRIGGER {triggerName} ON {GetTableName(entityType)};");
             return sqlBuilder.ToString();
         }
 

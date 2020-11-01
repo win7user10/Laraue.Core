@@ -18,7 +18,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 
         public BaseProvider(IModel model)
         {
-            Model = model;
+            Model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
         public string GetColumnName(MemberInfo memberInfo)
@@ -76,8 +76,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
         public abstract string GetCreateTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
             where TTriggerEntity : class;
 
-        public abstract string GetDropTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
-            where TTriggerEntity : class;
+        public abstract string GetDropTriggerSql(string triggerName, Type entityType);
 
         public abstract string GetTriggerConditionSql<TTriggerEntity>(TriggerCondition<TTriggerEntity> triggerCondition)
             where TTriggerEntity : class;

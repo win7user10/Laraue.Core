@@ -2,6 +2,7 @@
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
 using Laraue.Core.DataAccess.StoredProcedures.Extensions;
+using Laraue.Core.DataAccess.StoredProcedures.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
@@ -18,13 +19,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
             var trigger = new Trigger<T>(triggerType, triggerTime);
             configuration.Invoke(trigger);
 
-            IProvider sqlProvider = DbContextOptionsBuilderExtensions.ActualProvider switch
-            {
-                DbProvider.PostgreSql => new PostgreSqlProvider(entityTypeBuilder.Metadata.Model),
-                null => throw new InvalidOperationException("DB provider hasn't been configured"),
-                _ => throw new InvalidOperationException($"DB provider {DbContextOptionsBuilderExtensions.ActualProvider} is not suppoting"),
-            };
-
+            var sqlProvider = Initializer.GetSqlProvider(entityTypeBuilder.Metadata.Model);
             entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(trigger.Name, trigger.BuildSql(sqlProvider));
 
             return entityTypeBuilder;
