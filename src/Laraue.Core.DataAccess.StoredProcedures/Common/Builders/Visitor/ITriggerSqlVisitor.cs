@@ -1,4 +1,6 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnDelete;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnInsert;
 using System;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
@@ -36,6 +38,23 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             where TTriggerEntity : class;
 
         string GetTriggerUpdateActionSql<TTriggerEntity, TUpdateEntity>(OnDeleteTriggerUpdateAction<TTriggerEntity, TUpdateEntity> triggerUpdateAction)
+            where TTriggerEntity : class
+            where TUpdateEntity : class;
+
+        #endregion
+
+        #region OnInsertTriggers
+
+        string GetTriggerSql<TTriggerEntity>(OnInsertTrigger<TTriggerEntity> trigger)
+            where TTriggerEntity : class;
+
+        string GetTriggerConditionSql<TTriggerEntity>(OnInsertTriggerCondition<TTriggerEntity> triggerCondition)
+            where TTriggerEntity : class;
+
+        string GetTriggerActionsSql<TTriggerEntity>(OnInsertTriggerActions<TTriggerEntity> triggerActions)
+            where TTriggerEntity : class;
+
+        string GetTriggerUpdateActionSql<TTriggerEntity, TUpdateEntity>(OnInsertTriggerUpdateAction<TTriggerEntity, TUpdateEntity> triggerUpdateAction)
             where TTriggerEntity : class
             where TUpdateEntity : class;
 

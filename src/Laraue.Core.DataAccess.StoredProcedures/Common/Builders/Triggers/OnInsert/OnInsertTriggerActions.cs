@@ -3,23 +3,23 @@ using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using System;
 using System.Linq.Expressions;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnDelete
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnInsert
 {
-    public class OnDeleteTriggerActions<TTriggerEntity> : TriggerActions
+    public class OnInsertTriggerActions<TTriggerEntity> : TriggerActions
         where TTriggerEntity : class
     {
-        public OnDeleteTriggerActions<TTriggerEntity> Condition(Expression<Func<TTriggerEntity, bool>> condition)
+        public OnInsertTriggerActions<TTriggerEntity> Condition(Expression<Func<TTriggerEntity, bool>> condition)
         {
-            ActionConditions.Add(new OnDeleteTriggerCondition<TTriggerEntity>(condition));
+            ActionConditions.Add(new OnInsertTriggerCondition<TTriggerEntity>(condition));
             return this;
         }
 
-        public OnDeleteTriggerActions<TTriggerEntity> UpdateAnotherEntity<TUpdateEntity>(
+        public OnInsertTriggerActions<TTriggerEntity> UpdateAnotherEntity<TUpdateEntity>(
                 Expression<Func<TTriggerEntity, TUpdateEntity, bool>> entityFilter,
                 Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
             where TUpdateEntity : class
         {
-            ActionExpressions.Add(new OnDeleteTriggerUpdateAction<TTriggerEntity, TUpdateEntity>(entityFilter, setValues));
+            ActionExpressions.Add(new OnInsertTriggerUpdateAction<TTriggerEntity, TUpdateEntity>(entityFilter, setValues));
             return this;
         }
 

@@ -106,21 +106,41 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
         public virtual string GetBinaryExpressionSql(BinaryExpression binaryExpression, Dictionary<string, ArgumentPrefix> argumentTypes)
         {
             var sqlBuilder = new StringBuilder();
-            var parts = new[] { binaryExpression.Left, binaryExpression.Right };
-            foreach (var part in parts)
-            {
-                if (part is MemberExpression memberExpression)
-                    sqlBuilder.Append(GetMemberExpressionSql(memberExpression, argumentTypes));
-                else if (part is ConstantExpression constantExpression)
-                    sqlBuilder.Append(GetConstantExpressionSql(constantExpression));
-                else if (part is BinaryExpression binaryExp)
-                    sqlBuilder.Append(GetBinaryExpressionSql(binaryExp, argumentTypes));
-                else
-                    throw new InvalidOperationException($"{part.GetType()} expression does not supports in set statement.");
 
-                if (part != binaryExpression.Right)
-                    sqlBuilder.Append($" {GetExpressionTypeSql(binaryExpression.NodeType)} ");
+            void AddBinarySeparator()
+            {
+                sqlBuilder.Append($" {GetExpressionTypeSql(binaryExpression.NodeType)} ");
             }
+
+            var parts = new[] { binaryExpression.Left, binaryExpression.Right };
+
+            // Correct transform expressions like x => x.IsGood && x.IsSmth to boolean x.IsGood = true && x.IsSmth = true 
+            if (parts[0] is MemberExpression leftMemberExpression && parts[1] is MemberExpression rightMemberExpression
+                && ((PropertyInfo)leftMemberExpression.Member).PropertyType == typeof(bool)
+                && ((PropertyInfo)rightMemberExpression.Member).PropertyType == typeof(bool))
+            {
+                sqlBuilder.Append(GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, leftMemberExpression, Expression.Constant(true)), argumentTypes));
+                AddBinarySeparator();
+                sqlBuilder.Append(GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, rightMemberExpression, Expression.Constant(true)), argumentTypes));
+            }
+            else
+            {
+                foreach (var part in parts)
+                {
+                    if (part is MemberExpression memberExpression)
+                        sqlBuilder.Append(GetMemberExpressionSql(memberExpression, argumentTypes));
+                    else if (part is ConstantExpression constantExpression)
+                        sqlBuilder.Append(GetConstantExpressionSql(constantExpression));
+                    else if (part is BinaryExpression binaryExp)
+                        sqlBuilder.Append(GetBinaryExpressionSql(binaryExp, argumentTypes));
+                    else
+                        throw new InvalidOperationException($"{part.GetType()} expression does not supports in set statement.");
+
+                    if (part != binaryExpression.Right) AddBinarySeparator();
+                }
+            }
+
+            
             return sqlBuilder.ToString();
         }
 

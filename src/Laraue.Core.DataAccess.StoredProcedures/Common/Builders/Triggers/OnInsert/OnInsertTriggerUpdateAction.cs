@@ -3,13 +3,13 @@ using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using System;
 using System.Linq.Expressions;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnDelete
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnInsert
 {
-    public class OnDeleteTriggerUpdateAction<TTriggerEntity, TUpdateEntity> : TriggerUpdateAction
+    public class OnInsertTriggerUpdateAction<TTriggerEntity, TUpdateEntity> : TriggerUpdateAction
         where TTriggerEntity : class
         where TUpdateEntity : class
     {
-        public OnDeleteTriggerUpdateAction(
+        public OnInsertTriggerUpdateAction(
             Expression<Func<TTriggerEntity, TUpdateEntity, bool>> setFilter,
             Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
                 : base (setFilter, setValues)

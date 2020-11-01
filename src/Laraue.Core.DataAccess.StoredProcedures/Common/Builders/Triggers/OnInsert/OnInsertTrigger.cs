@@ -2,18 +2,18 @@
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using System;
 
-namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnDelete
+namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnInsert
 {
-    public class OnDeleteTrigger<TTriggerEntity> : Trigger<TTriggerEntity>
+    public class OnInsertTrigger<TTriggerEntity> : Trigger<TTriggerEntity>
         where TTriggerEntity : class
     {
-        public OnDeleteTrigger(TriggerTime triggerTime) : base(TriggerType.Delete, triggerTime)
+        public OnInsertTrigger(TriggerTime triggerTime) : base(TriggerType.Insert, triggerTime)
         {
         }
 
-        public OnDeleteTrigger<TTriggerEntity> Action(Action<OnDeleteTriggerActions<TTriggerEntity>> actionSetup)
+        public OnInsertTrigger<TTriggerEntity> Action(Action<OnInsertTriggerActions<TTriggerEntity>> actionSetup)
         {
-            var actionTrigger = new OnDeleteTriggerActions<TTriggerEntity>();
+            var actionTrigger = new OnInsertTriggerActions<TTriggerEntity>();
             actionSetup.Invoke(actionTrigger);
             Actions.Add(actionTrigger);
             return this;

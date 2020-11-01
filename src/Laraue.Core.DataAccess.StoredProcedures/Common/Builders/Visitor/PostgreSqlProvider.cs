@@ -80,16 +80,20 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        public override string GetTriggerUpdateActionSql<TUpdateEntity>(LambdaExpression condition, LambdaExpression setExpression, Dictionary<string, ArgumentPrefix> argumentPrefixes)
+        public override string GetTriggerUpdateActionSql<TUpdateEntity>(
+            LambdaExpression condition, 
+            Dictionary<string, ArgumentPrefix> conditionArgumentPrefixes, 
+            LambdaExpression setExpression, 
+            Dictionary<string, ArgumentPrefix> setArgumentPrefixes)
         {
             var sqlBuilder = new StringBuilder();
 
             sqlBuilder.Append("update ")
                 .Append($"{GetTableName(typeof(TUpdateEntity))} ");
 
-            sqlBuilder.Append(GetMemberInitSql((MemberInitExpression)setExpression.Body, argumentPrefixes))
+            sqlBuilder.Append(GetMemberInitSql((MemberInitExpression)setExpression.Body, conditionArgumentPrefixes))
                 .Append(" where ")
-                .Append(GetBinaryExpressionSql((BinaryExpression)condition.Body, argumentPrefixes));
+                .Append(GetBinaryExpressionSql((BinaryExpression)condition.Body, setArgumentPrefixes));
 
             return sqlBuilder.ToString();
         }
