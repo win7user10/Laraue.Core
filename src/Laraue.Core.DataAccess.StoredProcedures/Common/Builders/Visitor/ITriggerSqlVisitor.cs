@@ -7,6 +7,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
     {
         string GetDropTriggerSql(string triggerName, Type entityType);
 
+        #region OnUpdateTriggers
+
         string GetTriggerSql<TTriggerEntity>(OnUpdateTrigger<TTriggerEntity> trigger)
             where TTriggerEntity : class;
 
@@ -20,5 +22,23 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             where TTriggerEntity : class
             where TUpdateEntity : class;
 
+        #endregion
+
+        #region OnDeleteTriggers
+
+        string GetTriggerSql<TTriggerEntity>(OnDeleteTrigger<TTriggerEntity> trigger)
+            where TTriggerEntity : class;
+
+        string GetTriggerConditionSql<TTriggerEntity>(OnDeleteTriggerCondition<TTriggerEntity> triggerCondition)
+            where TTriggerEntity : class;
+
+        string GetTriggerActionsSql<TTriggerEntity>(OnDeleteTriggerActions<TTriggerEntity> triggerActions)
+            where TTriggerEntity : class;
+
+        string GetTriggerUpdateActionSql<TTriggerEntity, TUpdateEntity>(OnDeleteTriggerUpdateAction<TTriggerEntity, TUpdateEntity> triggerUpdateAction)
+            where TTriggerEntity : class
+            where TUpdateEntity : class;
+
+        #endregion
     }
 }

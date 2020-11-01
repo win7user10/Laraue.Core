@@ -3,19 +3,17 @@ using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base
 {
-    public abstract class TriggerUpdateAction<TTriggerEntity, TUpdateEntity> : ISqlConvertible
-        where TTriggerEntity : class
-        where TUpdateEntity : class
+    public abstract class TriggerUpdateAction : ISqlConvertible
     {
-        public Expression SetFilter;
-        public Expression SetExpression;
+        public Expression UpdateFilter;
+        public Expression UpdateExpression;
 
         public TriggerUpdateAction(
-            Expression setFilter,
-            Expression setValues)
+            Expression updateFilter,
+            Expression updateExpression)
         {
-            SetFilter = setFilter;
-            SetExpression = setValues;
+            UpdateFilter = updateFilter;
+            UpdateExpression = updateExpression;
         }
 
         public abstract string BuildSql(ITriggerSqlVisitor visitor);

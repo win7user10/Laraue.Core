@@ -5,13 +5,13 @@ using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate
 {
-    public class OnUpdateTriggerUpdateAction<TTriggerEntity, TUpdateEntity> : TriggerUpdateAction
+    public class OnDeleteTriggerUpdateAction<TTriggerEntity, TUpdateEntity> : TriggerUpdateAction
         where TTriggerEntity : class
         where TUpdateEntity : class
     {
-        public OnUpdateTriggerUpdateAction(
-            Expression<Func<TTriggerEntity, TTriggerEntity, TUpdateEntity, bool>> setFilter,
-            Expression<Func<TTriggerEntity, TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
+        public OnDeleteTriggerUpdateAction(
+            Expression<Func<TTriggerEntity, TUpdateEntity, bool>> setFilter,
+            Expression<Func<TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
                 : base (setFilter, setValues)
         {
         }

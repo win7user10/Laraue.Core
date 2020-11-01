@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base
 {
     public abstract class Trigger<TTriggerEntity> : ISqlConvertible
-        where TTriggerEntity : class
     {
         public TriggerType TriggerType { get; }
 

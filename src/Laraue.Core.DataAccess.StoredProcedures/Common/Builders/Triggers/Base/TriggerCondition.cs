@@ -3,8 +3,7 @@ using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base
 {
-    public abstract class TriggerCondition<TTriggerEntity> : ISqlConvertible
-        where TTriggerEntity : class
+    public abstract class TriggerCondition : ISqlConvertible
     {
         public Expression Condition { get; }
 

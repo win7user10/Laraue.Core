@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate
 {
-    public class OnUpdateTriggerActions<TTriggerEntity> : TriggerActions<TTriggerEntity>
+    public class OnUpdateTriggerActions<TTriggerEntity> : TriggerActions
         where TTriggerEntity : class
     {
         public OnUpdateTriggerActions<TTriggerEntity> Condition(Expression<Func<TTriggerEntity, TTriggerEntity, bool>> condition)
@@ -14,7 +14,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpd
             return this;
         }
 
-        public TriggerActions<TTriggerEntity> UpdateAnotherEntity<TUpdateEntity>(
+        public OnUpdateTriggerActions<TTriggerEntity> UpdateAnotherEntity<TUpdateEntity>(
                 Expression<Func<TTriggerEntity, TTriggerEntity, TUpdateEntity, bool>> entityFilter,
                 Expression<Func<TTriggerEntity, TTriggerEntity, TUpdateEntity, TUpdateEntity>> setValues)
             where TUpdateEntity : class

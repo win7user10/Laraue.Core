@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 {
@@ -57,14 +58,21 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             ExpressionType.Multiply => "*",
             ExpressionType.Divide => "/",
             ExpressionType.Equal => "=",
-            ExpressionType.NotEqual => "!=",
+            ExpressionType.NotEqual => "<>",
+            ExpressionType.AndAlso => "&&",
+            ExpressionType.OrElse => "||",
+            ExpressionType.GreaterThan => ">",
+            ExpressionType.GreaterThanOrEqual => ">=",
+            ExpressionType.LessThan => "<",
+            ExpressionType.LessThanOrEqual => "<=",
             _ => throw new NotSupportedException($"Unknown sign of {expressionType}"),
         };
 
         public virtual string GetMemberExpressionSql(MemberExpression memberExpression, Dictionary<string, ArgumentPrefix> argumentTypes)
         {
             var sqlBuilder = new StringBuilder();
-            var memberName = memberExpression.Member.Name;
+
+            var memberName = ((ParameterExpression)memberExpression.Expression).Name;
             if (argumentTypes.TryGetValue(memberName, out var argumentType))
             {
                 if (argumentType == ArgumentPrefix.New)
@@ -126,6 +134,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
                 var memberAssignmentExpression = (MemberAssignment)memberBinding;
                 var sql = GetMemberAssignmentSql(memberAssignmentExpression, argumentTypes);
                 sqlBuilder.Append(sql);
+
+                if (memberBinding != setExpressionBindings.Last())
+                    sqlBuilder.Append(", ");
             }
 
             return sqlBuilder.ToString();

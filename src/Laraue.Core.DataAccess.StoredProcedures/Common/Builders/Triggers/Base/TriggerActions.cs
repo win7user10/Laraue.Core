@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base
 {
-    public abstract class TriggerActions<TTriggerEntity> : ISqlConvertible
-        where TTriggerEntity : class
+    public abstract class TriggerActions : ISqlConvertible
     {
         public readonly List<ISqlConvertible> ActionConditions = new List<ISqlConvertible>();
 

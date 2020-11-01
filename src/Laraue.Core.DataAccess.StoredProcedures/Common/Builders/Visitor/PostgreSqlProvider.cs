@@ -1,4 +1,5 @@
-﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate;
+﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 {
-    public class PostgreSqlProvider : BaseExpressionSqlVisitor, ITriggerSqlVisitor
+    public class PostgreSqlProvider : BaseTriggerSqlVisitor
     {
         public PostgreSqlProvider(IModel model) : base(model)
         {
@@ -18,7 +19,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 
         protected override string OldEntityPrefix => "OLD";
 
-        public string GetDropTriggerSql(string triggerName, Type entityType)
+        public override string GetDropTriggerSql(string triggerName, Type entityType)
         {
             var sqlBuilder = new StringBuilder();
             sqlBuilder.Append($"DROP FUNCTION {triggerName}();")
@@ -26,9 +27,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        #region TriggerActions
-
-        public string GetTriggerActionsSql<TTriggerEntity>(OnUpdateTriggerActions<TTriggerEntity> triggerActions) where TTriggerEntity : class
+        public override string GetTriggerActionsSql(TriggerActions triggerActions)
         {
             var sqlBuilder = new StringBuilder();
             if (triggerActions.ActionConditions.Count > 0)
@@ -55,26 +54,16 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        #endregion
-
-        public string GetTriggerConditionSql<TTriggerEntity>(OnUpdateTriggerCondition<TTriggerEntity> triggerCondition) where TTriggerEntity : class
+        public override string GetTriggerConditionSql(LambdaExpression triggerCondition, Dictionary<string, ArgumentPrefix> argumentPrefixes)
         {
-            var lambdaExpression = triggerCondition.Condition as LambdaExpression;
-
-            var argsDictionary = new Dictionary<string, ArgumentPrefix>
-            {
-                { lambdaExpression.Parameters[0].Name, ArgumentPrefix.Old },
-                { lambdaExpression.Parameters[1].Name, ArgumentPrefix.New },
-            };
-
-            if (lambdaExpression.Body is BinaryExpression binaryExpression)
-                return GetBinaryExpressionSql(binaryExpression, argsDictionary);
-            else if (lambdaExpression.Body is MemberExpression memberExpression)
-                return GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, memberExpression, Expression.Constant(true)), argsDictionary);
-            throw new NotImplementedException($"Trigger condition of type {triggerCondition.Condition.GetType()} is not supported.");
+            if (triggerCondition.Body is BinaryExpression binaryExpression)
+                return GetBinaryExpressionSql(binaryExpression, argumentPrefixes);
+            else if (triggerCondition.Body is MemberExpression memberExpression)
+                return GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, memberExpression, Expression.Constant(true)), argumentPrefixes);
+            throw new NotImplementedException($"Trigger condition of type {triggerCondition.Body.GetType()} is not supported.");
         }
 
-        public string GetTriggerSql<TTriggerEntity>(OnUpdateTrigger<TTriggerEntity> trigger) where TTriggerEntity : class
+        public override string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
         {
             var sqlBuilder = new StringBuilder();
             sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() as ${trigger.Name}$ ")
@@ -91,27 +80,16 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        public string GetTriggerUpdateActionSql<TTriggerEntity, TUpdateEntity>(OnUpdateTriggerUpdateAction<TTriggerEntity, TUpdateEntity> triggerUpdateAction)
-            where TTriggerEntity : class
-            where TUpdateEntity : class
+        public override string GetTriggerUpdateActionSql<TUpdateEntity>(LambdaExpression condition, LambdaExpression setExpression, Dictionary<string, ArgumentPrefix> argumentPrefixes)
         {
             var sqlBuilder = new StringBuilder();
 
             sqlBuilder.Append("update ")
                 .Append($"{GetTableName(typeof(TUpdateEntity))} ");
 
-            var setLambda = (LambdaExpression)triggerUpdateAction.SetExpression;
-            var setFilterLambda = (LambdaExpression)triggerUpdateAction.SetFilter;
-
-            var expressionArgs = new Dictionary<string, ArgumentPrefix>
-            {
-                { setLambda.Parameters[0].Name, ArgumentPrefix.Old },
-                { setLambda.Parameters[1].Name, ArgumentPrefix.New },
-            };
-
-            sqlBuilder.Append(GetMemberInitSql((MemberInitExpression)setLambda.Body, expressionArgs))
+            sqlBuilder.Append(GetMemberInitSql((MemberInitExpression)setExpression.Body, argumentPrefixes))
                 .Append(" where ")
-                .Append(GetBinaryExpressionSql((BinaryExpression)setFilterLambda.Body, expressionArgs));
+                .Append(GetBinaryExpressionSql((BinaryExpression)condition.Body, argumentPrefixes));
 
             return sqlBuilder.ToString();
         }
