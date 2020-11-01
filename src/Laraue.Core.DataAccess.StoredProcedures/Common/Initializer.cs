@@ -1,4 +1,5 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common
             SetProvider(dbProvider);
         }
 
-        public static IProvider GetSqlProvider(IModel model)
+        public static ITriggerSqlVisitor GetSqlProvider(IModel model)
         {
             return UsingProvider switch
             {

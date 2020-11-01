@@ -1,8 +1,6 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common;
-using Laraue.Core.DataAccess.StoredProcedures.Common.Builders;
-using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers;
-using Laraue.Core.DataAccess.StoredProcedures.Extensions;
-using Laraue.Core.DataAccess.StoredProcedures.Migrations;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base;
+using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
@@ -10,24 +8,30 @@ namespace Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder
 {
     public static class EntityTypeBuilderExtensions
     {
-        private static EntityTypeBuilder<T> AddTrigger<T>(
+        private static EntityTypeBuilder<T> AddTriggerAnnotation<T>(
             this EntityTypeBuilder<T> entityTypeBuilder,
-            TriggerType triggerType,
-            TriggerTime triggerTime,
-            Action<Trigger<T>> configuration) where T : class
+            Trigger<T> configuredTrigger) where T : class
         {
-            var trigger = new Trigger<T>(triggerType, triggerTime);
-            configuration.Invoke(trigger);
-
             var sqlProvider = Initializer.GetSqlProvider(entityTypeBuilder.Metadata.Model);
-            entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(trigger.Name, trigger.BuildSql(sqlProvider));
-
+            entityTypeBuilder.Metadata.Model.FindEntityType(typeof(T).FullName).AddAnnotation(configuredTrigger.Name, configuredTrigger.BuildSql(sqlProvider));
             return entityTypeBuilder;
-
         }
 
-        public static EntityTypeBuilder<T> AddBeforeDeleteTrigger<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<Trigger<T>> configuration) where T : class =>
-            entityTypeBuilder.AddTrigger(TriggerType.Delete, TriggerTime.Before, configuration);
+        public static EntityTypeBuilder<T> BeforeUpdate<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<OnUpdateTrigger<T>> configuration) where T : class
+            => entityTypeBuilder.AddOnUpdateTrigger(configuration, TriggerTime.Before);
 
+        public static EntityTypeBuilder<T> AfterUpdate<T>(this EntityTypeBuilder<T> entityTypeBuilder, Action<OnUpdateTrigger<T>> configuration) where T : class
+            => entityTypeBuilder.AddOnUpdateTrigger(configuration, TriggerTime.After);
+
+        private static EntityTypeBuilder<T> AddOnUpdateTrigger<T>(
+                this EntityTypeBuilder<T> entityTypeBuilder,
+                Action<OnUpdateTrigger<T>> configuration,
+                TriggerTime triggerTime)
+            where T : class
+        {
+            var trigger = new OnUpdateTrigger<T>(triggerTime);
+            configuration.Invoke(trigger);
+            return entityTypeBuilder.AddTriggerAnnotation(trigger);
+        }
     }
 }

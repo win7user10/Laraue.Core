@@ -51,12 +51,12 @@ namespace Laraue.Core.Tests.StoredProcedures
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Transaction>()
-                .AddBeforeDeleteTrigger(trigger => trigger
+                .BeforeUpdate(trigger => trigger
                     .Action(action => action
-                        .Condition(deletingTransaction => deletingTransaction.IsVeryfied)
+                        .Condition((oldTransaction, newTransaction) => oldTransaction.IsVeryfied && newTransaction.IsVeryfied)
                         .UpdateAnotherEntity<User>(
-                            (transaction, user) => user.Id == transaction.UserId,
-                            (transaction, oldUser) => new User { Balance = oldUser.Balance + 1 + transaction.Value * 3 })));
+                            (oldTransaction, newTransaction, user) => user.Id == oldTransaction.UserId,
+                            (oldTransaction, newTransaction, oldUser) => new User { Balance = oldUser.Balance + newTransaction.Value - oldTransaction.Value })));
 
             modelBuilder.Entity<User>()
                 .HasData(new User { Id = 1, Balance = 23M, Name = "John" });
