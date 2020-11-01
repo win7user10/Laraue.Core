@@ -21,13 +21,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.DataAccess.EFCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.Mail", "src\Laraue.Core.Mail\Laraue.Core.Mail.csproj", "{A956573F-9A43-4EDC-B4D1-15F050F12D45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.DataAccess.StoredProcedures", "src\Laraue.Core.DataAccess.StoredProcedures\Laraue.Core.DataAccess.StoredProcedures.csproj", "{B2737F62-EB6D-42FD-AE76-46FB98C368CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.DataAccess.StoredProcedures", "src\Laraue.Core.DataAccess.StoredProcedures\Laraue.Core.DataAccess.StoredProcedures.csproj", "{B2737F62-EB6D-42FD-AE76-46FB98C368CB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{57EA2CE0-DE8F-47FE-840C-640B92E95253}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.Tests", "tests\Laraue.Core.Tests\Laraue.Core.Tests.csproj", "{E6DDF002-161B-484B-9742-76B290922BC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laraue.Core.Tests", "tests\Laraue.Core.Tests\Laraue.Core.Tests.csproj", "{E6DDF002-161B-484B-9742-76B290922BC3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DDC3C501-5BB5-4AC0-9B47-49A16D92055A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0FB22593-9B84-463C-97CF-927E148782DD}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
