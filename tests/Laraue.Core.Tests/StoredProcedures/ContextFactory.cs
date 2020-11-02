@@ -15,6 +15,7 @@ namespace Laraue.Core.Tests.StoredProcedures
         {
             var options = new DbContextOptionsBuilder<TestDbContext>()
                 .UseNpgsql("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=tests;")
+                .UseSnakeCaseNamingConvention()
                 .UseTriggers()
                 .Options;
 

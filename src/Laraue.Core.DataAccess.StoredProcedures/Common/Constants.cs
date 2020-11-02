@@ -2,6 +2,6 @@
 {
     public class Constants
     {
-        public const string AnnotationKey = "Laraue.Core.TriggerAnnotation";
+        public const string AnnotationKey = "LC_TRIGGER";
     }
 }

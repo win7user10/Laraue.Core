@@ -20,9 +20,9 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.102'
-          source-url: https://nuget.pkg.github.com/win7user10/index.json
+          source-url: https://api.nuget.org/v3/index.json
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.GHPackagesToken}}
+          NUGET_AUTH_TOKEN: ${{secrets.NUGETORGTOKEN}}
 
       - name: Generate build number
         uses: einaregilsson/build-number@v2 

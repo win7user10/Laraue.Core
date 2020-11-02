@@ -9,6 +9,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 
         string GetMemberAssignmentSql(MemberAssignment memberAssignment, Dictionary<string, ArgumentPrefix> argumentTypes);
 
+        string GetUnaryExpressionSql(UnaryExpression unaryExpression, Dictionary<string, ArgumentPrefix> argumentTypes);
+
         string GetBinaryExpressionSql(BinaryExpression binaryExpression, Dictionary<string, ArgumentPrefix> argumentTypes);
 
         string GetMemberExpressionSql(MemberExpression memberExpression, Dictionary<string, ArgumentPrefix> argumentTypes);

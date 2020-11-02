@@ -32,7 +32,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common
         {
             return UsingProvider switch
             {
-                DbProvider.PostgreSql => new PostgreSqlProvider(model),
+                DbProvider.PostgreSql => new PostgreSqlVisitor(model),
                 null => throw new InvalidOperationException("DB provider hasn't been configured"),
                 _ => throw new InvalidOperationException($"DB provider {UsingProvider} is not suppoting"),
             };

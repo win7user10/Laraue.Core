@@ -1,7 +1,6 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.CSharpBuilder;
 using Laraue.Core.Tests.StoredProcedures.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace Laraue.Core.Tests.StoredProcedures
 {

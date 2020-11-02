@@ -12,9 +12,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 {
     public abstract class BaseExpressionSqlVisitor : IExpressionSqlVisitor
     {
-        private static Dictionary<MemberInfo, string> _columnNamesCache = new Dictionary<MemberInfo, string>();
+        private Dictionary<MemberInfo, string> _columnNamesCache = new Dictionary<MemberInfo, string>();
 
-        private static Dictionary<Type, string> _tableNamesCache = new Dictionary<Type, string>();
+        private Dictionary<Type, string> _tableNamesCache = new Dictionary<Type, string>();
 
         protected IModel Model { get; }
 
@@ -67,6 +67,8 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             ExpressionType.GreaterThanOrEqual => ">=",
             ExpressionType.LessThan => "<",
             ExpressionType.LessThanOrEqual => "<=",
+            ExpressionType.IsTrue => "is true",
+            ExpressionType.IsFalse => "is false",
             _ => throw new NotSupportedException($"Unknown sign of {expressionType}"),
         };
 
@@ -105,6 +107,15 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return sqlBuilder.ToString();
         }
 
+        public virtual string GetUnaryExpressionSql(UnaryExpression unaryExpression, Dictionary<string, ArgumentPrefix> argumentTypes)
+        {
+            var sqlBuilder = new StringBuilder();
+            var memberExpression = (MemberExpression)unaryExpression.Operand;
+            sqlBuilder.Append(GetMemberExpressionSql(memberExpression, argumentTypes));
+            sqlBuilder.Append($" {GetExpressionTypeSql(unaryExpression.NodeType)}");
+            return sqlBuilder.ToString();
+        }
+
         public virtual string GetBinaryExpressionSql(BinaryExpression binaryExpression, Dictionary<string, ArgumentPrefix> argumentTypes)
         {
             var sqlBuilder = new StringBuilder();
@@ -121,9 +132,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
                 && ((PropertyInfo)leftMemberExpression.Member).PropertyType == typeof(bool)
                 && ((PropertyInfo)rightMemberExpression.Member).PropertyType == typeof(bool))
             {
-                sqlBuilder.Append(GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, leftMemberExpression, Expression.Constant(true)), argumentTypes));
+                sqlBuilder.Append(GetUnaryExpressionSql(Expression.IsTrue(leftMemberExpression), argumentTypes));
                 AddBinarySeparator();
-                sqlBuilder.Append(GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, rightMemberExpression, Expression.Constant(true)), argumentTypes));
+                sqlBuilder.Append(GetUnaryExpressionSql(Expression.IsTrue(rightMemberExpression), argumentTypes));
             }
             else
             {

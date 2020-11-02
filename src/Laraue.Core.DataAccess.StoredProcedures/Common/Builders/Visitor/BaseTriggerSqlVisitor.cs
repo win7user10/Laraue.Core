@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
 {
@@ -61,7 +62,14 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return GetTriggerConditionSql(conditionLambda, expressionArgs);
         }
 
-        public abstract string GetTriggerConditionSql(LambdaExpression triggerCondition, Dictionary<string, ArgumentPrefix> argumentPrefixes);
+        public virtual string GetTriggerConditionSql(LambdaExpression triggerCondition, Dictionary<string, ArgumentPrefix> argumentPrefixes)
+        {
+            if (triggerCondition.Body is BinaryExpression binaryExpression)
+                return GetBinaryExpressionSql(binaryExpression, argumentPrefixes);
+            else if (triggerCondition.Body is MemberExpression memberExpression)
+                return GetUnaryExpressionSql(Expression.IsTrue(memberExpression), argumentPrefixes);
+            throw new NotImplementedException($"Trigger condition of type {triggerCondition.Body.GetType()} is not supported.");
+        }
 
         #endregion
 
@@ -117,10 +125,21 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor
             return GetTriggerUpdateActionSql<TUpdateEntity>(setCondition, conditionArgs, setLambda, setArgs);
         }
 
-        // TODO tow different functions for 
-        public abstract string GetTriggerUpdateActionSql<TUpdateEntity>(
+        public virtual string GetTriggerUpdateActionSql<TUpdateEntity>(
             LambdaExpression condition, Dictionary<string, ArgumentPrefix> conditionArgumentPrefixes,
-            LambdaExpression setExpression, Dictionary<string, ArgumentPrefix> setArgumentPrefixes) where TUpdateEntity : class;
+            LambdaExpression setExpression, Dictionary<string, ArgumentPrefix> setArgumentPrefixes) where TUpdateEntity : class
+        {
+            var sqlBuilder = new StringBuilder();
+
+            sqlBuilder.Append("update ")
+                .Append($"{GetTableName(typeof(TUpdateEntity))} ");
+
+            sqlBuilder.Append(GetMemberInitSql((MemberInitExpression)setExpression.Body, conditionArgumentPrefixes))
+                .Append(" where ")
+                .Append(GetBinaryExpressionSql((BinaryExpression)condition.Body, setArgumentPrefixes));
+
+            return sqlBuilder.ToString();
+        }
 
         #endregion
     }

@@ -1,17 +1,14 @@
 ﻿using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.Base;
-using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Triggers.OnUpdate;
 using Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Visitor;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
 {
-    public class PostgreSqlProvider : BaseTriggerSqlVisitor
+    public class PostgreSqlVisitor : BaseTriggerSqlVisitor
     {
-        public PostgreSqlProvider(IModel model) : base(model)
+        public PostgreSqlVisitor(IModel model) : base(model)
         {
         }
 
@@ -22,8 +19,9 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
         public override string GetDropTriggerSql(string triggerName, Type entityType)
         {
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"DROP FUNCTION {triggerName}();")
-                .Append($"DROP TRIGGER {triggerName} ON {GetTableName(entityType)};");
+            sqlBuilder
+                .Append($"DROP TRIGGER {triggerName} ON {GetTableName(entityType)};")
+                .Append($"DROP FUNCTION {triggerName}();");
             return sqlBuilder.ToString();
         }
 
@@ -54,19 +52,10 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             return sqlBuilder.ToString();
         }
 
-        public override string GetTriggerConditionSql(LambdaExpression triggerCondition, Dictionary<string, ArgumentPrefix> argumentPrefixes)
-        {
-            if (triggerCondition.Body is BinaryExpression binaryExpression)
-                return GetBinaryExpressionSql(binaryExpression, argumentPrefixes);
-            else if (triggerCondition.Body is MemberExpression memberExpression)
-                return GetBinaryExpressionSql(Expression.MakeBinary(ExpressionType.Equal, memberExpression, Expression.Constant(true)), argumentPrefixes);
-            throw new NotImplementedException($"Trigger condition of type {triggerCondition.Body.GetType()} is not supported.");
-        }
-
         public override string GetTriggerSql<TTriggerEntity>(Trigger<TTriggerEntity> trigger)
         {
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() as ${trigger.Name}$ ")
+            sqlBuilder.Append($"CREATE FUNCTION {trigger.Name}() RETURNS trigger as ${trigger.Name}$ ")
                 .Append("BEGIN ");
 
             foreach (var action in trigger.Actions)
@@ -75,25 +64,7 @@ namespace Laraue.Core.DataAccess.StoredProcedures.Common.Builders.Providers
             sqlBuilder.Append(" END;")
                 .Append($"${trigger.Name}$ LANGUAGE plpgsql;")
                 .Append($"CREATE TRIGGER {trigger.Name} {trigger.TriggerTime.ToString().ToUpper()} {trigger.TriggerType.ToString().ToUpper()} ")
-                .Append($"ON {GetTableName(typeof(TTriggerEntity))} FOR EACH ROW EXECUTE PROCEDURE {trigger.Name}()");
-
-            return sqlBuilder.ToString();
-        }
-
-        public override string GetTriggerUpdateActionSql<TUpdateEntity>(
-            LambdaExpression condition, 
-            Dictionary<string, ArgumentPrefix> conditionArgumentPrefixes, 
-            LambdaExpression setExpression, 
-            Dictionary<string, ArgumentPrefix> setArgumentPrefixes)
-        {
-            var sqlBuilder = new StringBuilder();
-
-            sqlBuilder.Append("update ")
-                .Append($"{GetTableName(typeof(TUpdateEntity))} ");
-
-            sqlBuilder.Append(GetMemberInitSql((MemberInitExpression)setExpression.Body, conditionArgumentPrefixes))
-                .Append(" where ")
-                .Append(GetBinaryExpressionSql((BinaryExpression)condition.Body, setArgumentPrefixes));
+                .Append($"ON {GetTableName(typeof(TTriggerEntity))} FOR EACH ROW EXECUTE PROCEDURE {trigger.Name}();");
 
             return sqlBuilder.ToString();
         }
