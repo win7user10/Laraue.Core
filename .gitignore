@@ -240,4 +240,4 @@ _Pvt_Extensions
 
 .local-chromium
 
-migrations
+tests/*/migrations
