@@ -76,7 +76,7 @@ namespace Laraue.Core.Extensions.Linq
             Expression<Func<TQueryable, TCondition, bool>> condition,
             Func<Expression<Func<TQueryable, bool>>, Expression<Func<TQueryable, bool>>, Expression<Func<TQueryable, bool>>> combinatingFunction)
         {
-            if (values == null || values.Count() == 0)
+            if (values is null || values.Count() == 0)
                 return queryable;
 
             Expression<Func<TQueryable, bool>> fullCondition = null;

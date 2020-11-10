@@ -7,7 +7,8 @@
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <VersionPrefix>1.0</VersionPrefix>
+    <Version>1.0.1</Version>
+    <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
   </PropertyGroup>
   
 </Project>
