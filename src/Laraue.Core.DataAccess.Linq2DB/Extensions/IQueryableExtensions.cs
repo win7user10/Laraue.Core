@@ -17,7 +17,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         public static async Task<IPaginatedResult<TEntity>> PaginateAsyncLinq2DB<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
             where TEntity : class
         {
-            var total = await query.CountAsyncEF();
+            var total = await query.LongCountAsyncLinqToDB();
             int skip = (request.Page - 1) * request.PerPage;
 
             var data = await query.Skip(skip)

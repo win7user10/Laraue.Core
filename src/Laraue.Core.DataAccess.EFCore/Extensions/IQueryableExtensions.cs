@@ -17,7 +17,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         public static async Task<IPaginatedResult<TEntity>> PaginateAsyncEF<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
             where TEntity : class
         {
-            var total = await query.CountAsync();
+            var total = await query.LongCountAsync();
             int skip = (request.Page - 1) * request.PerPage;
 
             var data = await query.Skip(skip)
@@ -38,7 +38,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         public static IPaginatedResult<TEntity> PaginateEF<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
             where TEntity : class
         {
-            var total = query.Count();
+            var total = query.LongCount();
             int skip = (request.Page - 1) * request.PerPage;
 
             var data = query.Skip(skip)
