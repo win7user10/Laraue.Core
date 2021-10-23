@@ -1,11 +1,12 @@
 ﻿using Laraue.Core.DataAccess.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Laraue.Core.DataAccess.EFCore.Extensions
 {
-    public static class IQueryableExtensions
+    public static class QueryableExtensions
     {
         /// <summary>
         /// Create pagination by <see cref="IPaginatedRequest"/>. Extension for EF core package.
@@ -13,17 +14,21 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="query"></param>
         /// <param name="request"></param>
+        /// <param name="ct"></param>
         /// <returns></returns>
-        public static async Task<IPaginatedResult<TEntity>> PaginateAsyncEF<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
+        public static async Task<IPaginatedResult<TEntity>> PaginateAsync<TEntity>(
+            this IQueryable<TEntity> query,
+            IPaginatedRequest request,
+            CancellationToken ct = default)
             where TEntity : class
         {
-            var total = await query.LongCountAsync();
-            int skip = (request.Page - 1) * request.PerPage;
+            var total = await query.LongCountAsync(ct);
+            var skip = (request.Page - 1) * request.PerPage;
 
             var data = await query.Skip(skip)
                 .Take(request.PerPage)
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(ct);
 
             return new PaginatedResult<TEntity>(request.Page, request.PerPage, total, data);
         }
@@ -35,11 +40,11 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="query"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static IPaginatedResult<TEntity> PaginateEF<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
+        public static IPaginatedResult<TEntity> Paginate<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
             where TEntity : class
         {
             var total = query.LongCount();
-            int skip = (request.Page - 1) * request.PerPage;
+            var skip = (request.Page - 1) * request.PerPage;
 
             var data = query.Skip(skip)
                 .Take(request.PerPage)

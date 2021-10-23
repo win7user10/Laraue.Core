@@ -7,8 +7,9 @@
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Vesion>1.0.6</Vesion>
+    <Vesion>1.0.7</Vesion>
     <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="linq2db.EntityFrameworkCore" Version="5.4.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+    <PackageReference Include="linq2db.EntityFrameworkCore" Version="5.8.0" />
   </ItemGroup>
 
 </Project>

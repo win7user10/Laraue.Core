@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace Laraue.Core.DataAccess.Linq2DB.Extensions
 {
-    public static class IServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Add to container linq2DB provider to enable its functions.
