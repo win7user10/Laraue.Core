@@ -14,11 +14,22 @@ namespace Laraue.Core.Threading
     {
         private readonly SemaphoreWrappersDictionary _semaphores;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyedSemaphoreSlim{TKey}"/> class, specifying
+        /// the initial and maximum number of requests that can be granted concurrently.
+        /// </summary>
+        /// <param name="initCount"></param>
+        /// <param name="maxCount"></param>
         public KeyedSemaphoreSlim(int initCount, int maxCount)
         {
             _semaphores = new SemaphoreWrappersDictionary(initCount, maxCount);
         }
         
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyedSemaphoreSlim{TKey}"/> class, specifying
+        /// the initial number of requests that can be granted concurrently.
+        /// </summary>
+        /// <param name="initCount"></param>
         public KeyedSemaphoreSlim(int initCount) : this(initCount, initCount)
         {
         }
@@ -27,11 +38,24 @@ namespace Laraue.Core.Threading
         /// Asynchronously waits to enter the <see cref="KeyedSemaphoreSlim{TKey}"/>
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="ct"></param>
         /// <returns>Object to release <see cref="KeyedSemaphoreSlim{TKey}"/></returns>
-        public async Task<IDisposable> WaitAsync(TKey key)
+        public async Task<IDisposable> WaitAsync(TKey key, CancellationToken ct = default)
         {
             var semaphoreSlimWrapper = _semaphores.GetAndIncrementRefCount(key);
-            await semaphoreSlimWrapper.SemaphoreSlim.WaitAsync().ConfigureAwait(false);
+            await semaphoreSlimWrapper.SemaphoreSlim.WaitAsync(ct).ConfigureAwait(false);
+            return new SemaphoreReleaser(key, _semaphores);
+        }
+        
+        /// <summary>
+        /// Blocks the current thread until it can enter the <see cref="KeyedSemaphoreSlim{TKey}"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public IDisposable Wait(TKey key)
+        {
+            var semaphoreSlimWrapper = _semaphores.GetAndIncrementRefCount(key);
+            semaphoreSlimWrapper.SemaphoreSlim.Wait();
             return new SemaphoreReleaser(key, _semaphores);
         }
 
