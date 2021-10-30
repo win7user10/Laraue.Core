@@ -13,6 +13,11 @@ namespace Laraue.Core.DataAccess.Helpers
         /// <exception cref="NotFoundException"></exception>
         public static T EnsureNotDefaultValue<T>(T value)
         {
+            if (value is null)
+            {
+                throw new NotFoundException();
+            }
+            
             return value.Equals(default(T))
                 ? throw new NotFoundException()
                 : value;
