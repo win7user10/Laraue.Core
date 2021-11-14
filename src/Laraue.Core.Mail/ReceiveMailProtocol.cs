@@ -3,7 +3,7 @@
     /// <summary>
     /// List of available protocols for mail receiving.
     /// </summary>
-    public enum RecieveMailProtocol
+    public enum ReceiveMailProtocol
     {
         POP3,
         IMAP,

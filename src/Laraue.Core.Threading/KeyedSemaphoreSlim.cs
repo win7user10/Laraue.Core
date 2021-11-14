@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Laraue.Core.Threading
 {
     /// <summary>
-    /// Useful when needs to create different semaphore for some key
+    /// Useful when needs to create a different semaphore for some key
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public class KeyedSemaphoreSlim<TKey>

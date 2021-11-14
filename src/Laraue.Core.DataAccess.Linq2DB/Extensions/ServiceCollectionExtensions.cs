@@ -7,6 +7,9 @@ using System.Diagnostics;
 
 namespace Laraue.Core.DataAccess.Linq2DB.Extensions
 {
+    /// <summary>
+    /// Extensions for a container.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
