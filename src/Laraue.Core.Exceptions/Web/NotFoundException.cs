@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Net;
 
 namespace Laraue.Core.Exceptions.Web
 {
     /// <summary>
     /// Exception with 404 code
     /// </summary>
-    public class NotFoundException : Exception
+    public class NotFoundException : HttpException
     {
-        public NotFoundException()
+        public NotFoundException() : base(HttpStatusCode.NotFound)
         {
         }
         
-        public NotFoundException(string message) : base(message)
+        public NotFoundException(string message) : base(HttpStatusCode.NotFound, message)
         {
         }
     }

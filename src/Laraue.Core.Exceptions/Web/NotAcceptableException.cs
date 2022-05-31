@@ -1,17 +1,14 @@
 ﻿using System;
+using System.Net;
 
 namespace Laraue.Core.Exceptions.Web
 {
     /// <summary>
     /// Exception with 406 code
     /// </summary>
-    public class NotAcceptableException : Exception
+    public class NotAcceptableException : HttpException
     {
-        public NotAcceptableException()
-        {
-        }
-        
-        public NotAcceptableException(string message) : base(message)
+        public NotAcceptableException(string message) : base(HttpStatusCode.NotAcceptable, message)
         {
         }
     }

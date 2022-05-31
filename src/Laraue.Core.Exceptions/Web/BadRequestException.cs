@@ -2,22 +2,30 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 
 namespace Laraue.Core.Exceptions.Web
 {
     /// <summary>
     /// Exception with 400 code
     /// </summary>
-    public class BadRequestException : Exception
+    public class BadRequestException : HttpException
     {
+        /// <summary>
+        /// Errors dictionary
+        /// </summary>
         public IReadOnlyDictionary<string, string[]> Errors { get; }
 
+        private const string ErrorMessage = "Bad request";
+
         public BadRequestException(IReadOnlyDictionary<string, string[]> errors)
+            : base(HttpStatusCode.BadRequest, ErrorMessage)
         {
             Errors = errors;
         }
         
         public BadRequestException(List<ValidationResult> errors)
+            : base(HttpStatusCode.BadRequest, ErrorMessage)
         {
             var errorsDictionary = new Dictionary<string, List<string>>();
             
