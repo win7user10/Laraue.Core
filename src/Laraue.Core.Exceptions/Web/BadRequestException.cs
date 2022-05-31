@@ -6,25 +6,19 @@ using System.Net;
 namespace Laraue.Core.Exceptions.Web
 {
     /// <summary>
-    /// Exception with 400 code
+    /// Exception with 400 code and errors list.
     /// </summary>
-    public class BadRequestException : HttpException
+    public class BadRequestException : HttpExceptionWithErrors
     {
-        /// <summary>
-        /// Errors dictionary
-        /// </summary>
-        public IReadOnlyDictionary<string, string[]> Errors { get; }
-
         private const string ErrorMessage = "Bad request";
 
         public BadRequestException(IReadOnlyDictionary<string, string[]> errors)
-            : base(HttpStatusCode.BadRequest, ErrorMessage)
+            : base(ErrorMessage, HttpStatusCode.BadRequest, errors)
         {
-            Errors = errors;
         }
         
         public BadRequestException(List<ValidationResult> errors)
-            : base(HttpStatusCode.BadRequest, ErrorMessage)
+            : base(ErrorMessage, HttpStatusCode.BadRequest)
         {
             var errorsDictionary = new Dictionary<string, List<string>>();
             

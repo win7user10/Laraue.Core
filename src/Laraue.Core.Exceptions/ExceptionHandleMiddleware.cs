@@ -66,7 +66,7 @@ public class ExceptionHandleMiddleware
         return context.Response.WriteAsync(JsonSerializer.Serialize(new ErrorResponse
         {
             Message = exp.Message,
-            Errors = exp is BadRequestException badRequestException ? badRequestException.Errors : null
+            Errors = exp is HttpExceptionWithErrors httpExceptionWithErrors ? httpExceptionWithErrors.Errors : null
         }, SerializerOptions));
     }
 }
