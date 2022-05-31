@@ -22,6 +22,7 @@ public class ExceptionHandleMiddleware
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
     };
 
     public ExceptionHandleMiddleware(RequestDelegate next, ILogger<ExceptionHandleMiddleware> logger)
@@ -63,11 +64,11 @@ public class ExceptionHandleMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int) code;
 
-        return context.Response.WriteAsync(JsonSerializer.Serialize(new ErrorResponse
+        return context.Response.WriteAsJsonAsync(new ErrorResponse
         {
             Message = exp.Message,
             Errors = exp is HttpExceptionWithErrors httpExceptionWithErrors ? httpExceptionWithErrors.Errors : null
-        }, SerializerOptions));
+        }, SerializerOptions);
     }
 }
 
