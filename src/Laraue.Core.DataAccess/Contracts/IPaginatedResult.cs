@@ -3,7 +3,7 @@
 namespace Laraue.Core.DataAccess.Contracts
 {
     /// <summary>
-    /// Abstratction for request response, which should returns pagination data.
+    /// Abstraction for request response, which should returns pagination data.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     public interface IPaginatedResult<TEntity> where TEntity : class
@@ -32,5 +32,16 @@ namespace Laraue.Core.DataAccess.Contracts
         /// Paginated data.
         /// </summary>
         IEnumerable<TEntity> Data { get; }
+
+        /// <summary>
+        /// Returns is the current page last.
+        /// </summary>
+        /// <returns></returns>
+        bool HasNextPage { get; }
+
+        /// <summary>
+        /// Returns is the current page first.
+        /// </summary>
+        bool HasPreviousPage { get; }
     }
 }

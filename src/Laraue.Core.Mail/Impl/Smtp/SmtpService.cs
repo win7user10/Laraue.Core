@@ -30,9 +30,9 @@ namespace Laraue.Core.Mail.Impl.Smtp
         {
             var message = new MimeMessage();
 
-            // Create sender and reciever
-            MailboxAddress from = new MailboxAddress(sendMailAccount.DisplayName, sendMailAccount.SenderEmail);
-            MailboxAddress to = new MailboxAddress(emailTo);
+            // Create sender and receiver
+            var from = new MailboxAddress(sendMailAccount.DisplayName, sendMailAccount.SenderEmail);
+            var to = new MailboxAddress(sendMailAccount.DisplayName, emailTo);
 
             // Set message parts
             message.From.Add(from);
@@ -45,10 +45,10 @@ namespace Laraue.Core.Mail.Impl.Smtp
 
             using var smtpClient = _smtpClientFactory.CreateClient();
             smtpClient.ServerCertificateValidationCallback = (s, c, h, e) => true;
-            smtpClient.Connect(sendMailAccount.Host, sendMailAccount.Port, sendMailAccount.UseSsl);
-            smtpClient.Authenticate(sendMailAccount.Username, sendMailAccount.Password);
-            smtpClient.Send(message);
-            smtpClient.Disconnect(true);
+            await smtpClient.ConnectAsync(sendMailAccount.Host, sendMailAccount.Port, sendMailAccount.UseSsl);
+            await smtpClient.AuthenticateAsync(sendMailAccount.Username, sendMailAccount.Password);
+            await smtpClient.SendAsync(message);
+            await smtpClient.DisconnectAsync(true);
         }
     }
 }

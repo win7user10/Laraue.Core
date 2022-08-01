@@ -13,10 +13,9 @@ namespace Laraue.Core.Exceptions;
 /// <summary>
 /// Middleware that catch http exceptions and return json response.
 /// </summary>
-public class ExceptionHandleMiddleware
+public class ExceptionHandleMiddleware : IMiddleware
 {
     private readonly ILogger<ExceptionHandleMiddleware> _logger;
-    private readonly RequestDelegate _next;
     
     private static readonly JsonSerializerOptions SerializerOptions = new ()
     {
@@ -25,17 +24,16 @@ public class ExceptionHandleMiddleware
         DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
     };
 
-    public ExceptionHandleMiddleware(RequestDelegate next, ILogger<ExceptionHandleMiddleware> logger)
+    public ExceptionHandleMiddleware(ILogger<ExceptionHandleMiddleware> logger)
     {
-        _next = next;
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception ex)
         {
@@ -50,7 +48,7 @@ public class ExceptionHandleMiddleware
             exception = aggregateException.GetBaseException();
         }
         
-        _logger.LogError(exception, "Error was catch in middleware");
+        _logger.LogWarning(exception, "Error was catch in middleware");
 
         return exception switch
         {

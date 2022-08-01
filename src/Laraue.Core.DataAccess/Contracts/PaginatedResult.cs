@@ -35,5 +35,9 @@ namespace Laraue.Core.DataAccess.Contracts
         }
 
         public IEnumerable<TEntity> Data { get; }
+
+        public bool HasNextPage => LastPage > Page;
+        
+        public bool HasPreviousPage => Page > 1;
     }
 }
