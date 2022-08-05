@@ -38,14 +38,35 @@ public static class ServiceCollectionExtensions
         return serviceCollection.AddSwaggerGen();
     }
 
+    /// <summary>
+    /// Adds to the container telegram dependencies with default implementation of <see cref="ITelegramRouter"/>.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="routes"></param>
+    /// <returns></returns>
     public static IdentityBuilder AddTelegramDependencies(
         this IServiceCollection serviceCollection,
         IEnumerable<IRoute> routes)
     {
+        return serviceCollection.AddTelegramDependencies<TelegramRouter>(routes);
+    }
+
+    /// <summary>
+    /// Adds to the container telegram dependencies.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="routes"></param>
+    /// <typeparam name="TRouter"></typeparam>
+    /// <returns></returns>
+    public static IdentityBuilder AddTelegramDependencies<TRouter>(
+        this IServiceCollection serviceCollection,
+        IEnumerable<IRoute> routes)
+        where TRouter : class, ITelegramRouter
+    {
         serviceCollection
             .AddSingleton<IMemoryCache, MemoryCache>()
             .AddSingleton<ITelegramBotClient, TelegramBotClient>()
-            .AddScoped<ITelegramRouter, TelegramRouter>()
+            .AddScoped<ITelegramRouter, TRouter>()
             .AddSingleton(routes);
         
         return serviceCollection.AddIdentity<TelegramIdentityUser, IdentityRole>(opt =>

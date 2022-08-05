@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Laraue.Core.Telegram\Laraue.Core.Telegram.csproj" />
     <ProjectReference Include="..\..\src\Laraue.Core.Threading\Laraue.Core.Threading.csproj" />
   </ItemGroup>
 

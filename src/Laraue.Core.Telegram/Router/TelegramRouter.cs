@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Laraue.Core.Telegram.Authentication;
+using Laraue.Core.Telegram.Extensions;
 using Laraue.Core.Telegram.Router.Routes;
+using Laraue.Core.Threading;
 using MediatR;
 using Telegram.Bot.Types;
 
@@ -23,9 +22,12 @@ public class TelegramRouter : ITelegramRouter
     }
     
     private static readonly ConcurrentDictionary<long, string> RegisteredUsers = new ();
+    private static readonly KeyedSemaphoreSlim<long> Semaphore = new (1, 1);
     
     public async Task<object?> RouteAsync(Update update, CancellationToken cancellationToken = default)
     {
+        using var _ = await Semaphore.WaitAsync(update.Id, cancellationToken);
+        
         foreach (var route in _routes)
         {
             if (!route.TryMatch(update, out var pathParams))
@@ -33,14 +35,13 @@ public class TelegramRouter : ITelegramRouter
                 continue;
             }
             
-            var from = update.Message?.From
-                ?? update.CallbackQuery?.From;
-                
-            if (!RegisteredUsers.TryGetValue(@from.Id, out var systemId))
+            var from = update.GetUser()!;
+            
+            if (!RegisteredUsers.TryGetValue(from.Id, out var systemId))
             {
                 var result = await _userService.LoginOrRegisterAsync(
-                    new TelegramData(@from.Id, @from.Username));
-                RegisteredUsers.TryAdd(@from.Id, result.UserId);
+                    new TelegramData(from.Id, from.Username));
+                RegisteredUsers.TryAdd(from.Id, result.UserId);
                 systemId = result.UserId;
             }
             
