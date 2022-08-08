@@ -17,11 +17,12 @@ namespace Laraue.Core.Telegram.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static AuthenticationBuilder AddJwtTelegramAuthentication(this IServiceCollection serviceCollection)
+    public static AuthenticationBuilder AddJwtTelegramAuthentication<TUser>(this IServiceCollection serviceCollection)
+        where TUser : TelegramIdentityUser, new()
     {
         serviceCollection.ConfigureOptions<ConfigureJwtBearerOptions>();
 
-        serviceCollection.AddScoped<IUserService, UserService>();
+        serviceCollection.AddScoped<IUserService, UserService<TUser>>();
         
         return serviceCollection.AddAuthentication(options =>
         {

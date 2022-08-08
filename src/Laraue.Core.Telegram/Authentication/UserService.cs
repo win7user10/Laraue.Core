@@ -5,14 +5,14 @@ using Microsoft.Extensions.Options;
 
 namespace Laraue.Core.Telegram.Authentication;
 
-public class UserService : IUserService
+public class UserService<T> : IUserService where T : TelegramIdentityUser, new()
 {
-    private readonly UserManager<TelegramIdentityUser> _userManager;
+    private readonly UserManager<T> _userManager;
     private readonly AuthenticationOptions _authenticationOptions;
     private readonly IdentityOptions _identityOptions;
 
     public UserService(
-        UserManager<TelegramIdentityUser> userManager,
+        UserManager<T> userManager,
         IOptions<IdentityOptions> identityOptions,
         IOptions<AuthenticationOptions> authenticationOptions)
     {
@@ -49,7 +49,7 @@ public class UserService : IUserService
     public async Task<LoginResponse> RegisterAsync(LoginData loginData)
     {
         var (login, password) = loginData;
-        var result = await _userManager.CreateAsync(new TelegramIdentityUser { UserName = login }, password);
+        var result = await _userManager.CreateAsync(new T { UserName = login }, password);
         if (result.Succeeded)
         {
             return await LoginAsync(loginData);
@@ -82,7 +82,7 @@ public class UserService : IUserService
 
         var password = GenerateRandomPassword(_identityOptions.Password);
         var result = await _userManager.CreateAsync(
-            new TelegramIdentityUser()
+            new T
             {
                 UserName = userName,
                 TelegramId = telegramData.Id,

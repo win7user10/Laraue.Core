@@ -18,9 +18,13 @@ public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationO
     {
     }
 
+    /// <summary>
+    /// TODO - finish this method.
+    /// </summary>
+    /// <returns></returns>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Context.TryGetPlayerId(Options, out var playerId))
+        if (true)
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
@@ -32,7 +36,7 @@ public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationO
                         new ClaimsIdentity(
                             new Claim[]
                             {
-                                new ("id", playerId.ToString())
+                                new ("id", "user_identifier")
                             }, Options.AuthScheme)), Options.AuthScheme)));
     }
 }
