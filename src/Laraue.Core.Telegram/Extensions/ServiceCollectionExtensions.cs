@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         });
         
-        return serviceCollection.AddIdentity<TelegramIdentityUser, IdentityRole>(opt =>
+        return serviceCollection.AddIdentity<TUser, IdentityRole>(opt =>
         {
             opt.Password.RequireDigit = false;
             opt.Password.RequiredLength = 1;
