@@ -17,21 +17,6 @@ namespace Laraue.Core.Telegram.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static AuthenticationBuilder AddJwtTelegramAuthentication<TUser>(this IServiceCollection serviceCollection)
-        where TUser : TelegramIdentityUser, new()
-    {
-        serviceCollection.ConfigureOptions<ConfigureJwtBearerOptions>();
-
-        serviceCollection.AddScoped<IUserService, UserService<TUser>>();
-        
-        return serviceCollection.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        });
-    }
-
     public static IServiceCollection AddSwaggerGeneration(this IServiceCollection serviceCollection)
     {
         serviceCollection.ConfigureOptions<ConfigureSwaggerGenOptions>();
@@ -40,35 +25,35 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds to the container telegram dependencies with default implementation of <see cref="ITelegramRouter"/>.
-    /// </summary>
-    /// <param name="serviceCollection"></param>
-    /// <param name="routes"></param>
-    /// <returns></returns>
-    public static IdentityBuilder AddTelegramDependencies(
-        this IServiceCollection serviceCollection,
-        IEnumerable<IRoute> routes)
-    {
-        return serviceCollection.AddTelegramDependencies<TelegramRouter>(routes);
-    }
-
-    /// <summary>
     /// Adds to the container telegram dependencies.
     /// </summary>
     /// <param name="serviceCollection"></param>
     /// <param name="routes"></param>
     /// <typeparam name="TRouter"></typeparam>
+    /// <typeparam name="TUser"></typeparam>
     /// <returns></returns>
-    public static IdentityBuilder AddTelegramDependencies<TRouter>(
+    public static IdentityBuilder AddTelegramDependencies<TRouter, TUser>(
         this IServiceCollection serviceCollection,
         IEnumerable<IRoute> routes)
         where TRouter : class, ITelegramRouter
+        where TUser : TelegramIdentityUser, new()
     {
         serviceCollection
             .AddSingleton<IMemoryCache, MemoryCache>()
             .AddSingleton<ITelegramBotClient, TelegramBotClient>()
             .AddScoped<ITelegramRouter, TRouter>()
             .AddSingleton(routes);
+        
+        serviceCollection.ConfigureOptions<ConfigureJwtBearerOptions>();
+
+        serviceCollection.AddScoped<IUserService, UserService<TUser>>();
+        
+        serviceCollection.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        });
         
         return serviceCollection.AddIdentity<TelegramIdentityUser, IdentityRole>(opt =>
         {
