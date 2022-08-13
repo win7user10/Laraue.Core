@@ -45,7 +45,7 @@ public class TelegramRouter : ITelegramRouter
                 systemId = result.UserId;
             }
             
-            var request = route.GetRequest(update, pathParams, systemId, cancellationToken);
+            var request = route.GetRequest(update, pathParams, systemId);
 
             return await _mediator.Send((object) request, cancellationToken);
         }

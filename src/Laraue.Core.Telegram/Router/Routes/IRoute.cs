@@ -24,13 +24,11 @@ public interface IRoute
     /// <param name="update"></param>
     /// <param name="pathParameters"></param>
     /// <param name="userId"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     IRequest<object?> GetRequest(
         Update update,
         PathParameters pathParameters,
-        string userId,
-        CancellationToken cancellationToken = default);
+        string userId);
 }
 
 /// <summary>

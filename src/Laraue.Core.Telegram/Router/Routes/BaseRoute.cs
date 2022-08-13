@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Laraue.Core.Telegram.Extensions;
 using Laraue.Core.Telegram.Router.Request;
 using MediatR;
 using Telegram.Bot.Types;
@@ -53,26 +54,12 @@ public abstract class BaseRoute<T> : IRoute
     public IRequest<object?> GetRequest(
         Update update,
         PathParameters pathParameters,
-        string userId,
-        CancellationToken cancellationToken = default)
+        string userId)
     {
         var entity = GetEntity(update);
         var content = GetContent(entity);
 
-        var parameters = new RequestParameters();
-        if (content is not null)
-        {
-            var contentSpan = content.AsSpan();
-            var queryIndex = content.LastIndexOf('?');
-            if (queryIndex >= 0)
-            {
-                contentSpan = contentSpan[(queryIndex + 1)..];
-                parameters = new RequestParameters(contentSpan.ToString()
-                    .Replace("?", "")
-                    .Split('&')
-                    .ToDictionary(x => x.Split('=')[0], x => x.Split('=')[1]));
-            }
-        }
+        var parameters = new RequestParameters(content.ParseQueryParts());
         
         return _getRequest.Invoke(
             new RouteData<T>(
