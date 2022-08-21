@@ -24,7 +24,7 @@ public class TelegramRouter : ITelegramRouter
     private static readonly ConcurrentDictionary<long, string> RegisteredUsers = new ();
     private static readonly KeyedSemaphoreSlim<long> Semaphore = new (1, 1);
     
-    public async Task<object?> RouteAsync(Update update, CancellationToken cancellationToken = default)
+    public virtual async Task<object?> RouteAsync(Update update, CancellationToken cancellationToken = default)
     {
         using var _ = await Semaphore.WaitAsync(update.Id, cancellationToken);
         
