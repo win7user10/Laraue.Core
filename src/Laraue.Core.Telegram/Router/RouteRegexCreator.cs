@@ -10,6 +10,6 @@ public static class RouteRegexCreator
             path,
             "{(\\w+)}", _ => $"([\\w|\\s]+)");
         
-        return new Regex(regex);
+        return new Regex($"^{regex}");
     }
 }
