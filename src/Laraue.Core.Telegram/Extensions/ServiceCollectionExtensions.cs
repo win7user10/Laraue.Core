@@ -1,15 +1,11 @@
 ﻿using Laraue.Core.Telegram.Authentication;
 using Laraue.Core.Telegram.Router;
 using Laraue.Core.Telegram.Router.Routes;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Telegram.Bot;
 using AuthenticationOptions = Laraue.Core.Telegram.Authentication.AuthenticationOptions;
 
@@ -17,13 +13,6 @@ namespace Laraue.Core.Telegram.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddSwaggerGeneration(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.ConfigureOptions<ConfigureSwaggerGenOptions>();
-        
-        return serviceCollection.AddSwaggerGen();
-    }
-
     /// <summary>
     /// Adds to the container telegram dependencies.
     /// </summary>
@@ -39,7 +28,6 @@ public static class ServiceCollectionExtensions
         where TUser : TelegramIdentityUser, new()
     {
         serviceCollection
-            .AddSingleton<IMemoryCache, MemoryCache>()
             .AddSingleton<ITelegramBotClient, TelegramBotClient>()
             .AddScoped<ITelegramRouter, TRouter>()
             .AddSingleton(routes);
@@ -50,7 +38,7 @@ public static class ServiceCollectionExtensions
         
         serviceCollection.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme =  JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         });
@@ -64,49 +52,6 @@ public static class ServiceCollectionExtensions
             opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredUniqueChars = 1;
         });
-    }
-}
-
-public class ConfigureSwaggerGenOptions : IConfigureNamedOptions<SwaggerGenOptions>
-{
-    private readonly AuthenticationOptions _options;
-
-    public ConfigureSwaggerGenOptions(IOptionsMonitor<AuthenticationOptions> options)
-    {
-        _options = options.CurrentValue;
-    }
-
-    public void Configure(SwaggerGenOptions options)
-    {
-        options.AddSecurityDefinition(_options.TokenHeaderName, new OpenApiSecurityScheme
-        {
-            Name = _options.TokenHeaderName,
-            In = ParameterLocation.Header,
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = _options.AuthScheme,
-        });
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement()
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = _options.TokenHeaderName
-                    },
-                    Scheme = _options.AuthScheme,
-                    Name = _options.TokenHeaderName,
-                    In = ParameterLocation.Header,
-                },
-                new List<string>()
-            }
-        });
-    }
-
-    public void Configure(string name, SwaggerGenOptions options)
-    {
-        Configure(options);
     }
 }
 

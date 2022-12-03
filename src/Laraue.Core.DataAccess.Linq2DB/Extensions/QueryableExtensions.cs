@@ -50,7 +50,6 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        [NotNull]
         public static async Task<T> FirstOrThrowNotFoundAsync<T>(this IQueryable<T> query, CancellationToken ct = default)
         {
             var result = await query.FirstOrDefaultAsyncLinqToDB(ct);
@@ -65,7 +64,6 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        [NotNull] 
         public static async Task<T> FirstOrThrowNotFoundAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
@@ -83,7 +81,6 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
-        [NotNull] 
         public static async Task AnyOrThrowNotFoundAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
@@ -142,7 +139,6 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="NotFoundException"></exception>
-        [NotNull] 
         public static async Task<long> UpdateOrThrowNotFoundAsync<T>(this IQueryable<T> query, Expression<Func<T, T>> setter, CancellationToken ct = default)
         {
             var result = await query.UpdateAsync(setter, ct);
