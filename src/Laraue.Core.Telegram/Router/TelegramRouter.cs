@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Laraue.Core.Telegram.Extensions;
 using Laraue.Core.Telegram.Router.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,11 +29,8 @@ public sealed class TelegramRouter : ITelegramRouter
         var sw = new Stopwatch();
         sw.Start();
 
-        var allMiddlewaresTypes = new[] { _middlewareList.RootMiddleware }
-            .Concat(_middlewareList.MiddlewareTypes);
-
         ITelegramMiddleware? lastMiddleware = null;
-        foreach (var middlewareType in allMiddlewaresTypes)
+        foreach (var middlewareType in _middlewareList.Items)
         {
             var middleware = lastMiddleware == null
                 ? ActivatorUtilities.CreateInstance(_serviceProvider, middlewareType)

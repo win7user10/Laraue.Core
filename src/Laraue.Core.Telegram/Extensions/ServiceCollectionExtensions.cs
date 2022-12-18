@@ -35,7 +35,8 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddOptions<MiddlewareList>();
         serviceCollection.Configure<MiddlewareList>(opt =>
         {
-            opt.RootMiddleware = typeof(ExecuteRouteMiddleware);
+            opt.AddToRoot<ExecuteRouteMiddleware>();
+            opt.AddToTop<HandleExceptionsMiddleware>();
         });
 
         return serviceCollection;
@@ -84,9 +85,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddTelegramMiddleware<TMiddleware>(this IServiceCollection serviceCollection)
         where TMiddleware : class, ITelegramMiddleware
     {
-        serviceCollection.Configure<MiddlewareList>(configure =>
+        serviceCollection.Configure<MiddlewareList>(middlewareList =>
         {
-            configure.MiddlewareTypes.Enqueue(typeof(TMiddleware));
+            middlewareList.Add<TMiddleware>();
         });
 
         return serviceCollection;

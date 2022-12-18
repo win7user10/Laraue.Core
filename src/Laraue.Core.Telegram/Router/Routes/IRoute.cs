@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Laraue.Core.Telegram.Router.Request;
-using MediatR;
+﻿using Laraue.Core.Telegram.Router.Request;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 

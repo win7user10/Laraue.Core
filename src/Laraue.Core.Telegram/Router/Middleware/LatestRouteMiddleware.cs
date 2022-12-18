@@ -36,7 +36,7 @@ public class LatestRouteMiddleware : ITelegramMiddleware
                 {
                     continue;
                 }
-
+                
                 var lastRouteResult = await route.ExecuteAsync(context.Update, context.UserId!);
                 context.ExecutedRoute = null;
                 

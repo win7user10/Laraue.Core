@@ -9,4 +9,9 @@ public static class UpdateExtensions
         return update.Message?.From
             ?? update.CallbackQuery?.From;
     }
+    
+    public static long GetUserId(this Update update)
+    {
+        return update.GetUser()!.Id;
+    }
 }
