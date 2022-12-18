@@ -5,8 +5,8 @@ namespace Laraue.Core.Telegram.Router.Routes;
 
 public class CallbackRoute : BaseRoute<CallbackQuery>
 {
-    public CallbackRoute(string routePattern, PerformRoute<CallbackQuery> getRequest)
-        : base(UpdateType.CallbackQuery, routePattern, getRequest)
+    public CallbackRoute(string routePattern, Type routeAttributeType, ExecuteRouteAsync<CallbackQuery> executeRouteAsyncDelegate)
+        : base(UpdateType.CallbackQuery, routePattern, routeAttributeType, executeRouteAsyncDelegate)
     {
     }
 

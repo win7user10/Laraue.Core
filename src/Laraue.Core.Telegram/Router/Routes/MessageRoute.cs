@@ -5,8 +5,8 @@ namespace Laraue.Core.Telegram.Router.Routes;
 
 public class MessageRoute : BaseRoute<Message>
 {
-    public MessageRoute(string routePattern, PerformRoute<Message> getRequest)
-        : base(UpdateType.Message, routePattern, getRequest)
+    public MessageRoute(string routePattern, Type routeAttributeType, ExecuteRouteAsync<Message> executeRouteAsyncDelegate)
+        : base(UpdateType.Message, routePattern, routeAttributeType, executeRouteAsyncDelegate)
     {
     }
 

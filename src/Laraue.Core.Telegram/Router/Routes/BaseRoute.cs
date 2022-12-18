@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Laraue.Core.Telegram.Extensions;
 using Laraue.Core.Telegram.Router.Request;
-using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -9,49 +8,22 @@ namespace Laraue.Core.Telegram.Router.Routes;
 
 public abstract class BaseRoute<T> : IRoute
 {
-    protected readonly UpdateType UpdateType;
-    private readonly string _routePattern;
+    private readonly UpdateType _updateType;
+    public string Pattern { get; }
+    private readonly Type _routeAttributeType;
     private readonly Regex _isRouteMatchRegex;
-    private readonly PerformRoute<T> _getRequest;
+    private readonly ExecuteRouteAsync<T> _executeRouteAsyncDelegate;
 
-    protected BaseRoute(UpdateType updateType, string routePattern, PerformRoute<T> getRequest)
+    protected BaseRoute(UpdateType updateType, string routePattern, Type routeAttributeType, ExecuteRouteAsync<T> executeRouteAsyncDelegate)
     {
-        UpdateType = updateType;
-        _getRequest = getRequest;
-        _routePattern = routePattern;
+        _updateType = updateType;
+        _executeRouteAsyncDelegate = executeRouteAsyncDelegate;
+        Pattern = routePattern;
+        _routeAttributeType = routeAttributeType;
         _isRouteMatchRegex = RouteRegexCreator.ForRoute(routePattern);
     }
 
-    public virtual bool TryMatch(Update update, out PathParameters? pathParameters)
-    {
-        pathParameters = null;
-        
-        if (UpdateType != update.Type)
-        {
-            return false;
-        }
-        
-        var content = GetContent(GetEntity(update));
-        if (content is null)
-        {
-            return false;
-        }
-
-        var match = _isRouteMatchRegex.Match(content);
-        if (!match.Success)
-        {
-            return false;
-        }
-
-        var routeValues = match.Groups.Values.Skip(1)
-            .Select(x => x.Value)
-            .ToArray();
-
-        pathParameters = new PathParameters(routeValues);
-        return true;
-    }
-
-    public IRequest<object?> GetRequest(
+    public Task<object?> ExecuteAsync(
         Update update,
         PathParameters pathParameters,
         string userId)
@@ -61,13 +33,63 @@ public abstract class BaseRoute<T> : IRoute
 
         var parameters = new RequestParameters(content.ParseQueryParts());
         
-        return _getRequest.Invoke(
+        return _executeRouteAsyncDelegate.Invoke(
             new RouteData<T>(
                 entity,
                 new RequestContext
                 {
                     UserId = userId
                 }, parameters, pathParameters));
+    }
+
+    public override string ToString()
+    {
+        return $"{_routeAttributeType} {Pattern}";
+    }
+
+    public bool TryMatch(UpdateType updateType, string? route, Type routeAttributeType)
+    {
+        if (_updateType != updateType || _routeAttributeType != routeAttributeType)
+        {
+            return false;
+        }
+        
+        if (route is null)
+        {
+            return false;
+        }
+
+        var match = _isRouteMatchRegex.Match(route);
+        return match.Success;
+    }
+
+    public Task<object?> ExecuteAsync(Update update, string userId)
+    {
+        var entity = GetEntity(update);
+        var content = GetContent(entity);
+
+        var match = _isRouteMatchRegex.Match(content!);
+        var routeValues = match.Groups.Values.Skip(1)
+            .Select(x => x.Value)
+            .ToArray();
+
+        var pathParameters = new PathParameters(routeValues);
+        
+        var parameters = new RequestParameters(content.ParseQueryParts());
+        
+        return _executeRouteAsyncDelegate.Invoke(
+            new RouteData<T>(
+                entity,
+                new RequestContext
+                {
+                    UserId = userId
+                }, parameters, pathParameters));
+    }
+
+    public string? GetContent(Update update)
+    {
+        var entity = GetEntity(update);
+        return GetContent(entity);
     }
 
     protected abstract string? GetContent(T data);

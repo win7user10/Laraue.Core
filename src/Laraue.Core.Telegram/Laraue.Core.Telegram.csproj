@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Laraue.Core.Exceptions\Laraue.Core.Exceptions.csproj" />
     <ProjectReference Include="..\Laraue.Core.Threading\Laraue.Core.Threading.csproj" />
+    <ProjectReference Include="..\Laraue.Core.DataAccess\Laraue.Core.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
