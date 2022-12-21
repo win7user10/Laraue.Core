@@ -142,7 +142,7 @@ public static class ServiceCollectionExtensions
     private static Type[] RouteAttributes { get; } = 
     {
         typeof(TelegramRouteAttribute),
-        typeof(TelegramResponseOnRouteAttribute),
+        typeof(TelegramResponseOfRouteAttribute),
     };
 
     private static async Task<object?> ExecuteRouteAsync<TRoute>(

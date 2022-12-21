@@ -32,7 +32,7 @@ public class LatestRouteMiddleware : ITelegramMiddleware
         {
             foreach (var route in _routes)
             {
-                if (!route.TryMatch(context.Update.Type, latestRoute, typeof(TelegramResponseOnRouteAttribute)))
+                if (!route.TryMatch(context.Update.Type, latestRoute, typeof(TelegramResponseOfRouteAttribute)))
                 {
                     continue;
                 }
