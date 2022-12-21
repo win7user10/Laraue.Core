@@ -1,5 +1,9 @@
-﻿using Laraue.Core.Telegram.Authentication;
+﻿using System.Reflection;
+using Laraue.Core.Telegram.Authentication;
+using Laraue.Core.Telegram.Controllers;
 using Laraue.Core.Telegram.Router;
+using Laraue.Core.Telegram.Router.Middleware;
+using Laraue.Core.Telegram.Router.Request;
 using Laraue.Core.Telegram.Router.Routes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -14,27 +18,42 @@ namespace Laraue.Core.Telegram.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds to the container telegram dependencies.
+    /// Adds to the container telegram controllers.
     /// </summary>
     /// <param name="serviceCollection"></param>
-    /// <param name="routes"></param>
-    /// <typeparam name="TRouter"></typeparam>
-    /// <typeparam name="TUser"></typeparam>
+    /// <param name="controllerAssemblies"></param>
     /// <returns></returns>
-    public static IdentityBuilder AddTelegramDependencies<TRouter, TUser>(
+    public static IServiceCollection AddTelegramCore(
         this IServiceCollection serviceCollection,
-        IEnumerable<IRoute> routes)
-        where TRouter : class, ITelegramRouter
-        where TUser : TelegramIdentityUser, new()
+        Assembly[]? controllerAssemblies = null)
     {
         serviceCollection
             .AddSingleton<ITelegramBotClient, TelegramBotClient>()
-            .AddScoped<ITelegramRouter, TRouter>()
-            .AddSingleton(routes);
-        
-        serviceCollection.ConfigureOptions<ConfigureJwtBearerOptions>();
+            .AddScoped<ITelegramRouter, TelegramRouter>();
 
-        serviceCollection.AddScoped<IUserService, UserService<TUser>>();
+        serviceCollection.AddTelegramControllers(controllerAssemblies ?? new []{ Assembly.GetCallingAssembly() });
+        serviceCollection.AddOptions<MiddlewareList>();
+        serviceCollection.Configure<MiddlewareList>(opt =>
+        {
+            opt.AddToRoot<ExecuteRouteMiddleware>();
+            opt.AddToTop<HandleExceptionsMiddleware>();
+        });
+
+        return serviceCollection;
+    }
+
+    /// <summary>
+    /// Add authentication middleware to the container and configure identity.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <typeparam name="TUser"></typeparam>
+    /// <returns></returns>
+    public static IdentityBuilder AddTelegramAuthentication<TUser>(
+        this IServiceCollection serviceCollection)
+        where TUser : TelegramIdentityUser, new()
+    {
+        serviceCollection.AddTelegramMiddleware<AuthTelegramMiddleware>();
+        serviceCollection.ConfigureOptions<ConfigureJwtBearerOptions>();
         
         serviceCollection.AddAuthentication(options =>
         {
@@ -42,6 +61,9 @@ public static class ServiceCollectionExtensions
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         });
+
+        serviceCollection.AddScoped<IUserService, UserService<TUser>>();
+        serviceCollection.AddSingleton<UserEvents>();
         
         return serviceCollection.AddIdentity<TUser, IdentityRole>(opt =>
         {
@@ -52,6 +74,145 @@ public static class ServiceCollectionExtensions
             opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredUniqueChars = 1;
         });
+    }
+
+    /// <summary>
+    /// Allows to add a custom middleware to the telegram request pipeline.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <typeparam name="TMiddleware"></typeparam>
+    /// <returns></returns>
+    public static IServiceCollection AddTelegramMiddleware<TMiddleware>(this IServiceCollection serviceCollection)
+        where TMiddleware : class, ITelegramMiddleware
+    {
+        serviceCollection.Configure<MiddlewareList>(middlewareList =>
+        {
+            middlewareList.Add<TMiddleware>();
+        });
+
+        return serviceCollection;
+    }
+
+    public static IServiceCollection AddLatestRouteFunctionality<TLatestStorage>(this IServiceCollection serviceCollection)
+        where TLatestStorage : class, ILatestRouteStorage
+    {
+        return serviceCollection.AddTelegramMiddleware<LatestRouteMiddleware>()
+            .AddScoped<ILatestRouteStorage, TLatestStorage>();
+    }
+
+    private static void AddTelegramControllers(this IServiceCollection serviceCollection, IEnumerable<Assembly> controllerAssemblies)
+    {
+        var controllerTypes = controllerAssemblies
+            .SelectMany(x => x.GetTypes())
+            .Where(x => x is { IsClass: true, IsAbstract: false } && x.IsSubclassOf(typeof(TelegramController)));
+
+        foreach (var controllerType in controllerTypes)
+        {
+            serviceCollection.AddScoped(controllerType);
+            
+            var methodInfos = controllerType
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .Where(x => RouteAttributes.Any(y => x.GetCustomAttribute(y) != null));
+            
+            foreach (var methodInfo in methodInfos)
+            {
+                foreach (var routeAttributeType in RouteAttributes)
+                {
+                    var attribute = methodInfo.GetCustomAttribute(routeAttributeType);
+                    if (attribute is null)
+                    {
+                        continue;
+                    }
+                    
+                    var pathPattern = ((TelegramBaseRouteAttribute)attribute).PathPattern;
+                    serviceCollection.AddTelegramRoute(serviceProvider =>
+                        new MessageRoute(
+                            pathPattern,
+                            routeAttributeType,
+                            routeData => ExecuteRouteAsync(
+                                serviceProvider,
+                                routeData,
+                                methodInfo,
+                                controllerType)));
+                }
+            }
+        }
+    }
+    
+    private static Type[] RouteAttributes { get; } = 
+    {
+        typeof(TelegramRouteAttribute),
+        typeof(TelegramResponseOfRouteAttribute),
+    };
+
+    private static async Task<object?> ExecuteRouteAsync<TRoute>(
+        IServiceProvider sp,
+        RouteData<TRoute> routeData,
+        MethodInfo methodInfo,
+        Type controllerType)
+    {
+        using var requestScope = sp.CreateScope();
+                        
+        var result = methodInfo.Invoke(
+            requestScope.ServiceProvider.GetRequiredService(controllerType),
+            GetRouteParameters(routeData, methodInfo));
+
+        if (result is null)
+        {
+            return result;
+        }
+                        
+        if (methodInfo.ReturnType == typeof(Task<>) || methodInfo.ReturnType == typeof(ValueTask<>))
+        {
+            result = await (dynamic) result;
+        }
+
+        else if (methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(ValueTask))
+        {
+            await (dynamic) result;
+
+            return null;
+        }
+
+        return result;
+    }
+
+    private static object[] GetRouteParameters<TRoute>(RouteData<TRoute> routeData, MethodBase methodInfo)
+    {
+        var methodParameters = methodInfo.GetParameters();
+        var parameters = new object[methodParameters.Length];
+
+        for (var i = 0; i < methodParameters.Length; i++)
+        {
+            var methodParameter = methodParameters[i];
+            if (methodParameter.ParameterType == typeof(TRoute))
+            {
+                parameters[i] = routeData.Data!;
+            }
+            else if (methodParameter.ParameterType == typeof(RequestContext))
+            {
+                parameters[i] = routeData.Context;
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Unable to resolve parameter of type {methodParameter.ParameterType}");
+            }
+        }
+
+        return parameters;
+    }
+
+    public static void AddTelegramRoute(this IServiceCollection serviceCollection, IRoute route)
+    {
+        serviceCollection.AddSingleton(route);
+    }
+    
+    public static void AddTelegramRoute(
+        this IServiceCollection serviceCollection,
+        Func<IServiceProvider, IRoute> addRoute)
+    {
+        serviceCollection.AddSingleton(addRoute);
     }
 }
 

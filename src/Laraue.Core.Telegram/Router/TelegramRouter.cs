@@ -1,55 +1,64 @@
-﻿using System.Collections.Concurrent;
-using Laraue.Core.Telegram.Authentication;
-using Laraue.Core.Telegram.Extensions;
-using Laraue.Core.Telegram.Router.Routes;
-using Laraue.Core.Threading;
-using MediatR;
+﻿using System.Diagnostics;
+using Laraue.Core.Telegram.Router.Middleware;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Telegram.Bot.Types;
 
 namespace Laraue.Core.Telegram.Router;
 
-public class TelegramRouter : ITelegramRouter
+public sealed class TelegramRouter : ITelegramRouter
 {
-    private readonly IEnumerable<IRoute> _routes;
-    private readonly IMediator _mediator;
-    private readonly IUserService _userService;
+    private readonly MiddlewareList _middlewareList;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<TelegramRouter> _logger;
 
-    public TelegramRouter(IMediator mediator, IUserService userService, IEnumerable<IRoute> routes)
+    public TelegramRouter(
+        IServiceProvider serviceProvider,
+        IOptions<MiddlewareList> middlewareList,
+        ILogger<TelegramRouter> logger)
     {
-        _mediator = mediator;
-        _userService = userService;
-        _routes = routes;
+        _middlewareList = middlewareList.Value;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
     }
-    
-    private static readonly ConcurrentDictionary<long, string> RegisteredUsers = new ();
-    private static readonly KeyedSemaphoreSlim<long> Semaphore = new (1, 1);
-    
-    public virtual async Task<object?> RouteAsync(Update update, CancellationToken cancellationToken = default)
-    {
-        using var _ = await Semaphore.WaitAsync(update.Id, cancellationToken);
-        
-        foreach (var route in _routes)
-        {
-            if (!route.TryMatch(update, out var pathParams))
-            {
-                continue;
-            }
-            
-            var from = update.GetUser()!;
-            
-            if (!RegisteredUsers.TryGetValue(from.Id, out var systemId))
-            {
-                var result = await _userService.LoginOrRegisterAsync(
-                    new TelegramData(from.Id, from.Username));
-                RegisteredUsers.TryAdd(from.Id, result.UserId);
-                systemId = result.UserId;
-            }
-            
-            var request = route.GetRequest(update, pathParams, systemId);
 
-            return await _mediator.Send((object) request, cancellationToken);
+    public async Task<object?> RouteAsync(Update update, CancellationToken cancellationToken = default)
+    {
+        var sw = new Stopwatch();
+        sw.Start();
+
+        ITelegramMiddleware? lastMiddleware = null;
+        foreach (var middlewareType in _middlewareList.Items)
+        {
+            var middleware = lastMiddleware == null
+                ? ActivatorUtilities.CreateInstance(_serviceProvider, middlewareType)
+                : ActivatorUtilities.CreateInstance(_serviceProvider, middlewareType, lastMiddleware);
+
+            lastMiddleware = (ITelegramMiddleware) middleware;
         }
 
-        return null;
+        var requestContext = new TelegramRequestContext(update);
+        var result = await lastMiddleware!.InvokeAsync(
+            requestContext,
+            cancellationToken);
+        
+        if (requestContext.ExecutedRoute is not null)
+        {
+            _logger.LogDebug(
+                "Request time {Time} ms, route: {RouteName} executed",
+                sw.ElapsedMilliseconds,
+                requestContext.ExecutedRoute);
+        }
+        else
+        {
+            _logger.LogDebug(
+                "Request time {Time} ms, status: not found, payload: {Payload}",
+                sw.ElapsedMilliseconds,
+                JsonConvert.SerializeObject(update));
+        }
+        
+        return result;
     }
 }

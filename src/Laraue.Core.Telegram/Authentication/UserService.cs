@@ -8,15 +8,18 @@ namespace Laraue.Core.Telegram.Authentication;
 public class UserService<T> : IUserService where T : TelegramIdentityUser, new()
 {
     private readonly UserManager<T> _userManager;
+    private readonly UserEvents _userEvents;
     private readonly AuthenticationOptions _authenticationOptions;
     private readonly IdentityOptions _identityOptions;
 
     public UserService(
         UserManager<T> userManager,
+        UserEvents userEvents,
         IOptions<IdentityOptions> identityOptions,
         IOptions<AuthenticationOptions> authenticationOptions)
     {
         _userManager = userManager;
+        _userEvents = userEvents;
         _authenticationOptions = authenticationOptions.Value;
         _identityOptions = identityOptions.Value;
     }
@@ -94,6 +97,8 @@ public class UserService<T> : IUserService where T : TelegramIdentityUser, new()
         }
         
         user = await _userManager.FindByNameAsync(userName);
+        
+        _userEvents.FireOnUserRegistered(new RegisteredUserData(telegramData.Id, user.Id));
         
         return new LoginResponse(
             BearerHelper.GenerateAccessToken(user.Id, userName, _authenticationOptions),
