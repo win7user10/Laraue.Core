@@ -1,30 +1,31 @@
-﻿using Laraue.Core.Telegram.Controllers;
-using Laraue.Core.Telegram.Router.Routes;
+﻿using Laraue.Core.Telegram.Router.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Laraue.Core.Telegram.Router.Middleware;
 
 internal sealed class ExecuteRouteMiddleware : ITelegramMiddleware
 {
     private readonly IEnumerable<IRoute> _routes;
+    private readonly IServiceProvider _serviceProvider;
 
-    public ExecuteRouteMiddleware(IEnumerable<IRoute> routes)
+    public ExecuteRouteMiddleware(IEnumerable<IRoute> routes, IServiceProvider serviceProvider)
     {
         _routes = routes;
+        _serviceProvider = serviceProvider;
     }
 
-    public async Task<object?> InvokeAsync(TelegramRequestContext context, CancellationToken ct = default)
+    public async Task<object?> InvokeAsync(CancellationToken ct = default)
     {
         foreach (var route in _routes)
         {
-            if (!route.TryMatch(context.Update.Type, route.GetContent(context.Update), typeof(TelegramRouteAttribute)))
+            var result = await route.TryExecuteAsync(_serviceProvider);
+            
+            if (!result.IsExecuted)
             {
                 continue;
             }
 
-            var result = await route.ExecuteAsync(context.Update, context.UserId!);
-            context.ExecutedRoute = route.Pattern;
-
-            return result;
+            return result.ExecutionResult;
         }
 
         return null;

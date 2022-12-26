@@ -9,36 +9,32 @@ public class HandleExceptionsMiddleware : ITelegramMiddleware
 {
     private readonly ITelegramMiddleware _next;
     private readonly ITelegramBotClient _telegramBotClient;
-    private readonly ILogger<HandleExceptionsMiddleware> _logger;
+    private readonly TelegramRequestContext _telegramRequestContext;
 
     public HandleExceptionsMiddleware(
         ITelegramMiddleware next,
         ITelegramBotClient telegramBotClient,
-        ILogger<HandleExceptionsMiddleware> logger)
+        TelegramRequestContext telegramRequestContext)
     {
         _next = next;
         _telegramBotClient = telegramBotClient;
-        _logger = logger;
+        _telegramRequestContext = telegramRequestContext;
     }
     
-    public async Task<object?> InvokeAsync(TelegramRequestContext context, CancellationToken ct = default)
+    public async Task<object?> InvokeAsync(CancellationToken ct = default)
     {
         try
         {
-            return await _next.InvokeAsync(context, ct);
+            return await _next.InvokeAsync(ct);
         }
         catch (BadTelegramRequestException ex)
         {
-            var userId = context.Update.GetUserId();
+            var userId = _telegramRequestContext.Update.GetUserId();
             
             await _telegramBotClient.SendTextMessageAsync(
                 userId,
                 ex.Message,
                 cancellationToken: ct);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Telegram request handling error");
         }
 
         return null;

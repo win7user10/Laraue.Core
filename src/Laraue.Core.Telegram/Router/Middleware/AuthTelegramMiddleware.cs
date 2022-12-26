@@ -10,6 +10,7 @@ public class AuthTelegramMiddleware : ITelegramMiddleware
 {
     private readonly ITelegramMiddleware _next;
     private readonly IUserService _userService;
+    private readonly TelegramRequestContext _telegramRequestContext;
     private readonly ILogger<AuthTelegramMiddleware> _logger;
 
     private static readonly ConcurrentDictionary<long, string> UserIdTelegramIdMap = new ();
@@ -18,16 +19,18 @@ public class AuthTelegramMiddleware : ITelegramMiddleware
     public AuthTelegramMiddleware(
         ITelegramMiddleware next,
         IUserService userService,
+        TelegramRequestContext telegramRequestContext,
         ILogger<AuthTelegramMiddleware> logger)
     {
         _next = next;
         _userService = userService;
+        _telegramRequestContext = telegramRequestContext;
         _logger = logger;
     }
     
-    public async Task<object?> InvokeAsync(TelegramRequestContext context, CancellationToken ct = default)
+    public async Task<object?> InvokeAsync(CancellationToken ct = default)
     {
-        var from = context.Update.GetUser()!;
+        var from = _telegramRequestContext.Update.GetUser()!;
         
         using var _ = await Semaphore.WaitAsync(from.Id, ct);
 
@@ -40,9 +43,9 @@ public class AuthTelegramMiddleware : ITelegramMiddleware
             systemId = result.UserId;
         }
         
-        context.UserId = systemId;
+        _telegramRequestContext.UserId = systemId;
         
         _logger.LogInformation("Auth as: {TelegramId}, {SystemId}", from.Id, systemId);
-        return await _next.InvokeAsync(context, ct);
+        return await _next.InvokeAsync(ct);
     }
 }

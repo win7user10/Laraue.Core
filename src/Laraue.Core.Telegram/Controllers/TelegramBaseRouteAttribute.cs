@@ -1,12 +1,17 @@
-﻿namespace Laraue.Core.Telegram.Controllers;
+﻿using Telegram.Bot.Types;
 
+namespace Laraue.Core.Telegram.Controllers;
+
+/// <summary>
+/// Attribute that describe matching of telegram request with controller method.
+/// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class TelegramBaseRouteAttribute : Attribute
+public abstract class TelegramBaseRouteAttribute : Attribute
 {
-    public string PathPattern { get; }
-
-    protected TelegramBaseRouteAttribute(string pathPattern)
-    {
-        PathPattern = pathPattern;
-    }
+    /// <summary>
+    /// This method should return does 
+    /// </summary>
+    /// <param name="update"></param>
+    /// <returns></returns>
+    public abstract bool IsMatch(Update update);
 }

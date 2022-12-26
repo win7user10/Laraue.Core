@@ -8,16 +8,42 @@ namespace Laraue.Core.Telegram.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static void MapTelegramRequests(this WebApplication webApplication, string route)
+    public static void MapTelegramRequests(this IApplicationBuilder applicationBuilder, string route)
     {
-        webApplication.Map(route, async (HttpContext context, ITelegramRouter router, CancellationToken ct) =>
+        applicationBuilder.MapWhen(
+            x => x.Request.Path == route,
+            builder => builder.UseMiddleware<MapRequestToTelegramCoreMiddleware>());
+    }
+
+    internal sealed class MapRequestToTelegramCoreMiddleware : IMiddleware
+    {
+        private readonly ITelegramRouter _telegramRouter;
+
+        public MapRequestToTelegramCoreMiddleware(ITelegramRouter telegramRouter)
+        {
+            _telegramRouter = telegramRouter;
+        }
+        
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             using var sr = new StreamReader(context.Request.Body);
             var body = await sr.ReadToEndAsync();
             
             var update = JsonConvert.DeserializeObject<Update>(body);
 
-            return await router.RouteAsync(update, ct);
-        });
+            var routeResult = await _telegramRouter.RouteAsync(update);
+
+            if (routeResult is string stringResult)
+            {
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync(stringResult);
+            }
+            
+            else if (routeResult is not null)
+            {
+                context.Response.ContentType = "text/json";
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(routeResult));
+            }
+        }
     }
 }

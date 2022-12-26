@@ -5,5 +5,5 @@
 /// </summary>
 public interface ITelegramMiddleware
 {
-    public Task<object?> InvokeAsync(TelegramRequestContext context, CancellationToken ct = default);
+    public Task<object?> InvokeAsync(CancellationToken ct = default);
 }
