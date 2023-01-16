@@ -12,4 +12,8 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AsyncKeyedLock" Version="6.0.5" />
+    </ItemGroup>
+
 </Project>
