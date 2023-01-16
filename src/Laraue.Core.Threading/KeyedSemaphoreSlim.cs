@@ -16,31 +16,14 @@ namespace Laraue.Core.Threading
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyedSemaphoreSlim{TKey}"/> class, specifying
-        /// the initial and maximum number of requests that can be granted concurrently.
+        /// the maximum number of requests that can be granted concurrently.
         /// </summary>
-        /// <param name="initCount"></param>
         /// <param name="maxCount"></param>
-        [Obsolete("Passing on an initCount different to maxCount could have undesired results. Only pass on initCount instead.")]
-        public KeyedSemaphoreSlim(int initCount, int maxCount)
+        public KeyedSemaphoreSlim(int maxCount)
         {
             _asyncKeyedLocker = new AsyncKeyedLocker<TKey>(o =>
             {
-                o.MaxCount = initCount;
-                o.PoolSize = 20;
-                o.PoolInitialFill = 1;
-            });
-        }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyedSemaphoreSlim{TKey}"/> class, specifying
-        /// the initial number of requests that can be granted concurrently.
-        /// </summary>
-        /// <param name="initCount"></param>
-        public KeyedSemaphoreSlim(int initCount)
-        {
-            _asyncKeyedLocker = new AsyncKeyedLocker<TKey>(o =>
-            {
-                o.MaxCount = initCount;
+                o.MaxCount = maxCount;
                 o.PoolSize = 20;
                 o.PoolInitialFill = 1;
             });
