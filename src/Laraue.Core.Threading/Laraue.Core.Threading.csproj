@@ -13,7 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AsyncKeyedLock" Version="6.2.0" />
+      <PackageReference Include="AsyncKeyedLock" Version="6.2.1" />
     </ItemGroup>
 
 </Project>
