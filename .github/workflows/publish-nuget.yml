@@ -21,6 +21,11 @@ jobs:
         with:
           dotnet-version: '6.0.100'
           
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          
       - name: Install Python dependencies
         run: |
           alias python3.8="python"
