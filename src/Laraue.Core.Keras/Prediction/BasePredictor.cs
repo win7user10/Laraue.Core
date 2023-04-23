@@ -32,6 +32,8 @@ public abstract class BasePredictor<T> : IPredictor<T>
     {
         _predictorOptions = predictorOptions;
         _logger = logger;
+        
+        PythonInitializer.Initialize();
     }
 
     /// <summary>

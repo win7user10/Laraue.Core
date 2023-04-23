@@ -19,7 +19,6 @@ public static class PythonInitializer
         {
             if (!_isInitialized)
             {
-                PythonEngine.Initialize();
                 PythonEngine.BeginAllowThreads();
             }
 
