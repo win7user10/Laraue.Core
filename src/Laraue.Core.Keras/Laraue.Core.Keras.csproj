@@ -16,6 +16,7 @@
     <PackageReference Include="Keras.NET" Version="3.8.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="pythonnet_py38_linux" Version="2.5.2" Condition="'$(OS)' == 'UNIX'"/>
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
