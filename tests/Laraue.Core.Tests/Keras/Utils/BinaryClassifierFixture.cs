@@ -1,11 +1,8 @@
-﻿using Castle.Core.Logging;
-using Laraue.Core.Testing.Logging;
-using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Laraue.Core.Tests.Keras.Utils;
 
-public class BinaryClassifierFixture
+public sealed class BinaryClassifierFixture
 {
     public readonly BinaryClassifierPredictor Predictor;
 

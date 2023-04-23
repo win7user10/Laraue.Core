@@ -1,9 +1,7 @@
-﻿using System;
-using Laraue.Core.Keras.Models;
+﻿using Laraue.Core.Keras.Models;
 using Laraue.Core.Keras.Prediction;
 using Laraue.Core.Keras.Utils;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Numpy;
 
 namespace Laraue.Core.Tests.Keras.Utils;

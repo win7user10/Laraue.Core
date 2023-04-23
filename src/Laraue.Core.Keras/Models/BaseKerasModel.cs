@@ -1,5 +1,4 @@
-﻿using System;
-using Keras.Models;
+﻿using Keras.Models;
 using Numpy;
 
 namespace Laraue.Core.Keras.Models;
