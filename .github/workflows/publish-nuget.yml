@@ -19,7 +19,12 @@ jobs:
       - name: Setup .NET environment
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.100' 
+          dotnet-version: '6.0.100'
+          
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
             
       - name: Build project
         run: dotnet build --configuration Release
