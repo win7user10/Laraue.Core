@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>Latest</LangVersion>
     <Description>Utils to launch Keras models in .NET</Description>
     <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>6.0.0</Version>
+    <Version>5.0.0</Version>
     <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
@@ -15,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Keras.NET" Version="3.8.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-    <PackageReference Include="pythonnet_netstandard_py38_linux" Version="2.5.2" Condition="'$(OS)' == 'UNIX'"/>
+    <PackageReference Include="pythonnet_py38_linux" Version="2.5.2" Condition="'$(OS)' == 'UNIX'"/>
   </ItemGroup>
 
 </Project>
