@@ -28,7 +28,7 @@ jobs:
           
       - name: Install Python dependencies
         run: |
-          sudo apt update && sudo apt install -y libc-dev
+          sudo apt update && sudo apt install -y libc6-dev
           alias python3.8="python"
             
       - name: Build project
