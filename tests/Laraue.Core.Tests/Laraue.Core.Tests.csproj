@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.12" />
     <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.4.1" />
+    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -23,7 +24,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Laraue.Core.Keras\Laraue.Core.Keras.csproj" />
+    <ProjectReference Include="..\..\src\Laraue.Core.Testing\Laraue.Core.Testing.csproj" />
     <ProjectReference Include="..\..\src\Laraue.Core.Threading\Laraue.Core.Threading.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Keras\Images\1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Keras\Images\2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Keras\Utils\binary_model.h5">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

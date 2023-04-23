@@ -5,10 +5,19 @@ using Xunit.Abstractions;
 
 namespace Laraue.Core.Testing.Logging
 {
-    public class TestOutputHelperLogger<T> : ILogger<T> where T : class
+    /// <summary>
+    /// Integration <see cref="ITestOutputHelper"/> with Microsoft <see cref="ILogger{TCategoryName}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public sealed class TestOutputHelperLogger<T> : ILogger<T> where T : class
     {
-        public ITestOutputHelper _helper;
+        private readonly ITestOutputHelper _helper;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="TestOutputHelperLogger{T}"/>.
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public TestOutputHelperLogger(ITestOutputHelper helper)
         {
             _helper = helper ?? throw new ArgumentNullException(nameof(helper));
