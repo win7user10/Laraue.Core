@@ -25,14 +25,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
-        run: |
-          alias python3.8="python"
           
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install numpy
           pip install tensorflow
+          alias python3.8="python"
             
       - name: Build project
         run: dotnet build --configuration Release
