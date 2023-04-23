@@ -20,6 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="pythonnet_netstandard_py38_linux" Version="2.5.2" Condition="'$(OS)' == 'UNIX'"/>
   </ItemGroup>
 
   <ItemGroup>
