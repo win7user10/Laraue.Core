@@ -1,4 +1,5 @@
 ﻿using Keras.Models;
+using Laraue.Core.Keras.Prediction;
 using Numpy;
 
 namespace Laraue.Core.Keras.Models;
@@ -17,6 +18,8 @@ public abstract class BaseKerasModel<T>
     /// <param name="path"></param>
     protected BaseKerasModel(string path)
     {
+        PythonInitializer.Initialize();
+        
         _model = BaseModel.LoadModel(path);
     }
 
