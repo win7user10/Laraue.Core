@@ -28,6 +28,7 @@ jobs:
           
       - name: Install Python dependencies
         run: |
+          ldconfig -p | grep libdl
           sudo apt update && sudo apt install -y libc6-dev
           alias python3.8="python"
             
