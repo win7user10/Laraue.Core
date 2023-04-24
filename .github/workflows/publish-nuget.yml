@@ -30,6 +30,7 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y libc6-dev
           alias python3.8="python"
+          ln -s /usr/lib/libdl.so /lib/x86_64-linux-gnu/libdl.so.2
             
       - name: Build project
         run: dotnet build --configuration Release
