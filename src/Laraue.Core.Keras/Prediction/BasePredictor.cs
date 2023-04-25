@@ -55,7 +55,8 @@ public abstract class BasePredictor<T> : IPredictor<T>
                 _queue.Enqueue(new QueuedItem<T>(fileBytes, tcs));
 
                 return tcs.Task;
-            });
+            })
+            .ToArray();
         
         RunPredictionIfNotRun();
 
