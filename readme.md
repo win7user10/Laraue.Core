@@ -20,7 +20,7 @@ jobs:
       pip install Pillow
 ```
 
-To run model, BasePredictor class can be inherited
+To run the model, BasePredictor class can be inherited
 
 ```csharp
 public sealed class BinaryClassifierPredictor : BasePredictor<bool>
@@ -49,7 +49,7 @@ public sealed class BinaryClassifierPredictor : BasePredictor<bool>
 }
 ```
 
-Now you can make predictions:
+Now predictions can be made:
 
 ```csharp
 var image1 = await File.ReadAllBytesAsync("C://image1.jpg");
@@ -59,4 +59,4 @@ var predictor = new BinaryClassifierPredictor();
 var predictions = predictor.PredictAsync(new[] { image1, image2 });
 ```
 
-Now predictions contains two predictions, for the first and second images.
+Now the predictions variable contains two predictions, for the first and second images.
