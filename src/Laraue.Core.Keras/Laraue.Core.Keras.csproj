@@ -7,14 +7,14 @@
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>6.0.2</Version>
+    <Version>6.0.3</Version>
     <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Keras.NET" Version="3.8.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
 </Project>
