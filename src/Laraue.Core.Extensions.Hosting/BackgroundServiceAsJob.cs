@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Laraue.Core.Extensions.Hosting;
 
@@ -13,11 +15,13 @@ public abstract class BackgroundServiceAsJob : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private IServiceScope? _serviceScope;
+    private readonly ILogger<BackgroundServiceAsJob> _logger;
 
     /// <inheritdoc />
-    protected BackgroundServiceAsJob(IServiceProvider serviceProvider)
+    protected BackgroundServiceAsJob(IServiceProvider serviceProvider, ILogger<BackgroundServiceAsJob> logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     /// <summary>
@@ -28,7 +32,17 @@ public abstract class BackgroundServiceAsJob : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
+            _logger.LogDebug("Start the job executing");
+            
+            var sw = new Stopwatch();
+            sw.Start();
+            
             var timeToWait = await ExecuteOnceAsync(stoppingToken);
+            
+            _logger.LogDebug(
+                "Job has been completed for {Time} ms, sleeping for {SleepTime}",
+                sw.Elapsed,
+                timeToWait);
 
             await Task.Delay(timeToWait, stoppingToken);
         }

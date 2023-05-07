@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Laraue.Core.DateTime.Services.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Laraue.Core.Extensions.Hosting;
 
@@ -15,16 +16,19 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
     /// </summary>
     protected readonly string JobName;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ILogger<BackgroundServiceAsJobWithState> _logger;
 
     /// <inheritdoc />
     protected BackgroundServiceAsJobWithState(
         string jobName,
         IServiceProvider serviceProvider,
-        IDateTimeProvider dateTimeProvider)
-        : base(serviceProvider)
+        IDateTimeProvider dateTimeProvider,
+        ILogger<BackgroundServiceAsJobWithState> logger)
+        : base(serviceProvider, logger)
     {
         JobName = jobName;
         _dateTimeProvider = dateTimeProvider;
+        _logger = logger;
     }
 
     /// <inheritdoc />
@@ -38,6 +42,8 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
 
         if (state?.NextExecutionAt is not null)
         {
+            _logger.LogDebug("Waiting for the next execution at {ExecutionTime}", state.NextExecutionAt);
+            
             var timeToWait = state.NextExecutionAt.Value - _dateTimeProvider.UtcNow;
 
             if (timeToWait > TimeSpan.Zero)
@@ -52,7 +58,9 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
     /// <inheritdoc />
     protected override async Task<TimeSpan> ExecuteOnceAsync(CancellationToken stoppingToken)
     {
-        var timeToWait = await base.ExecuteOnceAsync(stoppingToken);
+        OpenScope();
+
+        var timeToWait = await ExecuteJobAsync(stoppingToken);
 
         var jobState = new JobState
         {
@@ -61,6 +69,8 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
         };
 
         await SaveJobStateAsync(jobState, stoppingToken);
+        
+        CloseScope();
 
         return timeToWait;
     }

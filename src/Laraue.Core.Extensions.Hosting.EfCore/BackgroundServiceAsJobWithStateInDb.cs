@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Laraue.Core.DateTime.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Laraue.Core.Extensions.Hosting.EfCore;
 
@@ -14,8 +15,9 @@ public abstract class BackgroundServiceAsJobWithStateInDb : BackgroundServiceAsJ
     protected BackgroundServiceAsJobWithStateInDb(
         string jobName,
         IServiceProvider serviceProvider,
-        IDateTimeProvider dateTimeProvider)
-        : base(jobName, serviceProvider, dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        ILogger<BackgroundServiceAsJobWithStateInDb> logger)
+        : base(jobName, serviceProvider, dateTimeProvider, logger)
     {
     }
     
