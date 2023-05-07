@@ -1,23 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Description>Extensions for EF core database provider.</Description>
+    <TargetFramework>net7.0</TargetFramework>
+    <Description>Background services that stores these states in the DB.</Description>
     <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>7.0.4</Version>
+    <Version>7.0.0</Version>
     <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Laraue.Core.DataAccess\Laraue.Core.DataAccess.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+    <ProjectReference Include="..\Laraue.Core.DataAccess.EFCore\Laraue.Core.DataAccess.EFCore.csproj" />
+    <ProjectReference Include="..\Laraue.Core.Extensions.Hosting\Laraue.Core.Extensions.Hosting.csproj" />
   </ItemGroup>
 
 </Project>

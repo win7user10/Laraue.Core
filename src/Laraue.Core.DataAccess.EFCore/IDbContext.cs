@@ -18,4 +18,12 @@ public interface IDbContext
     /// Provides access to information and operations for entity instances this context is tracking.
     /// </summary>
     ChangeTracker ChangeTracker { get; }
+
+    /// <summary>
+    /// Gets an <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry" /> for the given entity. The entry provides
+    /// access to change tracking information and operations for the entity.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    EntityEntry Entry(object entity);
 }
