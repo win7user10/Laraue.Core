@@ -7,23 +7,28 @@ namespace Laraue.Core.Keras.Models;
 /// </summary>
 public sealed class BinaryKerasModel : BaseKerasModel<bool>
 {
+    private readonly double _minResultForTruePrediction;
+
     /// <inheritdoc />
-    public BinaryKerasModel(string path)
+    public BinaryKerasModel(string path, double minResultForTruePrediction = 0.5)
         : base(path)
     {
+        _minResultForTruePrediction = minResultForTruePrediction;
     }
 
     /// <inheritdoc />
-    public override bool[] Predict(NDarray bytesArray)
+    public override TfResult<bool>[] Predict(NDarray bytesArray)
     {
         using var predictions = GetPrediction(bytesArray);
-        var result = new bool[bytesArray.len];
+        var result = new TfResult<bool>[bytesArray.len];
         
         for (var i = 0; i < predictions.len; i++)
         {
-            var falseScore = predictions[i][0].item<float>();
             var trueScore = predictions[i][1].item<float>();
-            result[i] = trueScore > falseScore;
+            
+            var prediction = trueScore >= _minResultForTruePrediction;
+            
+            result[i] = new TfResult<bool>(predictions[i], prediction);
         }
 
         return result;

@@ -6,7 +6,7 @@ namespace Laraue.Core.Keras.Models;
 /// <summary>
 /// The model to resolve regression problem.
 /// </summary>
-public sealed class RegressionKerasModel : BaseKerasModel<double>
+public sealed class RegressionKerasModel : BaseKerasModel<decimal>
 {
     /// <inheritdoc />
     public RegressionKerasModel(string path) : base(path)
@@ -14,14 +14,16 @@ public sealed class RegressionKerasModel : BaseKerasModel<double>
     }
 
     /// <inheritdoc />
-    public override double[] Predict(NDarray bytesArray)
+    public override TfResult<decimal>[] Predict(NDarray bytesArray)
     {
         using var predictions = GetPrediction(bytesArray);
-        var result = new double[bytesArray.len];
+        var result = new TfResult<decimal>[bytesArray.len];
         
         for (var i = 0; i < predictions.len; i++)
         {
-            result[i] = Math.Round(predictions[i].item<double>(), 2);
+            result[i] = new TfResult<decimal>(
+                predictions[i],
+                Math.Round(predictions[i].item<decimal>(), 2));
         }
 
         return result;

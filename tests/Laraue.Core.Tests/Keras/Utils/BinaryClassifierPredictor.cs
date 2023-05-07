@@ -1,4 +1,5 @@
-﻿using Laraue.Core.Keras.Models;
+﻿using System.Linq;
+using Laraue.Core.Keras.Models;
 using Laraue.Core.Keras.Prediction;
 using Laraue.Core.Keras.Utils;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,8 @@ public class BinaryClassifierPredictor : BasePredictor<bool>
 
     protected override bool[] PredictBatch(NDarray inputDataBatch)
     {
-        return _isRenovationExistsModel.Predict(inputDataBatch);
+        return _isRenovationExistsModel.Predict(inputDataBatch)
+            .Select(x => x.Result)
+            .ToArray();
     }
 }

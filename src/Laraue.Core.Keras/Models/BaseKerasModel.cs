@@ -25,7 +25,7 @@ public abstract class BaseKerasModel<T>
     /// </summary>
     /// <param name="bytesArray"></param>
     /// <returns></returns>
-    public abstract T[] Predict(NDarray bytesArray);
+    public abstract TfResult<T>[] Predict(NDarray bytesArray);
 
     /// <summary>
     /// Return prediction for the passed NDArray calling the Python model.

@@ -2,7 +2,7 @@
 
 Laraue.Core is the solution with often-using classes in other projects in Laraue.* namespace
 
-## Laraue.Keras
+## Laraue.Core.Keras
 
 The package allows to use Keras models in .NET.
 To run the models, python 3.x version should be installed on the machine with packages numpy and tensorflow.
