@@ -92,9 +92,9 @@ public abstract class BackgroundServiceAsJob : BackgroundService
     }
 
     /// <summary>
-    /// Execute task and return how long task should awaited before the next execution.
+    /// The Job body. Executes it and return how long task should be awaited before the next execution.
     /// </summary>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    protected abstract Task<TimeSpan> ExecuteJobAsync(CancellationToken stoppingToken);
+    public abstract Task<TimeSpan> ExecuteJobAsync(CancellationToken stoppingToken);
 }
