@@ -96,5 +96,5 @@ public abstract class BackgroundServiceAsJob : BackgroundService
     /// </summary>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    public abstract Task<TimeSpan> ExecuteJobAsync(CancellationToken stoppingToken);
+    protected abstract Task<TimeSpan> ExecuteJobAsync(CancellationToken stoppingToken);
 }
