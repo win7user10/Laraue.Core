@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Laraue.Core.DateTime.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,26 +10,69 @@ using Microsoft.Extensions.Logging;
 namespace Laraue.Core.Extensions.Hosting;
 
 /// <summary>
-/// Service that should execute some work and fall asleep for the some time.
+/// Service that should execute some work and fall asleep for the some time and store the current state somewhere.
 /// </summary>
-public abstract class BackgroundServiceAsJob : BackgroundService
+public abstract class BackgroundServiceAsJob<TJob, TJobData> : BackgroundService
+    where TJob : IJob<TJobData>
+    where TJobData : class, new()
 {
+    /// <summary>
+    /// Unique job identifier.
+    /// </summary>
+    protected readonly string JobName;
+
     private readonly IServiceProvider _serviceProvider;
-    private IServiceScope? _serviceScope;
-    private readonly ILogger<BackgroundServiceAsJob> _logger;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ILogger<BackgroundServiceAsJob<TJob, TJobData>> _logger;
 
     /// <inheritdoc />
-    protected BackgroundServiceAsJob(IServiceProvider serviceProvider, ILogger<BackgroundServiceAsJob> logger)
+    protected BackgroundServiceAsJob(
+        string jobName,
+        IServiceProvider serviceProvider,
+        IDateTimeProvider dateTimeProvider,
+        ILogger<BackgroundServiceAsJob<TJob, TJobData>> logger)
     {
+        JobName = jobName;
         _serviceProvider = serviceProvider;
+        _dateTimeProvider = dateTimeProvider;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Run the Job loop and fall asleep.
-    /// </summary>
-    /// <param name="stoppingToken"></param>
+    /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        var state = await InitializeAsync(stoppingToken).ConfigureAwait(false);
+        
+        await ExecuteInternalAsync(state, stoppingToken).ConfigureAwait(false);
+    }
+
+    private async Task<JobState<TJobData>> InitializeAsync(CancellationToken stoppingToken)
+    {
+        var jobState = await GetJobStateAsync(stoppingToken).ConfigureAwait(false);
+
+        if (jobState?.NextExecutionAt is null)
+        {
+            return jobState ?? new JobState<TJobData>
+            {
+                JobName = JobName,
+            };
+        }
+        
+        _logger.LogDebug(
+            "Waiting for the next execution at {ExecutionTime}",
+            jobState.NextExecutionAt);
+            
+        var timeToWait = jobState.NextExecutionAt.Value - _dateTimeProvider.UtcNow;
+
+        if (timeToWait > TimeSpan.Zero)
+        {
+            await Task.Delay(timeToWait, stoppingToken).ConfigureAwait(false);
+        }
+
+        return jobState;
+    }
+
+    private async Task ExecuteInternalAsync(JobState<TJobData> jobState, CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -36,65 +80,44 @@ public abstract class BackgroundServiceAsJob : BackgroundService
             
             var sw = new Stopwatch();
             sw.Start();
+
+            var scope = _serviceProvider.CreateScope();
+            var job = scope.ServiceProvider.GetRequiredService<TJob>();
             
-            var timeToWait = await ExecuteOnceAsync(stoppingToken);
+            var timeToWait = await job
+                .ExecuteAsync(jobState, stoppingToken)
+                .ConfigureAwait(false);
+
+            var now = _dateTimeProvider.UtcNow;
+            jobState.NextExecutionAt = now + timeToWait;
+            jobState.LastExecutionAt = now;
+            
+            await SaveJobStateAsync(jobState, stoppingToken);
             
             _logger.LogDebug(
                 "Job has been completed for {Time} ms, sleeping for {SleepTime}",
                 sw.Elapsed,
                 timeToWait);
+            
+            scope.Dispose();
 
-            await Task.Delay(timeToWait, stoppingToken);
+            await Task.Delay(timeToWait, stoppingToken)
+                .ConfigureAwait(false);
         }
     }
 
     /// <summary>
-    /// Initialize the container and run the Job body.
+    /// Get the job state from the storage.
     /// </summary>
-    /// <param name="stoppingToken"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected virtual async Task<TimeSpan> ExecuteOnceAsync(CancellationToken stoppingToken)
-    {
-        OpenScope();
-
-        var timeToWait = await ExecuteJobAsync(stoppingToken);
-        
-        CloseScope();
-
-        return timeToWait;
-    }
-
-    internal void OpenScope()
-    {
-        _serviceScope = _serviceProvider.CreateScope();
-    }
-
-    internal void CloseScope()
-    {
-        _serviceScope?.Dispose();
-    }
-
+    protected abstract Task<JobState<TJobData>?> GetJobStateAsync(CancellationToken cancellationToken = default);
+    
     /// <summary>
-    /// Get the service from the opened service scope. Service scope is active when
-    /// the <see cref="BackgroundServiceAsJob"/> is not in the sleep state.
+    /// Sets the job state to the storage.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <param name="state"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    protected T GetScopedService<T>() where T : class
-    {
-        if (_serviceScope is null)
-        {
-            throw new InvalidOperationException("Service scope is not defined");
-        }
-        
-        return _serviceScope.ServiceProvider.GetRequiredService<T>();
-    }
-
-    /// <summary>
-    /// The Job body. Executes it and return how long task should be awaited before the next execution.
-    /// </summary>
-    /// <param name="stoppingToken"></param>
-    /// <returns></returns>
-    protected abstract Task<TimeSpan> ExecuteJobAsync(CancellationToken stoppingToken);
+    protected abstract Task SaveJobStateAsync(JobState<TJobData> state, CancellationToken cancellationToken = default);
 }

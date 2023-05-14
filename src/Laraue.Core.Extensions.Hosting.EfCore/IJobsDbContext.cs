@@ -6,10 +6,10 @@ namespace Laraue.Core.Extensions.Hosting.EfCore;
 /// <summary>
 /// Storage for the hosting services states.
 /// </summary>
-public interface IHostingStateDbContext : IDbContext
+public interface IJobsDbContext : IDbContext
 {
     /// <summary>
     /// Table with job states.
     /// </summary>
-    public DbSet<JobState> JobStates { get; set; }
+    public DbSet<JobStateEntity> JobStates { get; set; }
 }
