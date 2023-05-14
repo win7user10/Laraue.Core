@@ -18,6 +18,11 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<BackgroundServiceAsJobWithState> _logger;
 
+    /// <summary>
+    /// Current Job state.
+    /// </summary>
+    protected JobState? JobState { get; private set; }
+
     /// <inheritdoc />
     protected BackgroundServiceAsJobWithState(
         string jobName,
@@ -36,15 +41,15 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
     {
         OpenScope();
         
-        var state = await GetJobStateAsync(stoppingToken).ConfigureAwait(false);
+        JobState = await GetJobStateAsync(stoppingToken).ConfigureAwait(false);
         
         CloseScope();
 
-        if (state?.NextExecutionAt is not null)
+        if (JobState?.NextExecutionAt is not null)
         {
-            _logger.LogDebug("Waiting for the next execution at {ExecutionTime}", state.NextExecutionAt);
+            _logger.LogDebug("Waiting for the next execution at {ExecutionTime}", JobState.NextExecutionAt);
             
-            var timeToWait = state.NextExecutionAt.Value - _dateTimeProvider.UtcNow;
+            var timeToWait = JobState.NextExecutionAt.Value - _dateTimeProvider.UtcNow;
 
             if (timeToWait > TimeSpan.Zero)
             {
@@ -61,17 +66,16 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
         OpenScope();
 
         var timeToWait = await ExecuteJobAsync(stoppingToken);
-
         var now = _dateTimeProvider.UtcNow;
         
-        var jobState = new JobState
+        JobState = new JobState
         {
             JobName = JobName,
             NextExecutionAt = now + timeToWait,
             LastExecutionAt = now,
         };
 
-        await SaveJobStateAsync(jobState, stoppingToken);
+        await SaveJobStateAsync(JobState, stoppingToken);
         
         CloseScope();
 
