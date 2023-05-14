@@ -62,10 +62,13 @@ public abstract class BackgroundServiceAsJobWithState : BackgroundServiceAsJob
 
         var timeToWait = await ExecuteJobAsync(stoppingToken);
 
+        var now = _dateTimeProvider.UtcNow;
+        
         var jobState = new JobState
         {
             JobName = JobName,
-            NextExecutionAt = _dateTimeProvider.UtcNow + timeToWait
+            NextExecutionAt = now + timeToWait,
+            LastExecutionAt = now,
         };
 
         await SaveJobStateAsync(jobState, stoppingToken);
