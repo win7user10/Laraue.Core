@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Laraue.Core.DateTime.Extensions;
 using Laraue.Core.DateTime.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,8 +64,8 @@ public abstract class BackgroundServiceAsJobInDb<TJob, TJobData> : BackgroundSer
         {
             JobName = state.JobName,
             JobData = JsonSerializer.Serialize(state.JobData),
-            NextExecutionAt = state.NextExecutionAt,
-            LastExecutionAt = state.LastExecutionAt
+            NextExecutionAt = state.NextExecutionAt?.UseUtcKind(),
+            LastExecutionAt = state.LastExecutionAt?.UseUtcKind(),
         };
         
         db.Entry(entry).State = isStateExists ? EntityState.Modified : EntityState.Added;
