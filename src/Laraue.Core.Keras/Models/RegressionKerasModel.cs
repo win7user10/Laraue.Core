@@ -23,7 +23,7 @@ public sealed class RegressionKerasModel : BaseKerasModel<decimal>
         {
             result[i] = new TfResult<decimal>(
                 predictions[i],
-                Math.Round(predictions[i].item<decimal>(), 2));
+                Math.Round((decimal)predictions[i].item<float>(), 2));
         }
 
         return result;
