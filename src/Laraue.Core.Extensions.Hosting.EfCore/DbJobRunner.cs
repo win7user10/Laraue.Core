@@ -12,23 +12,24 @@ using Microsoft.Extensions.Logging;
 namespace Laraue.Core.Extensions.Hosting.EfCore;
 
 /// <inheritdoc />
-public abstract class BackgroundServiceAsJobInDb<TJob, TJobData> : BackgroundServiceAsJob<TJob, TJobData> 
+public sealed class DbJobRunner<TJob, TJobData> : JobRunner<TJob, TJobData> 
     where TJob : IJob<TJobData>
     where TJobData : class, new()
 {
     private readonly IServiceProvider _serviceProvider;
 
     /// <inheritdoc />
-    protected BackgroundServiceAsJobInDb(
+    public DbJobRunner(
         string jobName,
         IServiceProvider serviceProvider,
         IDateTimeProvider dateTimeProvider,
-        ILogger<BackgroundServiceAsJobInDb<TJob, TJobData> > logger)
+        ILogger<DbJobRunner<TJob, TJobData> > logger)
         : base(jobName, serviceProvider, dateTimeProvider, logger)
     {
         _serviceProvider = serviceProvider;
     }
 
+    /// <inheritdoc />
     protected override async Task<JobState<TJobData>?> GetJobStateAsync(CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();
@@ -51,6 +52,7 @@ public abstract class BackgroundServiceAsJobInDb<TJob, TJobData> : BackgroundSer
             };
     }
 
+    /// <inheritdoc />
     protected override async Task SaveJobStateAsync(JobState<TJobData> state, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();

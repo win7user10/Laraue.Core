@@ -12,7 +12,7 @@ namespace Laraue.Core.Extensions.Hosting;
 /// <summary>
 /// Service that should execute some work and fall asleep for the some time and store the current state somewhere.
 /// </summary>
-public abstract class BackgroundServiceAsJob<TJob, TJobData> : BackgroundService
+public abstract class JobRunner<TJob, TJobData> : BackgroundService
     where TJob : IJob<TJobData>
     where TJobData : class, new()
 {
@@ -23,14 +23,14 @@ public abstract class BackgroundServiceAsJob<TJob, TJobData> : BackgroundService
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly ILogger<BackgroundServiceAsJob<TJob, TJobData>> _logger;
+    private readonly ILogger<JobRunner<TJob, TJobData>> _logger;
 
     /// <inheritdoc />
-    protected BackgroundServiceAsJob(
+    protected JobRunner(
         string jobName,
         IServiceProvider serviceProvider,
         IDateTimeProvider dateTimeProvider,
-        ILogger<BackgroundServiceAsJob<TJob, TJobData>> logger)
+        ILogger<JobRunner<TJob, TJobData>> logger)
     {
         JobName = jobName;
         _serviceProvider = serviceProvider;
