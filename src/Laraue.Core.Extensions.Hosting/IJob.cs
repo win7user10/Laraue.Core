@@ -20,5 +20,5 @@ public interface IJob<TJobData> where TJobData : class, new()
     /// <summary>
     /// Notify that job state updated and should be saved.
     /// </summary>
-    event Func<JobState<TJobData>, CancellationToken, Task> OnStateUpdated;
+    internal event Func<JobState<TJobData>, CancellationToken, Task> OnStateUpdated;
 }
