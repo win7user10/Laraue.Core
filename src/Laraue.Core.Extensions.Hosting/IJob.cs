@@ -16,4 +16,9 @@ public interface IJob<TJobData> where TJobData : class, new()
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
     Task<TimeSpan> ExecuteAsync(JobState<TJobData> jobState, CancellationToken stoppingToken);
+
+    /// <summary>
+    /// Notify that job state updated and should be saved.
+    /// </summary>
+    event Func<JobState<TJobData>, CancellationToken, Task> OnStateUpdated;
 }

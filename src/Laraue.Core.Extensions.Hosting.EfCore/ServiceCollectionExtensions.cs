@@ -2,7 +2,7 @@
 
 namespace Laraue.Core.Extensions.Hosting.EfCore;
 
-public static class ServiceCollectionExtentions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Register job as background service which store it state in the DB.

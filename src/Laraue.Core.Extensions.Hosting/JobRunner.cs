@@ -83,6 +83,8 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
 
             var scope = _serviceProvider.CreateScope();
             var job = scope.ServiceProvider.GetRequiredService<TJob>();
+
+            job.OnStateUpdated += SaveJobStateAsync;
             
             var timeToWait = await job
                 .ExecuteAsync(jobState, stoppingToken)
