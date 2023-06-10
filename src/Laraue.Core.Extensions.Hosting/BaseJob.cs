@@ -11,7 +11,7 @@ namespace Laraue.Core.Extensions.Hosting;
 public abstract class BaseJob<TJobData> : IJob<TJobData> where TJobData : class, new()
 {
     /// <inheritdoc />
-    public abstract Task<TimeSpan> ExecuteAsync(JobState<TJobData> jobState, CancellationToken stoppingToken);
+    public abstract Task<TimeSpan> ExecuteAsync(JobState<TJobData> jobState, CancellationToken stoppingToken = default);
 
     /// <inheritdoc />
     public event Func<JobState<TJobData>, CancellationToken, Task>? OnStateUpdated;
@@ -22,7 +22,7 @@ public abstract class BaseJob<TJobData> : IJob<TJobData> where TJobData : class,
     /// <param name="jobState"></param>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    public Task UpdateStateAsync(JobState<TJobData> jobState, CancellationToken stoppingToken)
+    public Task UpdateStateAsync(JobState<TJobData> jobState, CancellationToken stoppingToken = default)
     {
         return OnStateUpdated?.Invoke(jobState, stoppingToken) ?? Task.CompletedTask;
     }
