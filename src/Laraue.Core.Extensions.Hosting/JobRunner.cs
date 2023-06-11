@@ -58,9 +58,10 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
             };
         }
         
-        _logger.LogDebug(
-            "Waiting for the next execution at {ExecutionTime}",
-            jobState.NextExecutionAt);
+        _logger.LogInformation(
+            "Waiting for the next execution at {ExecutionTime} for {JobName}",
+            jobState.NextExecutionAt,
+            jobState.JobName);
             
         var timeToWait = jobState.NextExecutionAt.Value - _dateTimeProvider.UtcNow;
 
@@ -76,7 +77,7 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogDebug("Start the job executing");
+            _logger.LogInformation("Start the job {JobName} executing", JobName);
             
             var sw = new Stopwatch();
             sw.Start();
@@ -96,8 +97,9 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
             
             await SaveJobStateAsync(jobState, stoppingToken);
             
-            _logger.LogDebug(
-                "Job has been completed for {Time} ms, sleeping for {SleepTime}",
+            _logger.LogInformation(
+                "Job {JobName} has been completed for {Time} ms, sleeping for {SleepTime}",
+                JobName,
                 sw.Elapsed,
                 timeToWait);
             

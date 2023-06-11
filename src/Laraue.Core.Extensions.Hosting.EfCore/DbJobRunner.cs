@@ -23,7 +23,7 @@ public sealed class DbJobRunner<TJob, TJobData> : JobRunner<TJob, TJobData>
         string jobName,
         IServiceProvider serviceProvider,
         IDateTimeProvider dateTimeProvider,
-        ILogger<DbJobRunner<TJob, TJobData> > logger)
+        ILogger<DbJobRunner<TJob, TJobData>> logger)
         : base(jobName, serviceProvider, dateTimeProvider, logger)
     {
         _serviceProvider = serviceProvider;
