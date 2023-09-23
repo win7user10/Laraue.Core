@@ -50,7 +50,7 @@ public abstract class BasePredictor<T> : IPredictor<T>
             .Select(fileBytes =>
             {
                 var tcs = new TaskCompletionSource<T>();
-                cancellationToken.Register(tcs.SetCanceled);
+                cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken));
                 
                 _queue.Enqueue(new QueuedItem<T>(fileBytes, tcs));
 
