@@ -8,11 +8,11 @@
         /// <summary>
         /// From which page should be returned results.
         /// </summary>
-        int Page { get; set; }
+        int Page { get; init; }
 
         /// <summary>
         /// Maximum count of entities which can be returned in the one request.
         /// </summary>
-        int PerPage { get; set; }
+        int PerPage { get; init; }
     }
 }
