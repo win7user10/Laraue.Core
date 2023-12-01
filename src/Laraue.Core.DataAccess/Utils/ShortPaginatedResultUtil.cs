@@ -4,6 +4,9 @@ using Laraue.Core.DataAccess.Contracts;
 
 namespace Laraue.Core.DataAccess.Utils;
 
+/// <summary>
+/// Utils to instantiate <see cref="ShortPaginatedResult{TEntity}"/>.
+/// </summary>
 public static class ShortPaginatedResultUtil
 {
     /// <summary>
