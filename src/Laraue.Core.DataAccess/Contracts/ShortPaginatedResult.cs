@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Laraue.Core.DataAccess.Utils;
 
 namespace Laraue.Core.DataAccess.Contracts;
@@ -29,5 +28,5 @@ public class ShortPaginatedResult<TEntity> : IShortPaginatedResult<TEntity> wher
     public bool HasNextPage { get; }
 
     /// <inheritdoc cref="IShortPaginatedResult{TEntity}"/>
-    public bool HasPreviousPage => Page > 1;
+    public bool HasPreviousPage => Page > 0;
 }
