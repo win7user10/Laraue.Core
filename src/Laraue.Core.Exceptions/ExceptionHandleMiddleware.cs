@@ -62,26 +62,19 @@ public class ExceptionHandleMiddleware : IMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int) code;
 
-        return context.Response.WriteAsJsonAsync(new ErrorResponse
-        {
-            Message = exp.Message,
-            Errors = exp is HttpExceptionWithErrors httpExceptionWithErrors ? httpExceptionWithErrors.Errors : null
-        }, SerializerOptions);
+        return context.Response
+            .WriteAsJsonAsync(new ErrorResponse(
+                exp.Message,
+                exp is HttpExceptionWithErrors httpExceptionWithErrors ? httpExceptionWithErrors.Errors : null),
+            SerializerOptions);
     }
 }
 
 /// <summary>
 /// Error response.
 /// </summary>
-public sealed record ErrorResponse
+/// <param name="Message">Error message.</param>
+/// <param name="Errors">Error dictionary.</param>
+public sealed record ErrorResponse(string Message, IReadOnlyDictionary<string, string?[]>? Errors)
 {
-    /// <summary>
-    /// Error message.
-    /// </summary>
-    public string Message { get; init; }
-    
-    /// <summary>
-    /// Error dictionary.
-    /// </summary>
-    public IReadOnlyDictionary<string, string[]> Errors { get; init; }
 }

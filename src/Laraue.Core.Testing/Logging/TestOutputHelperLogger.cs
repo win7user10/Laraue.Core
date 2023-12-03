@@ -23,7 +23,7 @@ namespace Laraue.Core.Testing.Logging
             _helper = helper ?? throw new ArgumentNullException(nameof(helper));
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull
         {
             throw new NotImplementedException();
         }
@@ -33,7 +33,7 @@ namespace Laraue.Core.Testing.Logging
             return true;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string> formatter)
         {
             var messageBulder = new StringBuilder($"{DateTime.Now} {logLevel} {typeof(T).FullName}: - {state}");
             if (exception != null)

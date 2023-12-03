@@ -11,7 +11,7 @@ namespace Laraue.Core.DataAccess.Helpers
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="NotFoundException"></exception>
-        public static T EnsureNotDefaultValue<T>(T value)
+        public static T EnsureNotDefaultValue<T>(T? value)
         {
             if (value is null)
             {

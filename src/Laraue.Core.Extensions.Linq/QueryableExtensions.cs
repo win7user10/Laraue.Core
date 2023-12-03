@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Laraue.Core.Extensions.Linq
 {
-    public static class IQueryableExtensions
+    public static class QueryableExtensions
     {
         /// <summary>
         /// Apply expression if condition is true.
@@ -71,29 +71,37 @@ namespace Laraue.Core.Extensions.Linq
         /// <param name="condition"></param>
         /// <param name="combinatingFunction">Function, that use two expressions and returns one combined expression.</param>
         /// <returns></returns>
-        private static IQueryable<TQueryable> WhereExpression<TQueryable, TCondition>(this IQueryable<TQueryable> queryable, 
-            IEnumerable<TCondition> values, 
+        private static IQueryable<TQueryable> WhereExpression<TQueryable, TCondition>(
+            this IQueryable<TQueryable> queryable, 
+            IEnumerable<TCondition>? values, 
             Expression<Func<TQueryable, TCondition, bool>> condition,
             Func<Expression<Func<TQueryable, bool>>, Expression<Func<TQueryable, bool>>, Expression<Func<TQueryable, bool>>> combinatingFunction)
         {
-            if (values is null || values.Count() == 0)
+            var materializedValues = values?.ToList();
+            
+            if (materializedValues?.Count == 0)
                 return queryable;
 
-            Expression<Func<TQueryable, bool>> fullCondition = null;
-            foreach (var value in values)
+            Expression<Func<TQueryable, bool>>? fullCondition = null;
+            foreach (var value in materializedValues!)
             {
                 var constParameter = Expression.Constant(value);
                 var visitor = new ReplaceExpressionVisitor(condition.Parameters[1], constParameter);
                 var visitedExpression = visitor.Visit(condition.Body);
+
+                if (visitedExpression is null)
+                {
+                    throw new InvalidOperationException($"Expression {condition.Parameters[1]} could not be replaced");
+                }
+                
                 var lambdaExpression = Expression.Lambda<Func<TQueryable, bool>>(visitedExpression, condition.Parameters[0]);
 
-                if (fullCondition == null)
-                    fullCondition = lambdaExpression;
-                else
-                    fullCondition = combinatingFunction.Invoke(fullCondition, lambdaExpression);
+                fullCondition = fullCondition == null
+                    ? lambdaExpression
+                    : combinatingFunction.Invoke(fullCondition, lambdaExpression);
             }
 
-            return queryable.Where(fullCondition);
+            return queryable.Where(fullCondition!);
         }
     }
 }

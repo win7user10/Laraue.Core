@@ -9,7 +9,6 @@ using Laraue.Core.DataAccess.Helpers;
 using Laraue.Core.DataAccess.Utils;
 using Laraue.Core.Exceptions.Web;
 using LinqToDB;
-using Microsoft.EntityFrameworkCore;
 
 namespace Laraue.Core.DataAccess.Linq2DB.Extensions
 {

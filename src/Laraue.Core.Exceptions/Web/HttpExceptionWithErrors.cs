@@ -11,14 +11,14 @@ public abstract class HttpExceptionWithErrors : HttpException
     /// <summary>
     /// Errors dictionary
     /// </summary>
-    public IReadOnlyDictionary<string, string[]> Errors { get; protected set; }
+    public IReadOnlyDictionary<string, string?[]> Errors { get; protected set; }
 
     /// <summary>
     /// Initialize a new instance of <see cref="HttpExceptionWithErrors"/>.
     /// </summary>
     /// <param name="statusCode"></param>
     /// <param name="errors"></param>
-    protected HttpExceptionWithErrors(HttpStatusCode statusCode, IReadOnlyDictionary<string, string[]> errors)
+    protected HttpExceptionWithErrors(HttpStatusCode statusCode, IReadOnlyDictionary<string, string?[]> errors)
         : base(statusCode)
     {
         Errors = errors;
@@ -30,7 +30,7 @@ public abstract class HttpExceptionWithErrors : HttpException
     /// <param name="message"></param>
     /// <param name="statusCode"></param>
     /// <param name="errors"></param>
-    protected HttpExceptionWithErrors(string message, HttpStatusCode statusCode,  IReadOnlyDictionary<string, string[]> errors)
+    protected HttpExceptionWithErrors(string message, HttpStatusCode statusCode, IReadOnlyDictionary<string, string?[]> errors)
         : base(statusCode, message)
     {
         Errors = errors;
@@ -44,5 +44,6 @@ public abstract class HttpExceptionWithErrors : HttpException
     protected HttpExceptionWithErrors(string message, HttpStatusCode statusCode)
         : base(statusCode, message)
     {
+        Errors = new Dictionary<string, string?[]>();
     }
 }

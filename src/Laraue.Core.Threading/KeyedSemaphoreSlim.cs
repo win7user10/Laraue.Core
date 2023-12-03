@@ -10,7 +10,7 @@ namespace Laraue.Core.Threading
     /// Useful when needs to create a different semaphore for some key
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class KeyedSemaphoreSlim<TKey>
+    public class KeyedSemaphoreSlim<TKey> where TKey : notnull
     {
         private readonly AsyncKeyedLocker<TKey> _asyncKeyedLocker;
 

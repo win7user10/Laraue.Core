@@ -12,7 +12,7 @@ namespace Laraue.Core.Exceptions.Web
     {
         private const string ErrorMessage = "Bad request";
 
-        public BadRequestException(IReadOnlyDictionary<string, string[]> errors)
+        public BadRequestException(IReadOnlyDictionary<string, string?[]> errors)
             : base(ErrorMessage, HttpStatusCode.BadRequest, errors)
         {
         }
@@ -20,7 +20,7 @@ namespace Laraue.Core.Exceptions.Web
         public BadRequestException(List<ValidationResult> errors)
             : base(ErrorMessage, HttpStatusCode.BadRequest)
         {
-            var errorsDictionary = new Dictionary<string, List<string>>();
+            var errorsDictionary = new Dictionary<string, List<string?>>();
             
             foreach (var error in errors)
             {
@@ -28,7 +28,7 @@ namespace Laraue.Core.Exceptions.Web
                 {
                     if (!errorsDictionary.ContainsKey(member))
                     {
-                        errorsDictionary.Add(member, new List<string>());
+                        errorsDictionary.Add(member, new List<string?>());
                     }
                     errorsDictionary[member].Add(error.ErrorMessage);
                 }
