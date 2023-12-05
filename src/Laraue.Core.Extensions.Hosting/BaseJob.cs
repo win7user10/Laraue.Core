@@ -27,3 +27,9 @@ public abstract class BaseJob<TJobData> : IJob<TJobData> where TJobData : class,
         return OnStateUpdated?.Invoke(jobState, stoppingToken) ?? Task.CompletedTask;
     }
 }
+
+/// <summary>
+/// The job without context.
+/// </summary>
+public abstract class BaseJob : BaseJob<EmptyJobData>
+{}
