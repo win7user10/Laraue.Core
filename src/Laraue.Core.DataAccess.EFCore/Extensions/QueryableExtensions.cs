@@ -1,9 +1,13 @@
-﻿using Laraue.Core.DataAccess.Contracts;
+﻿using System;
+using Laraue.Core.DataAccess.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Laraue.Core.DataAccess.Helpers;
 using Laraue.Core.DataAccess.Utils;
+using Laraue.Core.Exceptions.Web;
 
 namespace Laraue.Core.DataAccess.EFCore.Extensions
 {
@@ -20,7 +24,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="request"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public static async Task<IFullPaginatedResult<TEntity>> FullPaginateAsync<TEntity>(
+        public static async Task<IFullPaginatedResult<TEntity>> FullPaginateEFAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginatedRequest request,
             CancellationToken ct = default)
@@ -45,7 +49,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static async Task<IShortPaginatedResult<TEntity>> ShortPaginateAsync<TEntity>(
+        public static async Task<IShortPaginatedResult<TEntity>> ShortPaginateEFAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginatedRequest request,
             CancellationToken ct = default)
@@ -68,7 +72,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="query"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static IFullPaginatedResult<TEntity> FullPaginate<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
+        public static IFullPaginatedResult<TEntity> FullPaginateEF<TEntity>(this IQueryable<TEntity> query, IPaginatedRequest request)
             where TEntity : class
         {
             var total = query.LongCount();
@@ -89,7 +93,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="request"></param>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static IShortPaginatedResult<TEntity> ShortPaginate<TEntity>(
+        public static IShortPaginatedResult<TEntity> ShortPaginateEF<TEntity>(
             this IQueryable<TEntity> query,
             IPaginatedRequest request)
             where TEntity : class
@@ -102,6 +106,55 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
                 .ToList();
 
             return ShortPaginatedResultUtil.BuildResult(request, data);
+        }
+        
+        /// <summary>
+        /// Returns a first element or throws <see cref="NotFoundException"/>
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="ct"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static async Task<T> FirstOrThrowNotFoundEFAsync<T>(this IQueryable<T> query, CancellationToken ct = default)
+        {
+            var result = await query.FirstOrDefaultAsync(ct);
+            return ObjectHelper.EnsureNotDefaultValue(result);
+        }
+        
+        /// <summary>
+        /// Returns a first element by predicate or throws <see cref="NotFoundException"/>
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="predicate"></param>
+        /// <param name="ct"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static async Task<T> FirstOrThrowNotFoundEFAsync<T>(
+            this IQueryable<T> query,
+            Expression<Func<T, bool>> predicate,
+            CancellationToken ct = default)
+        {
+            var result = await query.Where(predicate).FirstOrDefaultAsync(ct);
+            return ObjectHelper.EnsureNotDefaultValue(result);
+        }
+        
+        /// <summary>
+        /// Ensure that query returns at least one result or throws <see cref="NotFoundException"/>
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="predicate"></param>
+        /// <param name="ct"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <exception cref="NotFoundException"></exception>
+        public static async Task AnyOrThrowNotFoundEFAsync<T>(
+            this IQueryable<T> query,
+            Expression<Func<T, bool>> predicate,
+            CancellationToken ct = default)
+        {
+            if (!await query.AnyAsync(predicate, ct))
+            {
+                throw new NotFoundException();   
+            }
         }
     }
 }

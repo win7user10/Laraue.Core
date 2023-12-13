@@ -25,7 +25,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="request"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public static async Task<IFullPaginatedResult<TEntity>> FullPaginateAsync<TEntity>(
+        public static async Task<IFullPaginatedResult<TEntity>> FullPaginateLinq2DbAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginatedRequest request,
             CancellationToken ct = default)
@@ -49,7 +49,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static async Task<IShortPaginatedResult<TEntity>> ShortPaginateAsync<TEntity>(
+        public static async Task<IShortPaginatedResult<TEntity>> ShortPaginateLinq2DbAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginatedRequest request,
             CancellationToken ct = default)
@@ -71,7 +71,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task<T> FirstOrThrowNotFoundAsync<T>(this IQueryable<T> query, CancellationToken ct = default)
+        public static async Task<T> FirstOrThrowNotFoundLinq2DbAsync<T>(this IQueryable<T> query, CancellationToken ct = default)
         {
             var result = await query.FirstOrDefaultAsyncLinqToDB(ct);
             return ObjectHelper.EnsureNotDefaultValue(result);
@@ -85,7 +85,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task<T> FirstOrThrowNotFoundAsync<T>(
+        public static async Task<T> FirstOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default)
@@ -102,7 +102,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
-        public static async Task AnyOrThrowNotFoundAsync<T>(
+        public static async Task AnyOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default)
@@ -120,7 +120,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
-        public static async Task DeleteOrThrowNotFoundAsync<T>(
+        public static async Task DeleteOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             CancellationToken ct = default)
         {
@@ -139,7 +139,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
-        public static async Task DeleteOrThrowNotFoundAsync<T>(
+        public static async Task DeleteOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default) 
@@ -160,7 +160,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="NotFoundException"></exception>
-        public static async Task<long> UpdateOrThrowNotFoundAsync<T>(this IQueryable<T> query, Expression<Func<T, T>> setter, CancellationToken ct = default)
+        public static async Task<long> UpdateOrThrowNotFoundLinq2DbAsync<T>(this IQueryable<T> query, Expression<Func<T, T>> setter, CancellationToken ct = default)
         {
             var result = await query.UpdateAsync(setter, ct);
             return result == default ? throw new NotFoundException() : result;
