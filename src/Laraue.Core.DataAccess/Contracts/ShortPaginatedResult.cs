@@ -3,7 +3,7 @@ using Laraue.Core.DataAccess.Utils;
 
 namespace Laraue.Core.DataAccess.Contracts;
 
-public class ShortPaginatedResult<TEntity> : IShortPaginatedResult<TEntity> where TEntity : class
+public class ShortPaginatedResult<TEntity> : IShortPaginatedResult<TEntity>
 {
     public ShortPaginatedResult(long page, int perPage, bool hasNextPage, IList<TEntity> data)
     {

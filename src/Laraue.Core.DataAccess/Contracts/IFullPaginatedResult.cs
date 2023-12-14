@@ -6,7 +6,7 @@ namespace Laraue.Core.DataAccess.Contracts
     /// Abstraction for request response, which should returns pagination data.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public interface IFullPaginatedResult<TEntity> : IShortPaginatedResult<TEntity> where TEntity : class
+    public interface IFullPaginatedResult<TEntity> : IShortPaginatedResult<TEntity>
     {
         /// <summary>
         /// Number of last page.

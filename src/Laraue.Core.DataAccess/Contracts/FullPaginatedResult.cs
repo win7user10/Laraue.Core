@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Laraue.Core.DataAccess.Utils;
 
 namespace Laraue.Core.DataAccess.Contracts
 {
-    public class FullPaginatedResult<TEntity> : IFullPaginatedResult<TEntity> where TEntity : class
+    public class FullPaginatedResult<TEntity> : IFullPaginatedResult<TEntity>
     {
         public FullPaginatedResult(long page, int perPage, long total, IList<TEntity> data)
         {
@@ -20,7 +19,14 @@ namespace Laraue.Core.DataAccess.Contracts
         public long Page { get; }
 
         /// <inheritdoc />
-        public long LastPage => (int)Math.Ceiling((double)Total / PerPage);
+        public long LastPage
+        {
+            get
+            {
+                var totalPages = Total / PerPage;
+                return Total % PerPage == 0 ? totalPages - 1 : totalPages;
+            }
+        }
 
         /// <inheritdoc />
         public long Total { get; }

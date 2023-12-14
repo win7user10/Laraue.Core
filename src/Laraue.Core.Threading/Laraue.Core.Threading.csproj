@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Description>Classes to write multithreading code.</Description>
         <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Authors>Belyanskiy Ilya</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>6.0.9</Version>
+        <Version>8.0.0</Version>
         <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AsyncKeyedLock" Version="6.2.2" />
+      <PackageReference Include="AsyncKeyedLock" Version="6.2.4" />
     </ItemGroup>
 
 </Project>

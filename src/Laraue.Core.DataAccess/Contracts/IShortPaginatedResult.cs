@@ -7,7 +7,7 @@ namespace Laraue.Core.DataAccess.Contracts;
 /// about next/previous page existing.
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-public interface IShortPaginatedResult<TEntity> where TEntity : class
+public interface IShortPaginatedResult<TEntity>
 {
     /// <summary>
     /// Current page.
