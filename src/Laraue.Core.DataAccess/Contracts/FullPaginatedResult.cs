@@ -41,6 +41,6 @@ namespace Laraue.Core.DataAccess.Contracts
         public bool HasNextPage => LastPage > Page;
         
         /// <inheritdoc cref="IShortPaginatedResult{TEntity}"/>
-        public bool HasPreviousPage => Page > 1;
+        public bool HasPreviousPage => Page > 0;
     }
 }
