@@ -12,6 +12,14 @@ namespace Laraue.Core.Exceptions.Web
     {
         private const string ErrorMessage = "Bad request";
 
+        public BadRequestException(string propertyKey, string error)
+            : this(new Dictionary<string, string?[]>
+            {
+                [propertyKey] = [error]
+            })
+        {
+        }
+        
         public BadRequestException(IReadOnlyDictionary<string, string?[]> errors)
             : base(ErrorMessage, HttpStatusCode.BadRequest, errors)
         {
