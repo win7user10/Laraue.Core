@@ -40,5 +40,15 @@ namespace Laraue.Core.DataAccess.Extensions
                 shortPaginatedResult.HasNextPage,
                 shortPaginatedResult.Data.Select(convert).ToList());
         }
+        
+        /// <summary>
+        /// Returns serial number of the first entity in the paginated result.
+        /// Result with 8 records per page will return 1 for Page = 0, 9 for Page = 1 etc.
+        /// </summary>
+        public static long GetFirstItemSerialNumber<TResult>(
+            this IShortPaginatedResult<TResult> shortPaginatedResult)
+        {
+            return shortPaginatedResult.Page * shortPaginatedResult.PerPage + 1;
+        }
     }
 }

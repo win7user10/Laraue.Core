@@ -17,12 +17,12 @@ public static class PaginatorUtil
     {
         if (page < 0)
         {
-            throw new ArgumentException("Page should be grater or equal to 0", nameof(page));
+            throw new ArgumentException("Page should be greater or equal to 0", nameof(page));
         }
             
         if (perPage < 1)
         {
-            throw new ArgumentException("Per page should be grater or equal to 1", nameof(perPage));
+            throw new ArgumentException("Per page should be greater or equal to 1", nameof(perPage));
         }
     }
 }
