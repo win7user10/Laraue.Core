@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Text;
 
 namespace Laraue.Core.Exceptions.Web;
 
@@ -45,5 +46,19 @@ public abstract class HttpExceptionWithErrors : HttpException
         : base(statusCode, message)
     {
         Errors = new Dictionary<string, string?[]>();
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        sb.Append(base.ToString());
+
+        foreach (var error in Errors)
+        {
+            sb.Append($"{error.Key}: {string.Join(",", error.Value)}");
+        }
+        
+        return base.ToString();
     }
 }
