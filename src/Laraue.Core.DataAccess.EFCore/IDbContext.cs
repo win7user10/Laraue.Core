@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Laraue.Core.DataAccess.EFCore;
 
@@ -77,4 +78,9 @@ public interface IDbContext
     ///     access to change tracking information and operations for the entity.
     /// </returns>
     EntityEntry<TEntity> Add<TEntity>(TEntity entity) where TEntity : class;
+    
+    /// <summary>
+    ///     Provides access to database related information and operations for this context.
+    /// </summary>
+    DatabaseFacade Database { get; }
 }

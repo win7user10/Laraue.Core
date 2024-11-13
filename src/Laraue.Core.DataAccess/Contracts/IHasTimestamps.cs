@@ -5,7 +5,7 @@ namespace Laraue.Core.DataAccess.Contracts
     /// <summary>
     /// Base contract for the entity with timestamps.
     /// </summary>
-    public interface IWithTimestampsEntity
+    public interface IHasTimestamps
     {
         /// <summary>
         /// When the entity was created.
