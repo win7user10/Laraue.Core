@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Description>Library with often using asserts and constructions.</Description>
     <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>8.0.1</Version>
+    <Version>9.0.0</Version>
     <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Nullable>enable</Nullable>
@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="pythonnet_netstandard_py38_linux" Version="2.5.2" Condition="'$(OS)' == 'UNIX'" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
   </ItemGroup>
