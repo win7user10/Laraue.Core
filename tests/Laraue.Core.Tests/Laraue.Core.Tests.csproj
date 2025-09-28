@@ -24,21 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Laraue.Core.Extensions.Hosting.EfCore\Laraue.Core.Extensions.Hosting.EfCore.csproj" />
-    <ProjectReference Include="..\..\src\Laraue.Core.Keras\Laraue.Core.Keras.csproj" />
     <ProjectReference Include="..\..\src\Laraue.Core.Testing\Laraue.Core.Testing.csproj" />
     <ProjectReference Include="..\..\src\Laraue.Core.Threading\Laraue.Core.Threading.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Keras\Images\1.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Keras\Images\2.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Keras\Utils\binary_model.h5">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

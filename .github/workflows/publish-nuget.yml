@@ -20,19 +20,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '9.x.x'
-          
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
-          
-      - name: Install Python dependencies
-        run: |
-          alias python3.8="python"
-          python -m pip install --upgrade pip
-          pip install numpy
-          pip install tensorflow
-          pip install Pillow
             
       - name: Build project
         run: dotnet build --configuration Release
