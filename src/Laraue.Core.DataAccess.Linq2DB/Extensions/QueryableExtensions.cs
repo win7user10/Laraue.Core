@@ -32,13 +32,13 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
             where TEntity : class
         {
             var total = await query.LongCountAsyncLinqToDB(ct);
-            var skip = request.Page * request.PerPage;
+            var skip = request.Pagination.Page * request.Pagination.PerPage;
 
             var data = await query.Skip(skip)
-                .Take(request.PerPage)
+                .Take(request.Pagination.PerPage)
                 .ToListAsyncLinqToDB(ct);
 
-            return new FullPaginatedResult<TEntity>(request.Page, request.PerPage, total, data);
+            return new FullPaginatedResult<TEntity>(request.Pagination.Page, request.Pagination.PerPage, total, data);
         }
         
         /// <summary>
@@ -55,10 +55,10 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
             CancellationToken ct = default)
             where TEntity : class
         {
-            var skip = request.Page * request.PerPage;
+            var skip = request.Pagination.Page * request.Pagination.PerPage;
 
             var data = await query.Skip(skip)
-                .Take(request.PerPage + 1)
+                .Take(request.Pagination.PerPage + 1)
                 .ToListAsyncLinqToDB(ct);
 
             return ShortPaginatedResultUtil.BuildResult(request, data);
@@ -125,7 +125,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
             CancellationToken ct = default)
         {
             var result = await query.DeleteAsync(ct);
-            if (result == default)
+            if (result == 0)
             {
                 throw new NotFoundException();
             }
@@ -145,7 +145,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
             CancellationToken ct = default) 
         {
             var result = await query.DeleteAsync(predicate, ct);
-            if (result == default)
+            if (result == 0)
             {
                 throw new NotFoundException();
             }
@@ -163,7 +163,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         public static async Task<long> UpdateOrThrowNotFoundLinq2DbAsync<T>(this IQueryable<T> query, Expression<Func<T, T>> setter, CancellationToken ct = default)
         {
             var result = await query.UpdateAsync(setter, ct);
-            return result == default ? throw new NotFoundException() : result;
+            return result == 0 ? throw new NotFoundException() : result;
         }
     }
 }

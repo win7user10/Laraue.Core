@@ -15,7 +15,7 @@
   
   <ItemGroup>
     <PackageReference Include="Keras.NET" Version="3.8.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
   </ItemGroup>
 
 </Project>

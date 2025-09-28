@@ -23,13 +23,13 @@ public static class PaginationExtensions
         where TEntity : class
     {
         var total = query.Count;
-        var skip = request.Page * request.PerPage;
+        var skip = request.Pagination.Page * request.Pagination.PerPage;
 
         var data = query.Skip(skip)
-            .Take(request.PerPage)
+            .Take(request.Pagination.PerPage)
             .ToList();
 
-        return new FullPaginatedResult<TEntity>(request.Page, request.PerPage, total, data);
+        return new FullPaginatedResult<TEntity>(request.Pagination.Page, request.Pagination.PerPage, total, data);
     }
         
     /// <summary>
@@ -40,10 +40,10 @@ public static class PaginationExtensions
         IPaginatedRequest request)
         where TEntity : class
     {
-        var skip = request.Page * request.PerPage;
+        var skip = request.Pagination.Page * request.Pagination.PerPage;
 
         var data = query.Skip(skip)
-            .Take(request.PerPage + 1)
+            .Take(request.Pagination.PerPage + 1)
             .ToList();
 
         return ShortPaginatedResultUtil.BuildResult(request, data);

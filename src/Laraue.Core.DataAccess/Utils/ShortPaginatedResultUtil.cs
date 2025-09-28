@@ -22,12 +22,12 @@ public static class ShortPaginatedResultUtil
     public static ShortPaginatedResult<TEntity> BuildResult<TEntity>(IPaginatedRequest request, IList<TEntity> data)
         where TEntity : class
     {
-        var hasNextPage = data.Count > request.PerPage;
+        var hasNextPage = data.Count > request.Pagination.PerPage;
         if (hasNextPage)
         {
-            data = data.Take(request.PerPage).ToList();
+            data = data.Take(request.Pagination.PerPage).ToList();
         }
         
-        return new ShortPaginatedResult<TEntity>(request.Page, request.PerPage, hasNextPage, data);
+        return new ShortPaginatedResult<TEntity>(request.Pagination.Page, request.Pagination.PerPage, hasNextPage, data);
     }
 }

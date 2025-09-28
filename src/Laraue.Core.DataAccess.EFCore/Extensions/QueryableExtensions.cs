@@ -31,14 +31,14 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
             where TEntity : class
         {
             var total = await query.LongCountAsync(ct);
-            var skip = request.Page * request.PerPage;
+            var skip = request.Pagination.Page * request.Pagination.PerPage;
 
             var data = await query.Skip(skip)
-                .Take(request.PerPage)
+                .Take(request.Pagination.PerPage)
                 .AsNoTracking()
                 .ToListAsync(ct);
 
-            return new FullPaginatedResult<TEntity>(request.Page, request.PerPage, total, data);
+            return new FullPaginatedResult<TEntity>(request.Pagination.Page, request.Pagination.PerPage, total, data);
         }
         
         /// <summary>
@@ -55,10 +55,10 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
             CancellationToken ct = default)
             where TEntity : class
         {
-            var skip = request.Page * request.PerPage;
+            var skip = request.Pagination.Page * request.Pagination.PerPage;
 
             var data = await query.Skip(skip)
-                .Take(request.PerPage + 1)
+                .Take(request.Pagination.PerPage + 1)
                 .AsNoTracking()
                 .ToListAsync(ct);
 
@@ -76,14 +76,14 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
             where TEntity : class
         {
             var total = query.LongCount();
-            var skip = request.Page * request.PerPage;
+            var skip = request.Pagination.Page * request.Pagination.PerPage;
 
             var data = query.Skip(skip)
-                .Take(request.PerPage)
+                .Take(request.Pagination.PerPage)
                 .AsNoTracking()
                 .ToList();
 
-            return new FullPaginatedResult<TEntity>(request.Page, request.PerPage, total, data);
+            return new FullPaginatedResult<TEntity>(request.Pagination.Page, request.Pagination.PerPage, total, data);
         }
         
         /// <summary>
@@ -98,10 +98,10 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
             IPaginatedRequest request)
             where TEntity : class
         {
-            var skip = request.Page * request.PerPage;
+            var skip = request.Pagination.Page * request.Pagination.PerPage;
 
             var data = query.Skip(skip)
-                .Take(request.PerPage + 1)
+                .Take(request.Pagination.PerPage + 1)
                 .AsNoTracking()
                 .ToList();
 

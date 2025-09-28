@@ -5,14 +5,19 @@
     /// </summary>
     public interface IPaginatedRequest
     {
+        public PaginationData Pagination { get; init; }
+    }
+
+    public class PaginationData
+    {
         /// <summary>
         /// From which page should be returned results.
         /// </summary>
-        int Page { get; init; }
+        public int Page { get; init; }
 
         /// <summary>
         /// Maximum count of entities which can be returned in the one request.
         /// </summary>
-        int PerPage { get; init; }
+        public int PerPage { get; init; }
     }
 }
