@@ -1,11 +1,11 @@
 ﻿namespace Laraue.Core.DataAccess.Contracts
 {
     /// <summary>
-    /// Request for next page should contains these fields.
+    /// Request for the next page should contain these fields.
     /// </summary>
     public interface IPaginatedRequest
     {
-        public PaginationData Pagination { get; init; }
+        public PaginationData Pagination { get; }
     }
 
     public class PaginationData
