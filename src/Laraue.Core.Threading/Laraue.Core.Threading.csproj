@@ -1,20 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
         <Description>Classes to write multithreading code.</Description>
-        <RepositoryUrl>https://github.com/win7user10/Laraue.Core</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <Authors>Belyanskiy Ilya</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Version>9.0.1</Version>
-        <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncKeyedLock" Version="7.1.6" />
+        <PackageReference Include="AsyncKeyedLock" Version="$(AsyncKeyedLockVersion)" />
     </ItemGroup>
 
 </Project>

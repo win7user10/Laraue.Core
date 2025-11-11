@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>Latest</LangVersion>
+    <Copyright>Ilya Belyanskiy 2022</Copyright>
+    <Authors>Belyanskiy Ilya</Authors>
+    <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
+    <!-- Designate all projects as non-package projects by default -->
+    <IsPackable>false</IsPackable>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <MicrosoftPackagesVersion>[9.0.0, 10)</MicrosoftPackagesVersion>
+    <Linq2DbEfCoreVersion>[9.0.0, 10)</Linq2DbEfCoreVersion>
+    <AsyncKeyedLockVersion>[7.0.0, 8)</AsyncKeyedLockVersion>
+    <XUnitAbstractionsVersion>[2.0.3, 3)</XUnitAbstractionsVersion>
+  </PropertyGroup>
+</Project>

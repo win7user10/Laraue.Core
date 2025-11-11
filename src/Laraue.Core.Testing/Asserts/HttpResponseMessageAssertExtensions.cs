@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Laraue.Core.Testing.Asserts
@@ -14,8 +14,8 @@ namespace Laraue.Core.Testing.Asserts
     public static class HttpResponseMessageAssertExtensions
     {
         /// <summary>
-        /// Assert, that response has needed status code.
-        /// Dump content message if status code is not suit.
+        /// Assert, that response has necessary status code.
+        /// Dump a content message if status code is not suit.
         /// </summary>
         /// <param name="httpResponseMessageTask"></param>
         /// <param name="httpStatusCode"></param>
@@ -67,9 +67,9 @@ namespace Laraue.Core.Testing.Asserts
         }
 
         /// <summary>
-        /// Assert, that response has needed status code.
-        /// Dump content message if status code is not suit.
-        /// Returns deserialized object if status is suit.
+        /// Assert, that response has necessary status code.
+        /// Dump a content message if status code is not suit.
+        /// Returns a deserialized object if status is suit.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="httpResponseMessage"></param>
@@ -80,7 +80,7 @@ namespace Laraue.Core.Testing.Asserts
             await httpResponseMessage.AssertStatus(httpStatusCode);
             var contentBytes = (await httpResponseMessage).Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
             dynamic content = Encoding.UTF8.GetString(contentBytes);
-            return typeof(T) == typeof(string) ? content : JsonConvert.DeserializeObject<T>(content);
+            return typeof(T) == typeof(string) ? content : JsonSerializer.Deserialize<T>(content);
         }
     }
 }
