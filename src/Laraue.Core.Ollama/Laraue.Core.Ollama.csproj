@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Description>Ollama adapter for C#.</Description>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
         <Version>1.0.0</Version>
     </PropertyGroup>
 

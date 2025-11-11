@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Description>Classes to write multithreading code.</Description>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
         <Version>9.0.1</Version>
     </PropertyGroup>
 

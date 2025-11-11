@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>Extensions for EF core database provider.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>9.1.1</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Description>Extensions for EF core database provider.</Description>
+        <IsPackable>true</IsPackable>
+        <Version>9.1.1</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Laraue.Core.DataAccess\Laraue.Core.DataAccess.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Laraue.Core.DataAccess\Laraue.Core.DataAccess.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(MicrosoftPackagesVersion)" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(MicrosoftPackagesVersion)" />
+    </ItemGroup>
 
 </Project>

@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>Extensions for Linq2DB database provider to work through EFCore context.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>9.1.1</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Description>Extensions for Linq2DB database provider to work through EFCore context.</Description>
+        <IsPackable>true</IsPackable>
+        <Version>9.1.1</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Laraue.Core.DataAccess\Laraue.Core.DataAccess.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Laraue.Core.DataAccess\Laraue.Core.DataAccess.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="linq2db.EntityFrameworkCore" Version="$(Linq2DbEfCoreVersion)" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="linq2db.EntityFrameworkCore" Version="$(Linq2DbEfCoreVersion)" />
+    </ItemGroup>
 
 </Project>

@@ -1,18 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>Background services that stores these states in the DB.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>9.0.1</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Description>Background services that stores these states in the DB.</Description>
+        <IsPackable>true</IsPackable>
+        <Version>9.0.1</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(MicrosoftPackagesVersion)" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(MicrosoftPackagesVersion)" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Laraue.Core.DataAccess.EFCore\Laraue.Core.DataAccess.EFCore.csproj" />
-    <ProjectReference Include="..\Laraue.Core.Extensions.Hosting\Laraue.Core.Extensions.Hosting.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Laraue.Core.DataAccess.EFCore\Laraue.Core.DataAccess.EFCore.csproj" />
+        <ProjectReference Include="..\Laraue.Core.Extensions.Hosting\Laraue.Core.Extensions.Hosting.csproj" />
+    </ItemGroup>
 
 </Project>

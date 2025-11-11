@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>Extensions and contracts to work with data layer of application.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>9.1.1</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Description>Extensions and contracts to work with data layer of application.</Description>
+        <IsPackable>true</IsPackable>
+        <Version>9.1.1</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Laraue.Core.Exceptions\Laraue.Core.Exceptions.csproj" />
-  </ItemGroup>
-  
+    <ItemGroup>
+        <ProjectReference Include="..\Laraue.Core.Exceptions\Laraue.Core.Exceptions.csproj" />
+    </ItemGroup>
+
 </Project>
