@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Extensions for Linq2DB database provider to work through EFCore context.</Description>
         <IsPackable>true</IsPackable>
-        <Version>9.1.1</Version>
+        <Version>10.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

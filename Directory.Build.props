@@ -6,7 +6,7 @@
     <PackageProjectUrl>https://github.com/win7user10/Laraue.Core</PackageProjectUrl>
     <!-- Designate all projects as non-package projects by default -->
     <IsPackable>false</IsPackable>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -15,9 +15,9 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <MicrosoftPackagesVersion>[9.0.0, 10)</MicrosoftPackagesVersion>
+    <MicrosoftPackagesVersion>[10.0.0, 11)</MicrosoftPackagesVersion>
     <Linq2DbEfCoreVersion>[9.0.0, 10)</Linq2DbEfCoreVersion>
-    <AsyncKeyedLockVersion>[7.0.0, 8)</AsyncKeyedLockVersion>
+    <AsyncKeyedLockVersion>[7.1.7, 8)</AsyncKeyedLockVersion>
     <XUnitAbstractionsVersion>[2.0.3, 3)</XUnitAbstractionsVersion>
   </PropertyGroup>
 </Project>

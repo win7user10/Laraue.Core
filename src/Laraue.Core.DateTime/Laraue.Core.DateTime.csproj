@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Utilities to work with the System.DateTime, System.DateTimeOffset etc.</Description>
         <IsPackable>true</IsPackable>
-        <Version>9.0.0</Version>
+        <Version>10.0.0</Version>
     </PropertyGroup>
 
 </Project>
