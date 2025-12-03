@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Laraue.Core.DateTime.Services.Abstractions;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Laraue.Core.Extensions.Hosting;
 
 /// <summary>
-/// Service that should execute some work and fall asleep for the some time and store the current state somewhere.
+/// Service that should execute some work and fall asleep for some time and store the current state somewhere.
 /// </summary>
 public abstract class JobRunner<TJob, TJobData> : BackgroundService
     where TJob : IJob<TJobData>
@@ -21,21 +22,28 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
     /// </summary>
     protected readonly string JobName;
 
+    private readonly object[] _jobConstructorArguments;
+
     private readonly IServiceProvider _serviceProvider;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<JobRunner<TJob, TJobData>> _logger;
+    private readonly IJobConcurrencyChecker _jobConcurrencyChecker;
 
     /// <inheritdoc />
     protected JobRunner(
         string jobName,
+        object[] jobConstructorArguments,
         IServiceProvider serviceProvider,
         IDateTimeProvider dateTimeProvider,
-        ILogger<JobRunner<TJob, TJobData>> logger)
+        ILogger<JobRunner<TJob, TJobData>> logger,
+        IJobConcurrencyChecker jobConcurrencyChecker)
     {
         JobName = jobName;
+        _jobConstructorArguments = jobConstructorArguments;
         _serviceProvider = serviceProvider;
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
+        _jobConcurrencyChecker = jobConcurrencyChecker;
     }
 
     /// <inheritdoc />
@@ -77,13 +85,23 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Start the job {JobName} executing", JobName);
+            var jobGroupAttribute = typeof(TJob).GetCustomAttribute<JobGroupAttribute>();
+            if (jobGroupAttribute is not null)
+            {
+                _logger.LogInformation("Acquire lock on job group '{JobGroup}'", jobGroupAttribute.GroupName);
+                
+                await _jobConcurrencyChecker
+                    .AcquireLockAsync(jobGroupAttribute.GroupName, stoppingToken)
+                    .ConfigureAwait(false);
+            }
+            
+            _logger.LogInformation("Start the job '{JobName}' executing", JobName);
             
             var sw = new Stopwatch();
             sw.Start();
 
             var scope = _serviceProvider.CreateScope();
-            var job = scope.ServiceProvider.GetRequiredService<TJob>();
+            var job = ActivatorUtilities.CreateInstance<TJob>(scope.ServiceProvider, _jobConstructorArguments);
 
             job.OnStateUpdated += SaveJobStateAsync;
             
@@ -105,6 +123,11 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
             
             scope.Dispose();
 
+            if (jobGroupAttribute is not null)
+            {
+                _jobConcurrencyChecker.ReleaseLockAsync(jobGroupAttribute.GroupName);
+            }
+            
             await Task.Delay(timeToWait, stoppingToken)
                 .ConfigureAwait(false);
         }

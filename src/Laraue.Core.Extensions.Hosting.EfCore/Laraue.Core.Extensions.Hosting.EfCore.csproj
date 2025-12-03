@@ -3,7 +3,8 @@
     <PropertyGroup>
         <Description>Background services that stores these states in the DB.</Description>
         <IsPackable>true</IsPackable>
-        <Version>10.0.0</Version>
+        <Version>10.1.0</Version>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

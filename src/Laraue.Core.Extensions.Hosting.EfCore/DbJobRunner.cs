@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Laraue.Core.DateTime.Extensions;
 using Laraue.Core.DateTime.Services.Abstractions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -21,10 +19,18 @@ public sealed class DbJobRunner<TJob, TJobData> : JobRunner<TJob, TJobData>
     /// <inheritdoc />
     public DbJobRunner(
         string jobName,
+        object[] jobConstructorArguments,
         IServiceProvider serviceProvider,
         IDateTimeProvider dateTimeProvider,
-        ILogger<DbJobRunner<TJob, TJobData>> logger)
-        : base(jobName, serviceProvider, dateTimeProvider, logger)
+        ILogger<DbJobRunner<TJob, TJobData>> logger,
+        IJobConcurrencyChecker concurrencyChecker)
+        : base(
+            jobName,
+            jobConstructorArguments,
+            serviceProvider,
+            dateTimeProvider,
+            logger,
+            concurrencyChecker)
     {
         _serviceProvider = serviceProvider;
     }
@@ -33,10 +39,10 @@ public sealed class DbJobRunner<TJob, TJobData> : JobRunner<TJob, TJobData>
     protected override async Task<JobState<TJobData>?> GetJobStateAsync(CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IJobsDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IDbJobRunnerRepository>();
 
-        var jobState = await db.JobStates.Where(x => x.JobName == JobName)
-            .FirstOrDefaultAsync(cancellationToken)
+        var jobState = await db
+            .GetJobStateAsync(JobName, cancellationToken)
             .ConfigureAwait(false);
 
         return jobState is null
@@ -56,24 +62,15 @@ public sealed class DbJobRunner<TJob, TJobData> : JobRunner<TJob, TJobData>
     protected override async Task SaveJobStateAsync(JobState<TJobData> state, CancellationToken cancellationToken = default)
     {
         using var scope = _serviceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IJobsDbContext>();
-        
-        var isStateExists = await db.JobStates.Where(x => x.JobName == JobName)
-            .AnyAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        var entry = new JobStateEntity
-        {
-            JobName = state.JobName,
-            JobData = JsonSerializer.Serialize(state.JobData),
-            NextExecutionAt = state.NextExecutionAt?.UseUtcKind(),
-            LastExecutionAt = state.LastExecutionAt?.UseUtcKind(),
-        };
-        
-        db.Entry(entry).State = isStateExists ? EntityState.Modified : EntityState.Added;
+        var db = scope.ServiceProvider.GetRequiredService<IDbJobRunnerRepository>();
 
         await db
-            .SaveChangesAsync(cancellationToken)
+            .InsertOrUpdateStateAsync(
+                JobName,
+                JsonSerializer.Serialize(state.JobData),
+                state.NextExecutionAt?.UseUtcKind(),
+                state.LastExecutionAt?.UseUtcKind(),
+                cancellationToken)
             .ConfigureAwait(false);
     }
 }

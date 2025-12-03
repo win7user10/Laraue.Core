@@ -82,14 +82,14 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
         try
         {
             response.EnsureSuccessStatusCode();
-            var ollamaResult = await response.Content.ReadFromJsonAsync<OllamaResult>(JsonSerializerOptions.Web, ct);
+            var ollamaResult = await response.Content.ReadFromJsonAsync<OllamaResult>(JsonSerializerOptions.Default, ct);
             var data = 
                 ollamaResult!.Response != string.Empty
                     ? ollamaResult.Response
                     : ollamaResult!.Thinking
                     ?? throw new OllamaResponseException("No 'response' or 'thinking' properties are filled");
             
-            return JsonSerializer.Deserialize<TModel>(data, JsonSerializerOptions.Web)!;
+            return JsonSerializer.Deserialize<TModel>(data, JsonSerializerOptions.Default)!;
         }
         catch (Exception e)
         {

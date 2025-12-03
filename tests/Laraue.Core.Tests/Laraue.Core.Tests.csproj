@@ -3,6 +3,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Laraue.Core.Extensions.Hosting.EfCore\Laraue.Core.Extensions.Hosting.EfCore.csproj" />
-    <ProjectReference Include="..\..\src\Laraue.Core.Testing\Laraue.Core.Testing.csproj" />
     <ProjectReference Include="..\..\src\Laraue.Core.Threading\Laraue.Core.Threading.csproj" />
   </ItemGroup>
 
