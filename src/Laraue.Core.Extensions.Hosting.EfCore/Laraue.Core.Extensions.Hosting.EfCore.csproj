@@ -3,12 +3,12 @@
     <PropertyGroup>
         <Description>Background services that stores these states in the DB.</Description>
         <IsPackable>true</IsPackable>
-        <Version>10.1.0</Version>
+        <Version>10.2.0</Version>
         <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(MicrosoftPackagesVersion)" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(MicrosoftEfCoreVersion)" />
     </ItemGroup>
 
     <ItemGroup>

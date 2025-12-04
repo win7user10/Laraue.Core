@@ -17,13 +17,7 @@ public static class ServiceCollectionExtensions
         where TJobData : class, new()
     {
         return services
+            .AddScoped<IDbJobRunnerRepository, DbJobRunnerRepository>()
             .AddBackgroundJob<TJob, TJobData, DbJobRunner<TJob, TJobData>>(jobKey, jobConstructorArguments);
-    }
-
-    public static IServiceCollection AddBackgroundJobRepository<TDbJobRunnerRepository>(
-        this IServiceCollection services)
-        where TDbJobRunnerRepository : class, IDbJobRunnerRepository
-    {
-        return services.AddScoped<IDbJobRunnerRepository, TDbJobRunnerRepository>();
     }
 }
