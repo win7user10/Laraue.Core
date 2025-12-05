@@ -18,7 +18,6 @@ public static class ServiceCollectionExtensions
         where TJobRunner : JobRunner<TJob, TJobData>
     {
         services.TryAddSingleton<IJobConcurrencyChecker, JobConcurrencyChecker>();
-        services.TryAddScoped<TJob>();
         return services.AddSingleton<IHostedService>(sp => ActivatorUtilities.CreateInstance<TJobRunner>(sp, jobKey, jobConstructorArguments));
     }
 }
