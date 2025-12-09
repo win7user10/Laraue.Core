@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosting", "Hosting", "{541F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "System", "System", "{705512F3-CBF5-4835-9D11-71EAD1017F28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laraue.Core.IntegrationTests", "tests\Laraue.Core.IntegrationTests\Laraue.Core.IntegrationTests.csproj", "{F4D749E6-1D7C-414C-A06D-407F5F1C8345}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{2CB3F502-1C01-4BC2-A14B-AA7044C1BEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CB3F502-1C01-4BC2-A14B-AA7044C1BEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CB3F502-1C01-4BC2-A14B-AA7044C1BEDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4D749E6-1D7C-414C-A06D-407F5F1C8345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D749E6-1D7C-414C-A06D-407F5F1C8345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4D749E6-1D7C-414C-A06D-407F5F1C8345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D749E6-1D7C-414C-A06D-407F5F1C8345}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{A9DE5108-B502-4607-AF17-C81F47340A51} = {705512F3-CBF5-4835-9D11-71EAD1017F28}
 		{F06376D5-6934-4BCF-9300-2D223862B0D0} = {705512F3-CBF5-4835-9D11-71EAD1017F28}
 		{37A85C8B-9BDB-4D0F-93A1-DEE46680D0C5} = {705512F3-CBF5-4835-9D11-71EAD1017F28}
+		{F4D749E6-1D7C-414C-A06D-407F5F1C8345} = {57EA2CE0-DE8F-47FE-840C-640B92E95253}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {571F3D51-B3A5-4B4A-905F-54F08427EDB5}

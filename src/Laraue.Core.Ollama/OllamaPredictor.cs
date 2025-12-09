@@ -17,6 +17,7 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
 {
     private readonly JsonSerializerOptions _options = new()
     {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
@@ -73,7 +74,7 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
 
         try
         {
-            return JsonSerializer.Deserialize<TModel>(stringResponse, _options)!;
+            return JsonSerializer.Deserialize<TModel>(stringResponse, new JsonSerializerOptions(JsonSerializerDefaults.General))!;
         }
         catch (Exception e)
         {
