@@ -73,7 +73,7 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
 
         try
         {
-            return JsonSerializer.Deserialize<TModel>(stringResponse, JsonSerializerOptions.Default)!;
+            return JsonSerializer.Deserialize<TModel>(stringResponse, _options)!;
         }
         catch (Exception e)
         {
@@ -111,7 +111,10 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
         try
         {
             response.EnsureSuccessStatusCode();
-            var ollamaResult = await response.Content.ReadFromJsonAsync<OllamaResult>(JsonSerializerOptions.Default, ct);
+            var ollamaResult = await response.Content.ReadFromJsonAsync<OllamaResult>(
+                _options,
+                ct);
+            
             var data = 
                 ollamaResult!.Response != string.Empty
                     ? ollamaResult.Response
