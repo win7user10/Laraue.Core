@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Ollama adapter for C#.</Description>
         <IsPackable>true</IsPackable>
-        <Version>2.1.0</Version>
+        <Version>2.1.1</Version>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 

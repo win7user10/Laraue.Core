@@ -37,4 +37,16 @@ public interface IOllamaPredictor
         string prompt,
         CancellationToken ct = default)
         where TModel : class;
+    
+    /// <summary>
+    /// Run prediction and return response string.
+    /// </summary>
+    /// <param name="modelName"></param>
+    /// <param name="prompt"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public Task<string> PredictAsync(
+        string modelName,
+        string prompt,
+        CancellationToken ct = default);
 }

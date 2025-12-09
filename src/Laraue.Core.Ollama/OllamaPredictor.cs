@@ -35,7 +35,12 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
     {
         return PredictInternalAsync<TModel>(model, prompt, null, ct);
     }
-    
+
+    public Task<string> PredictAsync(string modelName, string prompt, CancellationToken ct = default)
+    {
+        return RequestOllamaAsync(modelName, prompt, null, null, ct);
+    }
+
     private async Task<TModel> PredictInternalAsync<TModel>(
         string model,
         string prompt,
@@ -59,6 +64,30 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
 
         semaphore.Release();
 
+        var stringResponse = await RequestOllamaAsync(
+            model,
+            prompt,
+            base64EncodedImage,
+            schema,
+            ct);
+
+        try
+        {
+            return JsonSerializer.Deserialize<TModel>(stringResponse, JsonSerializerOptions.Default)!;
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException(stringResponse, e);
+        }
+    }
+
+    private async Task<string> RequestOllamaAsync(
+        string model,
+        string prompt,
+        string? base64EncodedImage,
+        object? schema,
+        CancellationToken ct = default)
+    {
         var request = new Dictionary<string, object>()
         {
             ["temperature"] = 0,
@@ -78,7 +107,7 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
             request,
             _options,
             ct);
-
+        
         try
         {
             response.EnsureSuccessStatusCode();
@@ -87,9 +116,10 @@ public class OllamaPredictor(HttpClient client, ILogger<OllamaPredictor> logger)
                 ollamaResult!.Response != string.Empty
                     ? ollamaResult.Response
                     : ollamaResult!.Thinking
-                    ?? throw new OllamaResponseException("No 'response' or 'thinking' properties are filled");
+                      ?? throw new OllamaResponseException("No 'response' or 'thinking' properties are filled");
             
-            return JsonSerializer.Deserialize<TModel>(data, JsonSerializerOptions.Default)!;
+            return data;
+            
         }
         catch (Exception e)
         {
