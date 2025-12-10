@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Extensions and contracts to work with data layer of application.</Description>
         <IsPackable>true</IsPackable>
-        <Version>10.3.0</Version>
+        <Version>10.4.0</Version>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 

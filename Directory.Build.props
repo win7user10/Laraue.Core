@@ -16,8 +16,8 @@
   
   <PropertyGroup>
     <MicrosoftPackagesVersion>[10.0.0, 11)</MicrosoftPackagesVersion>
-    <MicrosoftEfCoreVersion>[9.0.0, 10)</MicrosoftEfCoreVersion>
-    <Linq2DbEfCoreVersion>[9.0.0, 10)</Linq2DbEfCoreVersion>
+    <MicrosoftEfCoreVersion>[10.0.0, 11)</MicrosoftEfCoreVersion>
+    <Linq2DbEfCoreVersion>[10.0.0, 11)</Linq2DbEfCoreVersion>
     <AsyncKeyedLockVersion>[7.1.7, 8)</AsyncKeyedLockVersion>
     <XUnitAbstractionsVersion>[2.0.3, 3)</XUnitAbstractionsVersion>
   </PropertyGroup>
