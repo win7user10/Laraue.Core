@@ -7,8 +7,8 @@
     {
         public PaginationData Pagination { get; }
     }
-
-    public class PaginationData
+    
+    public interface IPaginationData
     {
         /// <summary>
         /// From which page should be returned results.
@@ -18,6 +18,15 @@
         /// <summary>
         /// Maximum count of entities which can be returned in the one request.
         /// </summary>
+        public int PerPage { get; init; }
+    }
+
+    public class PaginationData : IPaginationData
+    {
+        /// <inheritdoc/>
+        public int Page { get; init; }
+
+        /// <inheritdoc/>
         public int PerPage { get; init; }
     }
 }

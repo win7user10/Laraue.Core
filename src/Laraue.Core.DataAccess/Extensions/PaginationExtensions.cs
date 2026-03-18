@@ -37,15 +37,15 @@ public static class PaginationExtensions
     /// </summary>
     public static IShortPaginatedResult<TEntity> ShortPaginate<TEntity>(
         this IEnumerable<TEntity> query,
-        IPaginatedRequest request)
+        IPaginationData pagination)
         where TEntity : class
     {
-        var skip = request.Pagination.Page * request.Pagination.PerPage;
+        var skip = pagination.Page * pagination.PerPage;
 
         var data = query.Skip(skip)
-            .Take(request.Pagination.PerPage + 1)
+            .Take(pagination.PerPage + 1)
             .ToList();
 
-        return ShortPaginatedResultUtil.BuildResult(request, data);
+        return ShortPaginatedResultUtil.BuildResult(pagination, data);
     }
 }

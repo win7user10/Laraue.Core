@@ -19,15 +19,15 @@ public static class ShortPaginatedResultUtil
     /// </param>
     /// <typeparam name="TEntity"></typeparam>
     /// <returns></returns>
-    public static ShortPaginatedResult<TEntity> BuildResult<TEntity>(IPaginatedRequest request, IList<TEntity> data)
+    public static ShortPaginatedResult<TEntity> BuildResult<TEntity>(IPaginationData request, IList<TEntity> data)
         where TEntity : class
     {
-        var hasNextPage = data.Count > request.Pagination.PerPage;
+        var hasNextPage = data.Count > request.PerPage;
         if (hasNextPage)
         {
-            data = data.Take(request.Pagination.PerPage).ToList();
+            data = data.Take(request.PerPage).ToList();
         }
         
-        return new ShortPaginatedResult<TEntity>(request.Pagination.Page, request.Pagination.PerPage, hasNextPage, data);
+        return new ShortPaginatedResult<TEntity>(request.Page, request.PerPage, hasNextPage, data);
     }
 }
