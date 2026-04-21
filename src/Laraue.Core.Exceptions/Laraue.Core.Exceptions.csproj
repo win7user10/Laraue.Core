@@ -3,7 +3,7 @@
     <PropertyGroup>
         <Description>Common exception for Laraue.Core packages.</Description>
         <IsPackable>true</IsPackable>
-        <Version>10.2.0</Version>
+        <Version>10.2.1</Version>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 

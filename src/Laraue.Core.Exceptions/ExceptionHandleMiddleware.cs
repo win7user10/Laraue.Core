@@ -44,11 +44,7 @@ public class ExceptionHandleMiddleware : IMiddleware
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         if (exception is AggregateException aggregateException)
-        {
             exception = aggregateException.GetBaseException();
-        }
-        
-        _logger.LogWarning(exception, "Error was catch in middleware");
 
         return exception switch
         {
@@ -57,14 +53,20 @@ public class ExceptionHandleMiddleware : IMiddleware
         };
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exp, HttpStatusCode code)
+    private Task HandleExceptionAsync(
+        HttpContext context,
+        Exception exp,
+        HttpStatusCode code)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int) code;
 
+        var isUnhandledError = code == HttpStatusCode.InternalServerError;
+        _logger.Log(isUnhandledError ? LogLevel.Error : LogLevel.Information, exp, "");
+
         return context.Response
             .WriteAsJsonAsync(new ErrorResponse(
-                exp.Message,
+                isUnhandledError ? "Internal Server Error" : exp.Message,
                 exp is HttpExceptionWithErrors httpExceptionWithErrors ? httpExceptionWithErrors.Errors : null),
             SerializerOptions);
     }
