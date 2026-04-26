@@ -5,7 +5,7 @@ using System.Text;
 namespace Laraue.Core.Exceptions.Web;
 
 /// <summary>
-/// Exception with some errors should be catch in middleware.
+/// Exception with some errors should be caught in middleware.
 /// </summary>
 public abstract class HttpExceptionWithErrors : HttpException
 {
@@ -13,17 +13,6 @@ public abstract class HttpExceptionWithErrors : HttpException
     /// Errors dictionary
     /// </summary>
     public IReadOnlyDictionary<string, string?[]> Errors { get; protected set; }
-
-    /// <summary>
-    /// Initialize a new instance of <see cref="HttpExceptionWithErrors"/>.
-    /// </summary>
-    /// <param name="statusCode"></param>
-    /// <param name="errors"></param>
-    protected HttpExceptionWithErrors(HttpStatusCode statusCode, IReadOnlyDictionary<string, string?[]> errors)
-        : base(statusCode)
-    {
-        Errors = errors;
-    }
     
     /// <summary>
     /// Initialize a new instance of <see cref="HttpExceptionWithErrors"/>.

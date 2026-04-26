@@ -7,7 +7,8 @@ namespace Laraue.Core.Exceptions.Web
     /// </summary>
     public class NotAcceptableException : HttpException
     {
-        public NotAcceptableException(string message) : base(HttpStatusCode.NotAcceptable, message)
+        public NotAcceptableException(string message)
+            : base(HttpStatusCode.NotAcceptable, message)
         {
         }
     }

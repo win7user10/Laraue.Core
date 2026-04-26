@@ -7,19 +7,14 @@ namespace Laraue.Core.DataAccess.Helpers
         /// <summary>
         /// Throw an exception if value is null for object ot values is default for structs
         /// </summary>
-        /// <param name="value"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         /// <exception cref="NotFoundException"></exception>
-        public static T EnsureNotDefaultValue<T>(T? value)
+        public static T EnsureNotDefaultValue<T>(T? value, string error)
         {
             if (value is null)
-            {
-                throw new NotFoundException();
-            }
+                throw new NotFoundException(error);
             
             return value.Equals(default(T))
-                ? throw new NotFoundException()
+                ? throw new NotFoundException(error)
                 : value;
         }
     }

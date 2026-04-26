@@ -67,103 +67,89 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <summary>
         /// Returns a first element or throws <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="ct"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static async Task<T> FirstOrThrowNotFoundLinq2DbAsync<T>(this IQueryable<T> query, CancellationToken ct = default)
+        public static async Task<T> FirstOrThrowNotFoundLinq2DbAsync<T>(
+            this IQueryable<T> query,
+            string error,
+            CancellationToken ct = default)
         {
             var result = await query.FirstOrDefaultAsyncLinqToDB(ct);
-            return ObjectHelper.EnsureNotDefaultValue(result);
+            return ObjectHelper.EnsureNotDefaultValue(result, error);
         }
         
         /// <summary>
         /// Returns a first element by predicate or throws <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="predicate"></param>
-        /// <param name="ct"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public static async Task<T> FirstOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
+            string error,
             CancellationToken ct = default)
         {
             var result = await query.Where(predicate).FirstOrDefaultAsyncLinqToDB(ct);
-            return ObjectHelper.EnsureNotDefaultValue(result);
+            return ObjectHelper.EnsureNotDefaultValue(result, error);
         }
         
         /// <summary>
         /// Ensure that query returns at least one result or throws <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="predicate"></param>
-        /// <param name="ct"></param>
-        /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
         public static async Task AnyOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
+            string error,
             CancellationToken ct = default)
         {
             if (!await query.AnyAsyncLinqToDB(predicate, ct))
             {
-                throw new NotFoundException();   
+                throw new NotFoundException(error);
             }
         }
         
         /// <summary>
         /// Delete rows by query. If 0 rows affected throws <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="ct"></param>
-        /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
         public static async Task DeleteOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
+            string error,
             CancellationToken ct = default)
         {
             var result = await query.DeleteAsync(ct);
             if (result == 0)
             {
-                throw new NotFoundException();
+                throw new NotFoundException(error);
             }
         }
         
         /// <summary>
         /// Delete rows by query with passed predicate. If 0 rows affected throws <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="predicate"></param>
-        /// <param name="ct"></param>
-        /// <typeparam name="T"></typeparam>
         /// <exception cref="NotFoundException"></exception>
         public static async Task DeleteOrThrowNotFoundLinq2DbAsync<T>(
             this IQueryable<T> query,
             Expression<Func<T, bool>> predicate,
+            string error,
             CancellationToken ct = default) 
         {
             var result = await query.DeleteAsync(predicate, ct);
             if (result == 0)
             {
-                throw new NotFoundException();
+                throw new NotFoundException(error);
             }
         }
         
         /// <summary>
         /// Update rows by query with passed setter. If 0 rows affected throws <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="setter"></param>
-        /// <param name="ct"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         /// <exception cref="NotFoundException"></exception>
-        public static async Task<long> UpdateOrThrowNotFoundLinq2DbAsync<T>(this IQueryable<T> query, Expression<Func<T, T>> setter, CancellationToken ct = default)
+        public static async Task<long> UpdateOrThrowNotFoundLinq2DbAsync<T>(
+            this IQueryable<T> query,
+            Expression<Func<T, T>> setter,
+            string error,
+            CancellationToken ct = default)
         {
             var result = await query.UpdateAsync(setter, ct);
-            return result == 0 ? throw new NotFoundException() : result;
+            return result == 0 ? throw new NotFoundException(error) : result;
         }
     }
 }

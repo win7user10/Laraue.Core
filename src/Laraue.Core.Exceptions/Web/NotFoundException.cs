@@ -5,14 +5,7 @@ namespace Laraue.Core.Exceptions.Web
     /// <summary>
     /// Exception with 404 code
     /// </summary>
-    public class NotFoundException : HttpException
+    public class NotFoundException(string message) : HttpException(HttpStatusCode.NotFound, message)
     {
-        public NotFoundException() : base(HttpStatusCode.NotFound)
-        {
-        }
-        
-        public NotFoundException(string message) : base(HttpStatusCode.NotFound, message)
-        {
-        }
     }
 }
