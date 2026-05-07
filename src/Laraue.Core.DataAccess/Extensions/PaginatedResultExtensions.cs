@@ -12,7 +12,7 @@ namespace Laraue.Core.DataAccess.Extensions
         /// <summary>
         /// Convert all elements of paginated result, using passed function.
         /// </summary>
-        public static IFullPaginatedResult<TTo> MapTo<TTo, TFrom>(
+        public static FullPaginatedResult<TTo> MapTo<TTo, TFrom>(
             this IFullPaginatedResult<TFrom> fullPaginatedResult,
             Func<TFrom, TTo> convert)
             where TFrom : class
@@ -28,7 +28,7 @@ namespace Laraue.Core.DataAccess.Extensions
         /// <summary>
         /// Convert all elements of paginated result, using passed function.
         /// </summary>
-        public static IShortPaginatedResult<TTo> MapTo<TTo, TFrom>(
+        public static ShortPaginatedResult<TTo> MapTo<TTo, TFrom>(
             this IShortPaginatedResult<TFrom> shortPaginatedResult,
             Func<TFrom, TTo> convert)
             where TFrom : class
