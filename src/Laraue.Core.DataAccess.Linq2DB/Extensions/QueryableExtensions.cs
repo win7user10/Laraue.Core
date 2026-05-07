@@ -25,7 +25,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="pagination"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public static async Task<IFullPaginatedResult<TEntity>> FullPaginateLinq2DbAsync<TEntity>(
+        public static async Task<FullPaginatedResult<TEntity>> FullPaginateLinq2DbAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginationData pagination,
             CancellationToken ct = default)
@@ -49,7 +49,7 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static async Task<IShortPaginatedResult<TEntity>> ShortPaginateLinq2DbAsync<TEntity>(
+        public static async Task<ShortPaginatedResult<TEntity>> ShortPaginateLinq2DbAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginationData pagination,
             CancellationToken ct = default)
@@ -100,6 +100,21 @@ namespace Laraue.Core.DataAccess.Linq2DB.Extensions
             CancellationToken ct = default)
         {
             if (!await query.AnyAsyncLinqToDB(predicate, ct))
+            {
+                throw new NotFoundException(error);
+            }
+        }
+        
+        /// <summary>
+        /// Ensure that query returns at least one result or throws <see cref="NotFoundException"/>
+        /// </summary>
+        /// <exception cref="NotFoundException"></exception>
+        public static async Task AnyOrThrowNotFoundLinq2DbAsync<T>(
+            this IQueryable<T> query,
+            string error,
+            CancellationToken ct = default)
+        {
+            if (!await query.AnyAsyncLinqToDB(ct))
             {
                 throw new NotFoundException(error);
             }

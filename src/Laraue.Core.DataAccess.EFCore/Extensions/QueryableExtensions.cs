@@ -24,7 +24,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="pagination"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public static async Task<IFullPaginatedResult<TEntity>> FullPaginateEFAsync<TEntity>(
+        public static async Task<FullPaginatedResult<TEntity>> FullPaginateEFAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginationData pagination,
             CancellationToken ct = default)
@@ -49,7 +49,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="ct"></param>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static async Task<IShortPaginatedResult<TEntity>> ShortPaginateEFAsync<TEntity>(
+        public static async Task<ShortPaginatedResult<TEntity>> ShortPaginateEFAsync<TEntity>(
             this IQueryable<TEntity> query,
             IPaginationData pagination,
             CancellationToken ct = default)
@@ -72,7 +72,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="query"></param>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        public static IFullPaginatedResult<TEntity> FullPaginateEF<TEntity>(
+        public static FullPaginatedResult<TEntity> FullPaginateEF<TEntity>(
             this IQueryable<TEntity> query,
             IPaginationData pagination)
             where TEntity : class
@@ -95,7 +95,7 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
         /// <param name="pagination"></param>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public static IShortPaginatedResult<TEntity> ShortPaginateEF<TEntity>(
+        public static ShortPaginatedResult<TEntity> ShortPaginateEF<TEntity>(
             this IQueryable<TEntity> query,
             IPaginationData pagination)
             where TEntity : class
@@ -145,6 +145,20 @@ namespace Laraue.Core.DataAccess.EFCore.Extensions
             CancellationToken ct = default)
         {
             if (!await query.AnyAsync(predicate, ct))
+            {
+                throw new NotFoundException(error);   
+            }
+        }
+        
+        /// <summary>
+        /// Ensure that query returns at least one result or throws <see cref="NotFoundException"/>
+        /// </summary>
+        public static async Task AnyOrThrowNotFoundEFAsync<T>(
+            this IQueryable<T> query,
+            string error,
+            CancellationToken ct = default)
+        {
+            if (!await query.AnyAsync(ct))
             {
                 throw new NotFoundException(error);   
             }
