@@ -5,13 +5,8 @@ namespace Laraue.Core.Exceptions.Web;
 
 public abstract class HttpException : Exception
 {
-    protected HttpException(HttpStatusCode statusCode, string message)
+    protected HttpException(HttpStatusCode statusCode, string message = "Client error")
         : base(message)
-    {
-        StatusCode = statusCode;
-    }
-    
-    protected HttpException(HttpStatusCode statusCode)
     {
         StatusCode = statusCode;
     }

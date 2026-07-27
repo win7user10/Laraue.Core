@@ -3,7 +3,7 @@
 namespace Laraue.Core.Exceptions.Web
 {
     /// <summary>
-    /// Exception with 406 code
+    /// Exception with 403 code
     /// </summary>
     public class ForbiddenException : HttpException
     {

@@ -17,7 +17,7 @@ public static class PaginationExtensions
     /// <param name="request"></param>
     /// <typeparam name="TEntity"></typeparam>
     /// <returns></returns>
-    public static IFullPaginatedResult<TEntity> FullPaginate<TEntity>(
+    public static FullPaginatedResult<TEntity> FullPaginate<TEntity>(
         this ICollection<TEntity> query,
         IPaginatedRequest request)
         where TEntity : class
@@ -35,7 +35,7 @@ public static class PaginationExtensions
     /// <summary>
     /// Create short pagination for the sequence.
     /// </summary>
-    public static IShortPaginatedResult<TEntity> ShortPaginate<TEntity>(
+    public static ShortPaginatedResult<TEntity> ShortPaginate<TEntity>(
         this IEnumerable<TEntity> query,
         IPaginationData pagination)
         where TEntity : class
