@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Laraue.Core.Extensions.Hosting.EfCore\Laraue.Core.Extensions.Hosting.EfCore.csproj" />
-    <ProjectReference Include="..\..\src\Laraue.Core.Ollama\Laraue.Core.Ollama.csproj" />
     <ProjectReference Include="..\..\src\Laraue.Core.Threading\Laraue.Core.Threading.csproj" />
   </ItemGroup>
 

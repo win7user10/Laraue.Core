@@ -20,8 +20,4 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\Laraue.Core.Ollama\Laraue.Core.Ollama.csproj" />
-    </ItemGroup>
-
 </Project>
