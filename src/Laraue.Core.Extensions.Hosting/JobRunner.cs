@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,7 +97,7 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
             }
             
             _logger.LogInformation("Start the job '{JobName}' executing", JobName);
-            
+
             var sw = new Stopwatch();
             sw.Start();
 
@@ -104,23 +105,39 @@ public abstract class JobRunner<TJob, TJobData> : BackgroundService
             var job = ActivatorUtilities.CreateInstance<TJob>(scope.ServiceProvider, _jobConstructorArguments);
 
             job.OnStateUpdated += SaveJobStateAsync;
-            
-            var timeToWait = await job
-                .ExecuteAsync(jobState, stoppingToken)
-                .ConfigureAwait(false);
+
+            var tags = new TagList { { JobTags.JobName, JobName } };
+            LaraueJobsTelemetry.JobsStarted.Add(1, tags);
+
+            TimeSpan timeToWait;
+            try
+            {
+                timeToWait = await job
+                    .ExecuteAsync(jobState, stoppingToken)
+                    .ConfigureAwait(false);
+            }
+            catch
+            {
+                LaraueJobsTelemetry.JobsFailed.Add(1, tags);
+                throw;
+            }
+            finally
+            {
+                LaraueJobsTelemetry.JobDuration.Record(sw.Elapsed.TotalMilliseconds, tags);
+            }
 
             var now = _dateTimeProvider.UtcNow;
             jobState.NextExecutionAt = now + timeToWait;
             jobState.LastExecutionAt = now;
-            
+
             await SaveJobStateAsync(jobState, stoppingToken);
-            
+
             _logger.LogInformation(
                 "Job {JobName} has been completed for {Time} ms, sleeping for {SleepTime}",
                 JobName,
                 sw.Elapsed,
                 timeToWait);
-            
+
             scope.Dispose();
 
             if (jobGroupAttribute is not null)
